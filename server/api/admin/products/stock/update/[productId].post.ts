@@ -4,18 +4,7 @@ export default defineEventHandler(async (event) => {
   await requireAdmin(event);
 
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
-
-  const result = await readValidatedBody(event, (body) => updateProductStockSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
+  const body = await validateBody(event, updateProductStockSchema);
 
   const product = await prisma.product.findUnique({
     where: { id: productId },

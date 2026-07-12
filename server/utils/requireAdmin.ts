@@ -1,17 +1,10 @@
 import { Role } from "@prisma/client";
-import type { H3Event } from "h3";
+import { createError, type H3Event } from "h3";
+import { prisma } from "./prisma";
+import { requireUser } from "./request";
 
 export async function requireAdmin(event: H3Event) {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    });
-  }
+  const { session } = await requireUser(event);
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },

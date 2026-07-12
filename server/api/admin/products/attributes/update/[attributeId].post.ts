@@ -8,18 +8,7 @@ export default defineEventHandler(async (event) => {
     "attributeId",
     "Некорректный ID характеристики"
   );
-
-  const result = await readValidatedBody(event, (body) => updateAttributeSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
+  const body = await validateBody(event, updateAttributeSchema);
 
   try {
     const attribute = await prisma.attribute.update({
@@ -28,19 +17,14 @@ export default defineEventHandler(async (event) => {
     });
 
     return { success: true, attribute };
-  } catch (error: any) {
-    if (error.code === "P2025") {
-      throw createError({
-        statusCode: 404,
-        message: "Характеристика не найдена"
-      });
-    }
+  } catch (error) {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Характеристика не найдена",
+      P2002: "Характеристика с таким названием уже существует"
+    });
 
-    if (error.code === "P2002") {
-      throw createError({
-        statusCode: 409,
-        message: "Характеристика с таким названием уже существует"
-      });
+    if (prismaError) {
+      throw prismaError;
     }
 
     throw createError({

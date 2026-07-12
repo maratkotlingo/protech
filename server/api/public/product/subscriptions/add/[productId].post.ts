@@ -1,16 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    })
-  }
-
-  const user = session.user;
+  const { user } = await requireUser(event);
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
 
   try {
@@ -18,28 +7,29 @@ export default defineEventHandler(async (event) => {
       where: {
         userId_productId: {
           userId: user.id,
-          productId: productId
+          productId
         }
       },
       create: {
         userId: user.id,
-        productId: productId
+        productId
       },
       update: {}
-    })
+    });
 
     return { success: true };
-  } catch (error: any) {
-    if (error.code === "P2003") {
-      throw createError({
-        statusCode: 404,
-        message: "Товар не найден"
-      })
+  } catch (error) {
+    const prismaError = toPrismaHttpError(error, {
+      P2003: { statusCode: 404, message: "Товар не найден" }
+    });
+
+    if (prismaError) {
+      throw prismaError;
     }
 
     throw createError({
       statusCode: 500,
       message: "Ошибка сервера при добавлении товара в подписку"
-    })
+    });
   }
 });

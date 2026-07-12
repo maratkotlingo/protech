@@ -1,16 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    });
-  }
-
-  const user = session.user;
+  const { user } = await requireUser(event);
   const shopQuestionId = getPositiveIntRouterParam(
     event,
     "shopQuestionId",
@@ -38,6 +27,16 @@ export default defineEventHandler(async (event) => {
 
   await prisma.shopQuestion.delete({
     where: { id: shopQuestionId }
+  }).catch((error) => {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Вопрос не найден"
+    });
+
+    if (prismaError) {
+      throw prismaError;
+    }
+
+    throw error;
   });
 
   return { success: true };

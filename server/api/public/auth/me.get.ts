@@ -1,30 +1,21 @@
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers,
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы не авторизованы",
-    });
-  }
+  const { userId } = await requireUser(event);
 
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     select: {
       id: true,
       email: true,
       name: true,
       image: true,
-      role: true,
-    },
+      role: true
+    }
   });
 
   if (!user) {
     throw createError({
       statusCode: 401,
-      message: "Пользователь не найден",
+      message: "Пользователь не найден"
     });
   }
 

@@ -9,19 +9,17 @@ export default defineEventHandler(async (event) => {
     });
 
     return { success: true };
-  } catch (error: any) {
-    if (error.code === "P2025") {
-      throw createError({
-        statusCode: 404,
-        message: "Товар не найден"
-      });
-    }
-
-    if (error.code === "P2003") {
-      throw createError({
+  } catch (error) {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Товар не найден",
+      P2003: {
         statusCode: 409,
         message: "Невозможно удалить товар, связанный с заказами"
-      });
+      }
+    });
+
+    if (prismaError) {
+      throw prismaError;
     }
 
     throw createError({

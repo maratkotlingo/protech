@@ -1,16 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    })
-  }
-
-  const user = session.user;
+  const { user } = await requireUser(event);
 
   try {
     const favorites = await prisma.favoriteProduct.findMany({
@@ -41,17 +30,19 @@ export default defineEventHandler(async (event) => {
 
     const productIds = favorites.map((favorite) => favorite.product.id);
 
-    const ratings = await prisma.review.groupBy({
-      by: ["productId"],
-      where: {
-        productId: {
-          in: productIds
+    const ratings = productIds.length
+      ? await prisma.review.groupBy({
+        by: ["productId"],
+        where: {
+          productId: {
+            in: productIds
+          }
+        },
+        _avg: {
+          rating: true
         }
-      },
-      _avg: {
-        rating: true
-      }
-    });
+      })
+      : [];
 
     const ratingByProductId = new Map(
       ratings.map((item) => [
@@ -73,10 +64,14 @@ export default defineEventHandler(async (event) => {
         averageRating: ratingByProductId.get(favorite.product.id) ?? null
       }
     }));
-  } catch (error: any) {
+  } catch (error) {
+    if (error && typeof error === "object" && "statusCode" in error) {
+      throw error;
+    }
+
     throw createError({
       statusCode: 500,
       message: "Ошибка сервера при получении избранных товаров"
-    })
+    });
   }
 });

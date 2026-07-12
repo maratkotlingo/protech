@@ -9,18 +9,7 @@ function getOrderStatusForActivePayment(paymentStatus: PaymentStatus) {
 export default defineEventHandler(async (event) => {
   await requireAdmin(event);
 
-  const result = await readValidatedBody(event, (body) => updatePaymentStatusSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
-
+  const body = await validateBody(event, updatePaymentStatusSchema);
   const paymentStatus = body.paymentStatus as PaymentStatus;
 
   const updatedPayment = await prisma.$transaction(async (tx) => {
@@ -103,9 +92,19 @@ export default defineEventHandler(async (event) => {
       where: { orderId: body.orderId },
       data: {
         paymentStatus,
-        paidAt: paymentStatus === PaymentStatus.PAID ? new Date() : null,
+        paidAt: paymentStatus === PaymentStatus.PAID ? new Date() : null
       }
     });
+  }).catch((error) => {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Платёж или заказ не найден"
+    });
+
+    if (prismaError) {
+      throw prismaError;
+    }
+
+    throw error;
   });
 
   return { success: true, payment: updatedPayment };

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { createError } from "h3";
 
 type StockItem = {
@@ -15,14 +15,14 @@ function normalizeStockItems(items: StockItem[]) {
     if (!Number.isInteger(item.productId) || item.productId <= 0) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Invalid product id"
+        message: "Invalid product id"
       });
     }
 
     if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Invalid product quantity"
+        message: "Invalid product quantity"
       });
     }
 
@@ -56,7 +56,7 @@ export async function reserveProductStock(
     if (result.count !== 1) {
       throw createError({
         statusCode: 409,
-        statusMessage: `Not enough stock for product ${item.productId}`
+        message: `Not enough stock for product ${item.productId}`
       });
     }
   }

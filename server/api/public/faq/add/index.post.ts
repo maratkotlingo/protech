@@ -1,30 +1,8 @@
 import { createShopQuestionSchema } from "~~/shared/schemas/user/faq/createShopQuestion";
 
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    });
-  }
-
-  const user = session.user;
-
-  const result = await readValidatedBody(event, (body) => createShopQuestionSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
+  const { user } = await requireUser(event);
+  const body = await validateBody(event, createShopQuestionSchema);
 
   const question = await prisma.shopQuestion.create({
     data: {

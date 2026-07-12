@@ -1,16 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    });
-  }
-
-  const user = session.user;
+  const { user } = await requireUser(event);
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
 
   try {
@@ -64,7 +53,7 @@ export default defineEventHandler(async (event) => {
         });
       }
 
-      const cartItem = await tx.cartItem.upsert({
+      return await tx.cartItem.upsert({
         where: {
           cartId_productId: {
             cartId: cart.id,
@@ -85,16 +74,14 @@ export default defineEventHandler(async (event) => {
           product: true
         }
       });
-
-      return cartItem;
     });
 
     return {
       success: true,
       cartItem: result
     };
-  } catch (error: any) {
-    if (error.statusCode) {
+  } catch (error) {
+    if (error && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
 

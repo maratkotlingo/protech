@@ -13,12 +13,13 @@ export default defineEventHandler(async (event) => {
     });
 
     return { success: true };
-  } catch (error: any) {
-    if (error.code === "P2025") {
-      throw createError({
-        statusCode: 404,
-        message: "Характеристика не найдена"
-      });
+  } catch (error) {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Характеристика не найдена"
+    });
+
+    if (prismaError) {
+      throw prismaError;
     }
 
     throw createError({

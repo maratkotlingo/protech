@@ -1,31 +1,24 @@
 export default defineEventHandler(async (event) => {
-	const session = await auth.api.getSession({
-		headers: event.headers
-	});
+  const { user } = await requireUser(event);
+  const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
 
-	if (!session) {
-		throw createError({
-			statusCode: 401,
-			message: "Вы неавторизованы"
-		})
-	}
+  try {
+    const result = await prisma.productSubscription.deleteMany({
+      where: {
+        userId: user.id,
+        productId
+      }
+    });
 
-	const user = session.user;
-	const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
+    return { success: true, deletedCount: result.count };
+  } catch (error) {
+    if (error && typeof error === "object" && "statusCode" in error) {
+      throw error;
+    }
 
-	try {
-		const result = await prisma.productSubscription.deleteMany({
-			where: {
-				userId: user.id,
-				productId
-			}
-		});
-
-		return { success: true, deletedCount: result.count };
-	} catch (error: any) {
-		throw createError({
-			statusCode: 500,
-			message: "Ошибка сервера при удалении подписки на товар"
-		})
-	}
+    throw createError({
+      statusCode: 500,
+      message: "Ошибка сервера при удалении подписки на товар"
+    });
+  }
 });

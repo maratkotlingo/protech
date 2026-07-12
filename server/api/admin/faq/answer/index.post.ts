@@ -2,18 +2,7 @@ import { shopAnswerSchema } from "~~/shared/schemas/admin/faq/shopAnswer";
 
 export default defineEventHandler(async (event) => {
   const { userId } = await requireAdmin(event);
-
-  const result = await readValidatedBody(event, (body) => shopAnswerSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
+  const body = await validateBody(event, shopAnswerSchema);
 
   const question = await prisma.shopQuestion.findUnique({
     where: { id: body.shopQuestionId }
@@ -38,7 +27,18 @@ export default defineEventHandler(async (event) => {
       where: { id: body.shopQuestionId },
       data: { isAnswered: true }
     })
-  ]);
+  ]).catch((error) => {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Вопрос не найден",
+      P2003: { statusCode: 404, message: "Вопрос не найден" }
+    });
+
+    if (prismaError) {
+      throw prismaError;
+    }
+
+    throw error;
+  });
 
   return { success: true, answer };
 });

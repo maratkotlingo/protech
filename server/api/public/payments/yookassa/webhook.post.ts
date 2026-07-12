@@ -3,7 +3,6 @@ import {
   PaymentStatus,
   Prisma
 } from "@prisma/client";
-import { defineEventHandler } from "h3";
 import { z } from "zod";
 import { reserveOrderStock, restoreOrderStock } from "~~/server/utils/orderStock";
 import { getYooKassaPayment } from "~~/server/utils/yookassa";
@@ -41,18 +40,7 @@ function ignored(reason: string) {
 }
 
 export default defineEventHandler(async (event) => {
-  const result = await readValidatedBody(event, (body) => yookassaWebhookSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Invalid webhook payload",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
-
+  const body = await validateBody(event, yookassaWebhookSchema);
   const payment = await getYooKassaPayment(event, body.object.id);
 
   const orderIdFromMetadata = Number(payment.metadata?.orderId);
@@ -145,7 +133,7 @@ export default defineEventHandler(async (event) => {
       if (!order || order.orderStatus === OrderStatus.CANCELLED) {
         throw createError({
           statusCode: 409,
-          statusMessage: "Order is not available for payment confirmation"
+          message: "Order is not available for payment confirmation"
         });
       }
 

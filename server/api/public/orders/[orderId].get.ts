@@ -17,23 +17,13 @@ const orderInclude = {
 } satisfies Prisma.OrderInclude;
 
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    });
-  }
-
+  const { userId } = await requireUser(event);
   const orderId = getPositiveIntRouterParam(event, "orderId", "Некорректный ID заказа");
 
   const order = await prisma.order.findFirst({
     where: {
       id: orderId,
-      userId: session.user.id
+      userId
     },
     include: orderInclude
   });

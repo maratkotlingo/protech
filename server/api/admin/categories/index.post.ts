@@ -3,17 +3,7 @@ import { categorySchema } from "~~/shared/schemas/admin/products/category";
 export default defineEventHandler(async (event) => {
   await requireAdmin(event);
 
-  const result = await readValidatedBody(event, (body) => categorySchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
+  const body = await validateBody(event, categorySchema);
 
   try {
     const category = await prisma.category.create({
@@ -21,12 +11,13 @@ export default defineEventHandler(async (event) => {
     });
 
     return { success: true, category };
-  } catch (error: any) {
-    if (error.code === "P2002") {
-      throw createError({
-        statusCode: 409,
-        message: "Категория с таким названием уже существует"
-      });
+  } catch (error) {
+    const prismaError = toPrismaHttpError(error, {
+      P2002: "Категория с таким названием уже существует"
+    });
+
+    if (prismaError) {
+      throw prismaError;
     }
 
     throw createError({

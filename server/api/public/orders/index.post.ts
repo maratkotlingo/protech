@@ -5,7 +5,7 @@ import {
 } from "@prisma/client";
 import { reserveProductStock, restoreOrderStock } from "~~/server/utils/orderStock";
 import { createYooKassaPayment } from "~~/server/utils/yookassa";
-import { createOrderSchema } from "~~/shared/schemas/user/orders/createOrder"
+import { createOrderSchema } from "~~/shared/schemas/user/orders/createOrder";
 
 const orderInclude = {
   orderItems: true,
@@ -14,30 +14,8 @@ const orderInclude = {
 } satisfies Prisma.OrderInclude;
 
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    })
-  }
-
-  const user = session.user;
-
-  const result = await readValidatedBody(event, (body) => createOrderSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: 'Ошибка валидации данных',
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    })
-  }
-
-  const body = result.data
+  const { user } = await requireUser(event);
+  const body = await validateBody(event, createOrderSchema);
 
   const order = await prisma.$transaction(async (tx) => {
     const productIds = body.orderItems.map((item) => item.productId);
@@ -61,7 +39,7 @@ export default defineEventHandler(async (event) => {
     if (products.length !== productIds.length) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Один или несколько товаров не найдены"
+        message: "Один или несколько товаров не найдены"
       });
     }
 
@@ -69,19 +47,19 @@ export default defineEventHandler(async (event) => {
       if (!product.isActive) {
         throw createError({
           statusCode: 400,
-          statusMessage: `Товар с ID ${product.id} недоступен для заказа`
+          message: `Товар с ID ${product.id} недоступен для заказа`
         });
       }
     }
 
     for (const item of body.orderItems) {
-      const product = products.find((p) => p.id === item.productId);
+      const product = products.find((candidate) => candidate.id === item.productId);
       const stock = product?.productStocks[0]?.quantity ?? 0;
 
       if (stock < item.quantity) {
         throw createError({
           statusCode: 400,
-          statusMessage: `Недостаточно товара с ID ${item.productId} на складе`
+          message: `Недостаточно товара с ID ${item.productId} на складе`
         });
       }
     }
@@ -99,7 +77,7 @@ export default defineEventHandler(async (event) => {
       if (!price) {
         throw createError({
           statusCode: 400,
-          statusMessage: `Товар с ID ${productId} не найден`
+          message: `Товар с ID ${productId} не найден`
         });
       }
 
@@ -115,7 +93,7 @@ export default defineEventHandler(async (event) => {
     if (totalAmount.lte(0)) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Сумма заказа должна быть больше нуля"
+        message: "Сумма заказа должна быть больше нуля"
       });
     }
 
@@ -171,6 +149,16 @@ export default defineEventHandler(async (event) => {
     await reserveProductStock(tx, body.orderItems);
 
     return createdOrder;
+  }).catch((error) => {
+    const prismaError = toPrismaHttpError(error, {
+      P2003: "Один или несколько товаров не найдены"
+    });
+
+    if (prismaError) {
+      throw prismaError;
+    }
+
+    throw error;
   });
 
   if (body.paymentMethod === "OFFLINE") {

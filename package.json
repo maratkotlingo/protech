@@ -6,6 +6,11 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "typecheck": "nuxt typecheck",
+    "lint": "nuxt prepare && eslint .",
+    "prisma:validate": "prisma validate --schema ./server/prisma",
+    "test:integration": "vitest run",
+    "check": "npm run prisma:validate && npm run typecheck && npm run lint && npm run test:integration",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
@@ -20,10 +25,15 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^1.16.0",
+    "@nuxt/test-utils": "^4.0.3",
     "@types/node": "^26.0.0",
     "@types/pg": "^8.20.0",
+    "eslint": "^10.7.0",
     "prisma": "^7.8.0",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10",
+    "vue-tsc": "^3.3.7"
   }
 }

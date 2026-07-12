@@ -4,18 +4,7 @@ export default defineEventHandler(async (event) => {
   const { userId } = await requireAdmin(event);
 
   const reviewId = getPositiveIntRouterParam(event, "reviewId", "Некорректный ID отзыва");
-
-  const result = await readValidatedBody(event, (body) => reviewAnswerSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
+  const body = await validateBody(event, reviewAnswerSchema);
 
   const review = await prisma.review.findUnique({
     where: { id: reviewId }
@@ -40,7 +29,18 @@ export default defineEventHandler(async (event) => {
       where: { id: reviewId },
       data: { isAnswered: true }
     })
-  ]);
+  ]).catch((error) => {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Отзыв не найден",
+      P2003: { statusCode: 404, message: "Отзыв не найден" }
+    });
+
+    if (prismaError) {
+      throw prismaError;
+    }
+
+    throw error;
+  });
 
   return { success: true, answer };
 });

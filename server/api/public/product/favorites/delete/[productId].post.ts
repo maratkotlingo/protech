@@ -1,16 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    })
-  }
-
-  const user = session.user;
+  const { user } = await requireUser(event);
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
 
   try {
@@ -22,10 +11,14 @@ export default defineEventHandler(async (event) => {
     });
 
     return { success: true, deletedCount: result.count };
-  } catch (error: any) {
+  } catch (error) {
+    if (error && typeof error === "object" && "statusCode" in error) {
+      throw error;
+    }
+
     throw createError({
       statusCode: 500,
       message: "Ошибка сервера при удалении товара из избранного"
-    })
+    });
   }
 });

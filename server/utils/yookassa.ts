@@ -1,7 +1,7 @@
 // server/utils/yookassa.ts
 import { Buffer } from "node:buffer";
 import { createError, type H3Event } from "h3";
-import { type Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 type YooKassaPayment = {
   id: string;
@@ -27,11 +27,18 @@ function getYooKassaAuth(event: H3Event) {
   if (!shopId || !secretKey) {
     throw createError({
       statusCode: 500,
-      statusMessage: "Не настроены YOOKASSA_SHOP_ID / YOOKASSA_SECRET_KEY"
+      message: "Не настроены YOOKASSA_SHOP_ID / YOOKASSA_SECRET_KEY"
     });
   }
 
   return `Basic ${Buffer.from(`${shopId}:${secretKey}`).toString("base64")}`;
+}
+
+function getYooKassaApiUrl(event: H3Event) {
+  const config = useRuntimeConfig(event);
+  const url = String(config.yookassaApiUrl || "https://api.yookassa.ru");
+
+  return url.replace(/\/$/, "");
 }
 
 export async function createYooKassaPayment(
@@ -47,11 +54,11 @@ export async function createYooKassaPayment(
   if (!config.public.appUrl) {
     throw createError({
       statusCode: 500,
-      statusMessage: "Не настроен NUXT_PUBLIC_APP_URL"
+      message: "Не настроен NUXT_PUBLIC_APP_URL"
     });
   }
 
-  const response = await fetch("https://api.yookassa.ru/v3/payments", {
+  const response = await fetch(`${getYooKassaApiUrl(event)}/v3/payments`, {
     method: "POST",
     headers: {
       Authorization: getYooKassaAuth(event),
@@ -79,7 +86,7 @@ export async function createYooKassaPayment(
   if (!response.ok) {
     throw createError({
       statusCode: 502,
-      statusMessage: "ЮKassa не создала платеж",
+      message: "ЮKassa не создала платеж",
       data: {
         status: response.status,
         body: await response.text()
@@ -91,7 +98,7 @@ export async function createYooKassaPayment(
 }
 
 export async function getYooKassaPayment(event: H3Event, paymentId: string) {
-  const response = await fetch(`https://api.yookassa.ru/v3/payments/${paymentId}`, {
+  const response = await fetch(`${getYooKassaApiUrl(event)}/v3/payments/${paymentId}`, {
     method: "GET",
     headers: {
       Authorization: getYooKassaAuth(event)
@@ -101,7 +108,7 @@ export async function getYooKassaPayment(event: H3Event, paymentId: string) {
   if (!response.ok) {
     throw createError({
       statusCode: 502,
-      statusMessage: "Не удалось проверить платеж в ЮKassa",
+      message: "Не удалось проверить платеж в ЮKassa",
       data: {
         status: response.status,
         body: await response.text()

@@ -2,35 +2,13 @@ import { Prisma } from "@prisma/client";
 import { updateShopQuestionSchema } from "~~/shared/schemas/user/faq/updateShopQuestion";
 
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    });
-  }
-
-  const user = session.user;
+  const { user } = await requireUser(event);
   const shopQuestionId = getPositiveIntRouterParam(
     event,
     "shopQuestionId",
     "Некорректный ID вопроса"
   );
-
-  const result = await readValidatedBody(event, (body) => updateShopQuestionSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
+  const body = await validateBody(event, updateShopQuestionSchema);
 
   const existing = await prisma.shopQuestion.findUnique({
     where: { id: shopQuestionId },
@@ -70,6 +48,16 @@ export default defineEventHandler(async (event) => {
     include: {
       shopQuestionImages: true
     }
+  }).catch((error) => {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Вопрос не найден"
+    });
+
+    if (prismaError) {
+      throw prismaError;
+    }
+
+    throw error;
   });
 
   return { success: true, question };

@@ -3,17 +3,7 @@ import { createProductSchema } from "~~/shared/schemas/admin/products/createProd
 export default defineEventHandler(async (event) => {
   await requireAdmin(event);
 
-  const result = await readValidatedBody(event, (body) => createProductSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
+  const body = await validateBody(event, createProductSchema);
 
   const category = await prisma.category.findUnique({
     where: { id: body.categoryId }
@@ -78,19 +68,14 @@ export default defineEventHandler(async (event) => {
     });
 
     return { success: true, product };
-  } catch (error: any) {
-    if (error.code === "P2002") {
-      throw createError({
-        statusCode: 409,
-        message: "Товар с таким артикулом уже существует"
-      });
-    }
+  } catch (error) {
+    const prismaError = toPrismaHttpError(error, {
+      P2002: "Товар с таким артикулом уже существует",
+      P2003: "Указана несуществующая характеристика"
+    });
 
-    if (error.code === "P2003") {
-      throw createError({
-        statusCode: 400,
-        message: "Указана несуществующая характеристика"
-      });
+    if (prismaError) {
+      throw prismaError;
     }
 
     throw createError({

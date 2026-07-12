@@ -1,31 +1,9 @@
 import { Prisma } from "@prisma/client";
-import { updateReviewSchema } from "~~/shared/schemas/user/reviews/updateReview"
+import { updateReviewSchema } from "~~/shared/schemas/user/reviews/updateReview";
 
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    })
-  }
-
-  const user = session.user;
-
-  const result = await readValidatedBody(event, (body) => updateReviewSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: 'Ошибка валидации данных',
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    })
-  }
-
-  const body = result.data;
+  const { user } = await requireUser(event);
+  const body = await validateBody(event, updateReviewSchema);
   const reviewId = getPositiveIntRouterParam(event, "reviewId", "Некорректный ID отзыва");
 
   const existingReview = await prisma.review.findUnique({
@@ -47,22 +25,22 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const data: Prisma.ReviewUpdateInput = {}
+  const data: Prisma.ReviewUpdateInput = {};
 
   if (body.rating !== undefined) {
-    data.rating = body.rating
+    data.rating = body.rating;
   }
 
   if (body.advantages !== undefined) {
-    data.advantages = body.advantages
+    data.advantages = body.advantages;
   }
 
   if (body.disadvantages !== undefined) {
-    data.disadvantages = body.disadvantages
+    data.disadvantages = body.disadvantages;
   }
 
   if (body.comment !== undefined) {
-    data.comment = body.comment
+    data.comment = body.comment;
   }
 
   data.isAnswered = false;
@@ -78,7 +56,7 @@ export default defineEventHandler(async (event) => {
           }))
         }
         : {})
-    }
+    };
   }
 
   try {
@@ -94,10 +72,18 @@ export default defineEventHandler(async (event) => {
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Отзыв не найден"
+    });
+
+    if (prismaError) {
+      throw prismaError;
+    }
+
     throw createError({
       statusCode: 500,
       message: "Ошибка сервера при обновлении отзыва"
-    })
+    });
   }
 });

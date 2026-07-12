@@ -5,18 +5,7 @@ export default defineEventHandler(async (event) => {
   await requireAdmin(event);
 
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
-
-  const result = await readValidatedBody(event, (body) => updateProductSchema.safeParse(body));
-
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: "Ошибка валидации данных",
-      data: result.error.flatten((issue) => issue.message).fieldErrors,
-    });
-  }
-
-  const body = result.data;
+  const body = await validateBody(event, updateProductSchema);
 
   if (body.categoryId !== undefined) {
     const category = await prisma.category.findUnique({
@@ -36,7 +25,7 @@ export default defineEventHandler(async (event) => {
     body.currentPrice !== undefined
       ? await prisma.product.findUnique({
         where: { id: productId },
-        select: { currentPrice: true },
+        select: { currentPrice: true }
       })
       : null;
   const priceChanged =
@@ -94,33 +83,22 @@ export default defineEventHandler(async (event) => {
         prisma.productPrice.create({
           data: {
             productId,
-            value: body.currentPrice!,
-          },
-        }),
+            value: body.currentPrice!
+          }
+        })
       ]))[0]
       : await updateProduct;
 
     return { success: true, product };
-  } catch (error: any) {
-    if (error.code === "P2025") {
-      throw createError({
-        statusCode: 404,
-        message: "Товар не найден"
-      });
-    }
+  } catch (error) {
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Товар не найден",
+      P2002: "Товар с таким артикулом уже существует",
+      P2003: "Указана несуществующая характеристика"
+    });
 
-    if (error.code === "P2002") {
-      throw createError({
-        statusCode: 409,
-        message: "Товар с таким артикулом уже существует"
-      });
-    }
-
-    if (error.code === "P2003") {
-      throw createError({
-        statusCode: 400,
-        message: "Указана несуществующая характеристика"
-      });
+    if (prismaError) {
+      throw prismaError;
     }
 
     throw createError({

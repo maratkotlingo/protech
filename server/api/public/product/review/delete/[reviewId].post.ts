@@ -1,16 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы неавторизованы"
-    })
-  }
-
-  const user = session.user;
+  const { user } = await requireUser(event);
   const reviewId = getPositiveIntRouterParam(event, "reviewId", "Некорректный ID отзыва");
 
   try {
@@ -41,9 +30,17 @@ export default defineEventHandler(async (event) => {
     });
 
     return { success: true };
-  } catch (error: any) {
-    if (error.statusCode) {
+  } catch (error) {
+    if (error && typeof error === "object" && "statusCode" in error) {
       throw error;
+    }
+
+    const prismaError = toPrismaHttpError(error, {
+      P2025: "Отзыв не найден"
+    });
+
+    if (prismaError) {
+      throw prismaError;
     }
 
     throw createError({

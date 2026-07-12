@@ -17,20 +17,11 @@ const orderInclude = {
 } satisfies Prisma.OrderInclude;
 
 export default defineEventHandler(async (event) => {
-  const session = await auth.api.getSession({
-    headers: event.headers
-  });
-
-  if (!session) {
-    throw createError({
-      statusCode: 401,
-      message: "Вы не авторизованы"
-    });
-  }
+  const { userId } = await requireUser(event);
 
   return prisma.order.findMany({
     where: {
-      userId: session.user.id
+      userId
     },
     include: orderInclude,
     orderBy: {

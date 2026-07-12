@@ -1,0 +1,530 @@
+import "dotenv/config";
+import { randomUUID } from "node:crypto";
+import { createServer, type Server } from "node:http";
+import type { AddressInfo } from "node:net";
+import { $fetch, setup } from "@nuxt/test-utils/e2e";
+import {
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+  Prisma,
+  Role
+} from "@prisma/client";
+import { afterAll, afterEach, describe, expect, it } from "vitest";
+import { prisma } from "../../server/utils/prisma";
+import { expireUnpaidOrders } from "../../server/utils/orderExpiry";
+
+const mockYooKassaPayments = new Map<string, unknown>();
+const mockYooKassaServer: Server = createServer((request, response) => {
+  const url = request.url ?? "";
+  const paymentId = url.startsWith("/v3/payments/")
+    ? decodeURIComponent(url.slice("/v3/payments/".length))
+    : null;
+  const payment = paymentId ? mockYooKassaPayments.get(paymentId) : null;
+
+  if (request.method === "GET" && payment) {
+    response.writeHead(200, {
+      "Content-Type": "application/json"
+    });
+    response.end(JSON.stringify(payment));
+    return;
+  }
+
+  response.writeHead(404, {
+    "Content-Type": "application/json"
+  });
+  response.end(JSON.stringify({ error: "not_found" }));
+});
+
+await new Promise<void>((resolve) => {
+  mockYooKassaServer.listen(0, "127.0.0.1", resolve);
+});
+
+const mockYooKassaAddress = mockYooKassaServer.address() as AddressInfo;
+
+process.env.RATE_LIMIT_DISABLED = "true";
+process.env.ORDER_EXPIRY_JOB_DISABLED = "true";
+process.env.YOOKASSA_SHOP_ID = process.env.YOOKASSA_SHOP_ID || "test-shop";
+process.env.YOOKASSA_SECRET_KEY = process.env.YOOKASSA_SECRET_KEY || "test-secret";
+process.env.YOOKASSA_API_URL = `http://127.0.0.1:${mockYooKassaAddress.port}`;
+
+await setup({
+  server: true,
+  browser: false,
+  setupTimeout: 120_000,
+  env: {
+    RATE_LIMIT_DISABLED: "true",
+    ORDER_EXPIRY_JOB_DISABLED: "true",
+    YOOKASSA_SHOP_ID: process.env.YOOKASSA_SHOP_ID,
+    YOOKASSA_SECRET_KEY: process.env.YOOKASSA_SECRET_KEY,
+    YOOKASSA_API_URL: process.env.YOOKASSA_API_URL
+  }
+});
+
+const testPrefix = `it-${randomUUID()}`;
+
+type TestUser = {
+  id: string;
+  token: string;
+  headers: Record<string, string>;
+};
+
+type TestProduct = {
+  id: number;
+  categoryId: number;
+};
+
+async function cleanupTestData() {
+  const users = await prisma.user.findMany({
+    where: {
+      email: {
+        startsWith: testPrefix
+      }
+    },
+    select: {
+      id: true
+    }
+  });
+
+  const userIds = users.map((user) => user.id);
+
+  if (userIds.length) {
+    await prisma.order.deleteMany({
+      where: {
+        userId: {
+          in: userIds
+        }
+      }
+    });
+
+    await prisma.cart.deleteMany({
+      where: {
+        userId: {
+          in: userIds
+        }
+      }
+    });
+
+    await prisma.session.deleteMany({
+      where: {
+        userId: {
+          in: userIds
+        }
+      }
+    });
+
+    await prisma.account.deleteMany({
+      where: {
+        userId: {
+          in: userIds
+        }
+      }
+    });
+
+    await prisma.user.deleteMany({
+      where: {
+        id: {
+          in: userIds
+        }
+      }
+    });
+  }
+
+  await prisma.product.deleteMany({
+    where: {
+      article: {
+        startsWith: testPrefix
+      }
+    }
+  });
+
+  await prisma.category.deleteMany({
+    where: {
+      name: {
+        startsWith: testPrefix
+      }
+    }
+  });
+}
+
+async function createTestUser(role: Role = Role.USER): Promise<TestUser> {
+  const id = randomUUID();
+  const token = `${testPrefix}-token-${id}`;
+
+  const user = await prisma.user.create({
+    data: {
+      email: `${testPrefix}-${id}@example.com`,
+      name: `Test ${id}`,
+      role
+    }
+  });
+
+  await prisma.session.create({
+    data: {
+      token,
+      userId: user.id,
+      expiresAt: new Date(Date.now() + 60 * 60_000)
+    }
+  });
+
+  return {
+    id: user.id,
+    token,
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+}
+
+async function createTestProduct(quantity = 10): Promise<TestProduct> {
+  const id = randomUUID();
+
+  const category = await prisma.category.create({
+    data: {
+      name: `${testPrefix}-category-${id}`
+    }
+  });
+
+  const product = await prisma.product.create({
+    data: {
+      name: `Product ${id}`,
+      description: "Integration test product",
+      currentPrice: new Prisma.Decimal("100.00"),
+      article: `${testPrefix}-article-${id}`,
+      mainImage: "/uploads/test.png",
+      categoryId: category.id,
+      isActive: true,
+      productPrices: {
+        create: {
+          value: new Prisma.Decimal("100.00")
+        }
+      },
+      productStocks: {
+        create: {
+          quantity
+        }
+      }
+    }
+  });
+
+  return {
+    id: product.id,
+    categoryId: category.id
+  };
+}
+
+async function getStockQuantity(productId: number) {
+  const stock = await prisma.productStock.findUniqueOrThrow({
+    where: { productId },
+    select: { quantity: true }
+  });
+
+  return stock.quantity;
+}
+
+afterEach(async () => {
+  mockYooKassaPayments.clear();
+  await cleanupTestData();
+});
+
+afterAll(async () => {
+  await cleanupTestData();
+  await new Promise<void>((resolve, reject) => {
+    mockYooKassaServer.close((error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve();
+    });
+  });
+  await prisma.$disconnect();
+});
+
+describe("cart/order integration", () => {
+  it("adds, updates, lists and removes cart items", async () => {
+    const user = await createTestUser();
+    const product = await createTestProduct();
+
+    const added = await $fetch<{ success: boolean; cartItem: { quantity: number } }>(
+      `/api/public/cart/add/${product.id}`,
+      {
+        method: "POST",
+        headers: user.headers
+      }
+    );
+
+    expect(added.success).toBe(true);
+    expect(added.cartItem.quantity).toBe(1);
+
+    const updated = await $fetch<{ success: boolean; cartItem: { quantity: number } }>(
+      `/api/public/cart/update/${product.id}`,
+      {
+        method: "POST",
+        headers: user.headers,
+        body: { quantity: 3 }
+      }
+    );
+
+    expect(updated.cartItem.quantity).toBe(3);
+
+    const cart = await $fetch<Array<{ quantity: number; product: { id: number } }>>(
+      "/api/public/cart",
+      {
+        headers: user.headers
+      }
+    );
+
+    expect(cart).toHaveLength(1);
+    expect(cart[0]).toMatchObject({
+      quantity: 3,
+      product: {
+        id: product.id
+      }
+    });
+
+    const removed = await $fetch<{ success: boolean; deletedCount: number }>(
+      "/api/public/cart/delete/many",
+      {
+        method: "POST",
+        headers: user.headers,
+        body: { productIds: [product.id, product.id] }
+      }
+    );
+
+    expect(removed).toEqual({
+      success: true,
+      deletedCount: 1
+    });
+  });
+
+  it("creates an offline pickup order and reserves product stock", async () => {
+    const user = await createTestUser();
+    const product = await createTestProduct(5);
+
+    const response = await $fetch<{
+      order: {
+        id: number;
+        orderStatus: OrderStatus;
+        stockReserved: boolean;
+        payment: {
+          paymentStatus: PaymentStatus;
+        };
+      };
+      payment: {
+        type: string;
+        confirmationUrl: string | null;
+      };
+    }>("/api/public/orders", {
+      method: "POST",
+      headers: user.headers,
+      body: {
+        obtainingMethod: "PICKUP",
+        paymentMethod: "OFFLINE",
+        orderItems: [
+          {
+            productId: product.id,
+            quantity: 2
+          }
+        ]
+      }
+    });
+
+    expect(response.order.orderStatus).toBe(OrderStatus.CONFIRMED);
+    expect(response.order.stockReserved).toBe(true);
+    expect(response.order.payment.paymentStatus).toBe(PaymentStatus.UPON_RECEIPT);
+    expect(response.payment).toEqual({
+      type: "offline",
+      confirmationUrl: null
+    });
+    expect(await getStockQuantity(product.id)).toBe(3);
+  });
+
+  it("processes a successful YooKassa webhook", async () => {
+    const user = await createTestUser();
+    const product = await createTestProduct(1);
+    const transactionId = `${testPrefix}-yk-${randomUUID()}`;
+
+    const order = await prisma.order.create({
+      data: {
+        userId: user.id,
+        obtainingMethod: "PICKUP",
+        paymentMethod: PaymentMethod.ONLINE,
+        orderStatus: OrderStatus.NEW,
+        stockReserved: true,
+        orderItems: {
+          create: {
+            productId: product.id,
+            quantity: 2,
+            price: new Prisma.Decimal("100.00")
+          }
+        },
+        payment: {
+          create: {
+            paymentStatus: PaymentStatus.PENDING,
+            amount: new Prisma.Decimal("200.00"),
+            transactionId
+          }
+        }
+      }
+    });
+
+    mockYooKassaPayments.set(transactionId, {
+      id: transactionId,
+      status: "succeeded",
+      paid: true,
+      amount: {
+        value: "200.00",
+        currency: "RUB"
+      },
+      metadata: {
+        orderId: String(order.id)
+      }
+    });
+
+    const webhookResponse = await $fetch<{ ok: boolean }>(
+      "/api/public/payments/yookassa/webhook",
+      {
+        method: "POST",
+        body: {
+          type: "notification",
+          event: "payment.succeeded",
+          object: {
+            id: transactionId,
+            status: "succeeded",
+            paid: true
+          }
+        }
+      }
+    );
+
+    expect(webhookResponse).toEqual({ ok: true });
+
+    const payment = await prisma.payment.findUniqueOrThrow({
+      where: { orderId: order.id },
+      include: {
+        order: true
+      }
+    });
+
+    expect(payment.paymentStatus).toBe(PaymentStatus.PAID);
+    expect(payment.order.orderStatus).toBe(OrderStatus.CONFIRMED);
+    expect(payment.order.stockReserved).toBe(true);
+    expect(await getStockQuantity(product.id)).toBe(1);
+  });
+
+  it("cancels and restores an order status while updating stock", async () => {
+    const user = await createTestUser();
+    const admin = await createTestUser(Role.ADMIN);
+    const product = await createTestProduct(1);
+
+    const order = await prisma.order.create({
+      data: {
+        userId: user.id,
+        obtainingMethod: "PICKUP",
+        paymentMethod: PaymentMethod.OFFLINE,
+        orderStatus: OrderStatus.CONFIRMED,
+        stockReserved: true,
+        orderItems: {
+          create: {
+            productId: product.id,
+            quantity: 2,
+            price: new Prisma.Decimal("100.00")
+          }
+        },
+        payment: {
+          create: {
+            paymentStatus: PaymentStatus.UPON_RECEIPT,
+            amount: new Prisma.Decimal("200.00")
+          }
+        }
+      }
+    });
+
+    const cancelled = await $fetch<{ success: boolean; order: { orderStatus: OrderStatus; stockReserved: boolean } }>(
+      `/api/admin/orders/${order.id}/status`,
+      {
+        method: "POST",
+        headers: admin.headers,
+        body: {
+          orderStatus: OrderStatus.CANCELLED
+        }
+      }
+    );
+
+    expect(cancelled.order).toMatchObject({
+      orderStatus: OrderStatus.CANCELLED,
+      stockReserved: false
+    });
+    expect(await getStockQuantity(product.id)).toBe(3);
+
+    const restored = await $fetch<{ success: boolean; order: { orderStatus: OrderStatus; stockReserved: boolean } }>(
+      `/api/admin/orders/${order.id}/status`,
+      {
+        method: "POST",
+        headers: admin.headers,
+        body: {
+          orderStatus: OrderStatus.CONFIRMED
+        }
+      }
+    );
+
+    expect(restored.order).toMatchObject({
+      orderStatus: OrderStatus.CONFIRMED,
+      stockReserved: true
+    });
+    expect(await getStockQuantity(product.id)).toBe(1);
+
+    const payment = await prisma.payment.findUniqueOrThrow({
+      where: { orderId: order.id }
+    });
+
+    expect(payment.paymentStatus).toBe(PaymentStatus.UPON_RECEIPT);
+  });
+
+  it("expires unpaid online orders and releases reserved stock", async () => {
+    const user = await createTestUser();
+    const product = await createTestProduct(1);
+
+    const order = await prisma.order.create({
+      data: {
+        userId: user.id,
+        obtainingMethod: "PICKUP",
+        paymentMethod: PaymentMethod.ONLINE,
+        orderStatus: OrderStatus.NEW,
+        stockReserved: true,
+        createdAt: new Date(Date.now() - 60 * 60_000),
+        orderItems: {
+          create: {
+            productId: product.id,
+            quantity: 2,
+            price: new Prisma.Decimal("100.00")
+          }
+        },
+        payment: {
+          create: {
+            paymentStatus: PaymentStatus.PENDING,
+            amount: new Prisma.Decimal("200.00")
+          }
+        }
+      }
+    });
+
+    const result = await expireUnpaidOrders({
+      expiresBefore: new Date()
+    });
+
+    expect(result.orderIds).toContain(order.id);
+
+    const expiredOrder = await prisma.order.findUniqueOrThrow({
+      where: { id: order.id },
+      include: { payment: true }
+    });
+
+    expect(expiredOrder.orderStatus).toBe(OrderStatus.CANCELLED);
+    expect(expiredOrder.stockReserved).toBe(false);
+    expect(expiredOrder.payment?.paymentStatus).toBe(PaymentStatus.CANCELLED);
+    expect(await getStockQuantity(product.id)).toBe(3);
+  });
+});
