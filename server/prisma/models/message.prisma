@@ -1,0 +1,19 @@
+enum MessageType {
+    DELIVERY
+    STOCK
+    PRICE
+    FAQ_ANSWER
+    REVIEW_ANSWER
+}
+
+model Message {
+    id          Int         @id @default(autoincrement())
+    userId      String      @map("user_id")
+    user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+    messageType MessageType @map("message_type")
+    message     String
+
+    createdAt DateTime @default(now())
+
+    @@map("message")
+}

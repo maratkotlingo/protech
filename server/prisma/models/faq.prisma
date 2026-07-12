@@ -1,0 +1,41 @@
+model ShopQuestion {
+    id         Int      @id @default(autoincrement())
+    userId     String   @map("user_id")
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    title      String
+    comment    String
+    isAnswered Boolean? @default(false) @map("is_answered")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    shopQuestionImages ShopQuestionImage[]
+    shopAnswers        ShopAnswer[]
+
+    @@index([userId])
+    @@map("shop_question")
+}
+
+model ShopQuestionImage {
+    id             Int          @id @default(autoincrement())
+    shopQuestionId Int          @map("shop_question_id")
+    shopQuestion   ShopQuestion @relation(fields: [shopQuestionId], references: [id], onDelete: Cascade)
+    url            String
+
+    @@index([shopQuestionId])
+    @@map("shop_question_image")
+}
+
+model ShopAnswer {
+    id             Int          @id @default(autoincrement())
+    shopQuestionId Int          @map("shop_question_id")
+    shopQuestion   ShopQuestion @relation(fields: [shopQuestionId], references: [id], onDelete: Cascade)
+    comment        String
+    userId         String?      @map("user_id")
+    user           User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@index([shopQuestionId])
+    @@map("shop_answer")
+}
