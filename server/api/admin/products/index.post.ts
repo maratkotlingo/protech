@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
         name: body.name,
         description: body.description,
         currentPrice: body.currentPrice,
+        costPrice: body.costPrice,
         oldPrice: body.oldPrice,
         article: body.article,
         mainImage: body.mainImage,

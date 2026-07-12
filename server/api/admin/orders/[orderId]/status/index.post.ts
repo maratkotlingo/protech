@@ -38,7 +38,10 @@ export default defineEventHandler(async (event) => {
       nextOrderStatus === OrderStatus.CANCELLED
     ) {
       if (existingOrder.stockReserved) {
-        await restoreProductStock(tx, existingOrder.orderItems);
+        await restoreProductStock(tx, existingOrder.orderItems, {
+          orderId,
+          reason: "Admin order cancelled"
+        });
       }
 
       orderData.stockReserved = false;
@@ -56,7 +59,10 @@ export default defineEventHandler(async (event) => {
     }
 
     if (nextOrderStatus !== OrderStatus.CANCELLED && !existingOrder.stockReserved) {
-      await reserveProductStock(tx, existingOrder.orderItems);
+      await reserveProductStock(tx, existingOrder.orderItems, {
+        orderId,
+        reason: "Admin order reactivated"
+      });
       orderData.stockReserved = true;
     }
 

@@ -39,7 +39,10 @@ export default defineEventHandler(async (event) => {
     if (paymentStatus === PaymentStatus.CANCELLED) {
       if (payment.order.orderStatus !== OrderStatus.CANCELLED) {
         if (payment.order.stockReserved) {
-          await restoreProductStock(tx, payment.order.orderItems);
+          await restoreProductStock(tx, payment.order.orderItems, {
+            orderId: payment.order.id,
+            reason: "Admin payment cancelled"
+          });
         }
 
         await tx.order.update({
@@ -52,7 +55,10 @@ export default defineEventHandler(async (event) => {
       }
     } else if (payment.order.orderStatus === OrderStatus.CANCELLED) {
       if (!payment.order.stockReserved) {
-        await reserveProductStock(tx, payment.order.orderItems);
+        await reserveProductStock(tx, payment.order.orderItems, {
+          orderId: payment.order.id,
+          reason: "Admin payment reactivated"
+        });
       }
 
       await tx.order.update({
@@ -63,7 +69,10 @@ export default defineEventHandler(async (event) => {
         }
       });
     } else if (!payment.order.stockReserved) {
-      await reserveProductStock(tx, payment.order.orderItems);
+      await reserveProductStock(tx, payment.order.orderItems, {
+        orderId: payment.order.id,
+        reason: "Admin payment status update"
+      });
 
       await tx.order.update({
         where: { id: payment.order.id },

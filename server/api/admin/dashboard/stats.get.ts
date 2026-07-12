@@ -93,35 +93,35 @@ export default defineEventHandler(async (event) => {
     }),
     prisma.order.findMany({
       where: {
-        createdAt: {
-          gte: startDate,
-          lte: rangeEndDate,
-        },
         orderStatus: {
           not: "CANCELLED",
         },
         payment: {
           is: {
             paymentStatus: "PAID",
+            paidAt: {
+              gte: startDate,
+              lte: rangeEndDate,
+            },
           },
         },
       },
       select: {
         id: true,
         createdAt: true,
+        payment: {
+          select: {
+            paidAt: true,
+          },
+        },
         orderItems: {
           select: {
             productId: true,
             quantity: true,
-            price: true,
-            product: {
-              select: {
-                id: true,
-                name: true,
-                article: true,
-                mainImage: true,
-              },
-            },
+            lineTotal: true,
+            productName: true,
+            productArticle: true,
+            productMainImage: true,
           },
         },
       },
@@ -164,21 +164,19 @@ export default defineEventHandler(async (event) => {
   }
 
   for (const order of paidOrders) {
-    const dayKey = toDateKey(order.createdAt);
+    const dayKey = toDateKey(order.payment?.paidAt ?? order.createdAt);
     const day = dailySales.get(dayKey);
     let orderMatchesSelectedProduct = false;
 
     for (const item of order.orderItems) {
-      const price = Number(item.price);
-      const revenue = price * item.quantity;
-      const product = item.product;
+      const revenue = Number(item.lineTotal);
       const productStats =
         productSales.get(item.productId) ??
         {
-          productId: product.id,
-          name: product.name,
-          article: product.article,
-          mainImage: product.mainImage,
+          productId: item.productId,
+          name: item.productName,
+          article: item.productArticle,
+          mainImage: item.productMainImage ?? "",
           quantity: 0,
           revenue: 0,
           orderIds: new Set<number>(),

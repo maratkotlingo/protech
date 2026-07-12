@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { StockMovementType, type Prisma } from "@prisma/client";
 import { createError } from "h3";
 
 type StockItem = {
@@ -7,6 +7,11 @@ type StockItem = {
 };
 
 type OrderStockTransaction = Prisma.TransactionClient;
+
+type StockMovementOptions = {
+  orderId?: number;
+  reason?: string;
+};
 
 function normalizeStockItems(items: StockItem[]) {
   const quantityByProductId = new Map<number, number>();
@@ -40,7 +45,8 @@ function normalizeStockItems(items: StockItem[]) {
 
 export async function reserveProductStock(
   tx: OrderStockTransaction,
-  items: StockItem[]
+  items: StockItem[],
+  options: StockMovementOptions = {}
 ) {
   for (const item of normalizeStockItems(items)) {
     const result = await tx.productStock.updateMany({
@@ -59,15 +65,32 @@ export async function reserveProductStock(
         message: `Not enough stock for product ${item.productId}`
       });
     }
+
+    const stock = await tx.productStock.findUniqueOrThrow({
+      where: { productId: item.productId },
+      select: { quantity: true }
+    });
+
+    await tx.stockMovement.create({
+      data: {
+        productId: item.productId,
+        orderId: options.orderId,
+        type: StockMovementType.RESERVE,
+        quantityDelta: -item.quantity,
+        quantityAfter: stock.quantity,
+        reason: options.reason ?? "Order stock reserve"
+      }
+    });
   }
 }
 
 export async function restoreProductStock(
   tx: OrderStockTransaction,
-  items: StockItem[]
+  items: StockItem[],
+  options: StockMovementOptions = {}
 ) {
   for (const item of normalizeStockItems(items)) {
-    await tx.productStock.upsert({
+    const stock = await tx.productStock.upsert({
       where: { productId: item.productId },
       create: {
         productId: item.productId,
@@ -75,6 +98,20 @@ export async function restoreProductStock(
       },
       update: {
         quantity: { increment: item.quantity }
+      },
+      select: {
+        quantity: true
+      }
+    });
+
+    await tx.stockMovement.create({
+      data: {
+        productId: item.productId,
+        orderId: options.orderId,
+        type: StockMovementType.RELEASE,
+        quantityDelta: item.quantity,
+        quantityAfter: stock.quantity,
+        reason: options.reason ?? "Order stock release"
       }
     });
   }
@@ -92,16 +129,42 @@ export async function getOrderStockItems(
 
 export async function reserveOrderStock(
   tx: OrderStockTransaction,
-  orderId: number
+  orderId: number,
+  reason = "Order stock reserve"
 ) {
   const orderItems = await getOrderStockItems(tx, orderId);
-  await reserveProductStock(tx, orderItems);
+  await reserveProductStock(tx, orderItems, { orderId, reason });
 }
 
 export async function restoreOrderStock(
   tx: OrderStockTransaction,
-  orderId: number
+  orderId: number,
+  reason = "Order stock release"
 ) {
   const orderItems = await getOrderStockItems(tx, orderId);
-  await restoreProductStock(tx, orderItems);
+  await restoreProductStock(tx, orderItems, { orderId, reason });
+}
+
+export async function recordStockAdjustment(
+  tx: OrderStockTransaction,
+  input: {
+    productId: number;
+    quantityDelta: number;
+    quantityAfter: number;
+    reason?: string;
+  }
+) {
+  if (input.quantityDelta === 0) {
+    return;
+  }
+
+  await tx.stockMovement.create({
+    data: {
+      productId: input.productId,
+      type: StockMovementType.ADJUSTMENT,
+      quantityDelta: input.quantityDelta,
+      quantityAfter: input.quantityAfter,
+      reason: input.reason ?? "Manual stock adjustment"
+    }
+  });
 }

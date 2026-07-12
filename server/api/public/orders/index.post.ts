@@ -28,8 +28,18 @@ export default defineEventHandler(async (event) => {
       },
       select: {
         id: true,
+        name: true,
+        article: true,
+        mainImage: true,
         currentPrice: true,
+        costPrice: true,
         isActive: true,
+        category: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
         productStocks: {
           select: { quantity: true }
         }
@@ -64,6 +74,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    const productById = new Map(products.map((product) => [product.id, product]));
     const priceByProductId = new Map<number, Prisma.Decimal>(
       products.map((product) => [
         product.id,
@@ -110,11 +121,23 @@ export default defineEventHandler(async (event) => {
             : OrderStatus.CONFIRMED,
 
         orderItems: {
-          create: body.orderItems.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            price: priceByProductId.get(item.productId)!
-          }))
+          create: body.orderItems.map((item) => {
+            const product = productById.get(item.productId)!;
+            const price = priceByProductId.get(item.productId)!;
+
+            return {
+              productId: item.productId,
+              quantity: item.quantity,
+              price,
+              costPrice: product.costPrice,
+              lineTotal: price.mul(item.quantity),
+              productName: product.name,
+              productArticle: product.article,
+              productMainImage: product.mainImage,
+              categoryId: product.category.id,
+              categoryName: product.category.name
+            };
+          })
         },
 
         delivery:
@@ -146,7 +169,10 @@ export default defineEventHandler(async (event) => {
       include: orderInclude
     });
 
-    await reserveProductStock(tx, body.orderItems);
+    await reserveProductStock(tx, body.orderItems, {
+      orderId: createdOrder.id,
+      reason: "Order created"
+    });
 
     return createdOrder;
   }).catch((error) => {
@@ -177,7 +203,7 @@ export default defineEventHandler(async (event) => {
     description: `Заказ №${order.id}`
   }).catch(async (error) => {
     await prisma.$transaction(async (tx) => {
-      await restoreOrderStock(tx, order.id);
+      await restoreOrderStock(tx, order.id, "YooKassa payment creation failed");
 
       await tx.payment.update({
         where: { orderId: order.id },

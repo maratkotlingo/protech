@@ -113,7 +113,10 @@ export async function expireUnpaidOrders(
         return false;
       }
 
-      await restoreProductStock(tx, order.orderItems);
+      await restoreProductStock(tx, order.orderItems, {
+        orderId: order.id,
+        reason: "Unpaid order expired"
+      });
 
       await tx.payment.update({
         where: { orderId: order.id },

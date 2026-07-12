@@ -72,6 +72,12 @@ type TestUser = {
 type TestProduct = {
   id: number;
   categoryId: number;
+  categoryName: string;
+  name: string;
+  article: string;
+  mainImage: string;
+  currentPrice: Prisma.Decimal;
+  costPrice: Prisma.Decimal;
 };
 
 async function cleanupTestData() {
@@ -190,6 +196,7 @@ async function createTestProduct(quantity = 10): Promise<TestProduct> {
       name: `Product ${id}`,
       description: "Integration test product",
       currentPrice: new Prisma.Decimal("100.00"),
+      costPrice: new Prisma.Decimal("60.00"),
       article: `${testPrefix}-article-${id}`,
       mainImage: "/uploads/test.png",
       categoryId: category.id,
@@ -209,7 +216,28 @@ async function createTestProduct(quantity = 10): Promise<TestProduct> {
 
   return {
     id: product.id,
-    categoryId: category.id
+    categoryId: category.id,
+    categoryName: category.name,
+    name: product.name,
+    article: product.article,
+    mainImage: product.mainImage,
+    currentPrice: new Prisma.Decimal(product.currentPrice),
+    costPrice: new Prisma.Decimal(product.costPrice!)
+  };
+}
+
+function createOrderItemData(product: TestProduct, quantity: number) {
+  return {
+    productId: product.id,
+    quantity,
+    price: product.currentPrice,
+    costPrice: product.costPrice,
+    lineTotal: product.currentPrice.mul(quantity),
+    productName: product.name,
+    productArticle: product.article,
+    productMainImage: product.mainImage,
+    categoryId: product.categoryId,
+    categoryName: product.categoryName
   };
 }
 
@@ -354,11 +382,7 @@ describe("cart/order integration", () => {
         orderStatus: OrderStatus.NEW,
         stockReserved: true,
         orderItems: {
-          create: {
-            productId: product.id,
-            quantity: 2,
-            price: new Prisma.Decimal("100.00")
-          }
+          create: createOrderItemData(product, 2)
         },
         payment: {
           create: {
@@ -427,11 +451,7 @@ describe("cart/order integration", () => {
         orderStatus: OrderStatus.CONFIRMED,
         stockReserved: true,
         orderItems: {
-          create: {
-            productId: product.id,
-            quantity: 2,
-            price: new Prisma.Decimal("100.00")
-          }
+          create: createOrderItemData(product, 2)
         },
         payment: {
           create: {
@@ -496,11 +516,7 @@ describe("cart/order integration", () => {
         stockReserved: true,
         createdAt: new Date(Date.now() - 60 * 60_000),
         orderItems: {
-          create: {
-            productId: product.id,
-            quantity: 2,
-            price: new Prisma.Decimal("100.00")
-          }
+          create: createOrderItemData(product, 2)
         },
         payment: {
           create: {
@@ -526,5 +542,90 @@ describe("cart/order integration", () => {
     expect(expiredOrder.stockReserved).toBe(false);
     expect(expiredOrder.payment?.paymentStatus).toBe(PaymentStatus.CANCELLED);
     expect(await getStockQuantity(product.id)).toBe(3);
+  });
+
+  it("returns sales, product and inventory analytics for admin charts", async () => {
+    const user = await createTestUser();
+    const admin = await createTestUser(Role.ADMIN);
+    const product = await createTestProduct(8);
+    const paidAt = new Date();
+
+    await prisma.order.create({
+      data: {
+        userId: user.id,
+        obtainingMethod: "PICKUP",
+        paymentMethod: PaymentMethod.ONLINE,
+        orderStatus: OrderStatus.CONFIRMED,
+        stockReserved: true,
+        orderItems: {
+          create: createOrderItemData(product, 3)
+        },
+        payment: {
+          create: {
+            paymentStatus: PaymentStatus.PAID,
+            amount: new Prisma.Decimal("300.00"),
+            paidAt
+          }
+        }
+      }
+    });
+
+    await $fetch(`/api/admin/products/stock/update/${product.id}`, {
+      method: "POST",
+      headers: admin.headers,
+      body: {
+        quantity: 4
+      }
+    });
+
+    const sales = await $fetch<{
+      totals: {
+        orders: number;
+        quantity: number;
+        revenue: number;
+        cost: number;
+        grossProfit: number;
+      };
+      salesByPeriod: Array<{ revenue: number }>;
+    }>("/api/admin/analytics/sales", {
+      headers: admin.headers
+    });
+
+    expect(sales.totals).toMatchObject({
+      orders: 1,
+      quantity: 3,
+      revenue: 300,
+      cost: 180,
+      grossProfit: 120
+    });
+    expect(sales.salesByPeriod.some((item) => item.revenue === 300)).toBe(true);
+
+    const products = await $fetch<{
+      items: Array<{
+        productId: number;
+        revenue: number;
+        grossProfit: number;
+        currentStock: number;
+      }>;
+    }>("/api/admin/analytics/products", {
+      headers: admin.headers
+    });
+
+    expect(products.items[0]).toMatchObject({
+      productId: product.id,
+      revenue: 300,
+      grossProfit: 120,
+      currentStock: 4
+    });
+
+    const inventory = await $fetch<{
+      movementsByPeriod: Array<{ type: string; quantityDelta: number }>;
+    }>("/api/admin/analytics/inventory", {
+      headers: admin.headers
+    });
+
+    expect(
+      inventory.movementsByPeriod.some((item) => item.type === "ADJUSTMENT" && item.quantityDelta === -4)
+    ).toBe(true);
   });
 });

@@ -1,3 +1,4 @@
+import { recordStockAdjustment } from "~~/server/utils/orderStock";
 import { updateProductStockSchema } from "~~/shared/schemas/admin/products/updateProductStock";
 
 export default defineEventHandler(async (event) => {
@@ -8,7 +9,14 @@ export default defineEventHandler(async (event) => {
 
   const product = await prisma.product.findUnique({
     where: { id: productId },
-    select: { id: true }
+    select: {
+      id: true,
+      productStocks: {
+        select: {
+          quantity: true
+        }
+      }
+    }
   });
 
   if (!product) {
@@ -18,15 +26,28 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const stock = await prisma.productStock.upsert({
-    where: { productId },
-    create: {
+  const previousQuantity = product.productStocks[0]?.quantity ?? 0;
+
+  const stock = await prisma.$transaction(async (tx) => {
+    const updatedStock = await tx.productStock.upsert({
+      where: { productId },
+      create: {
+        productId,
+        quantity: body.quantity
+      },
+      update: {
+        quantity: body.quantity
+      }
+    });
+
+    await recordStockAdjustment(tx, {
       productId,
-      quantity: body.quantity
-    },
-    update: {
-      quantity: body.quantity
-    }
+      quantityDelta: body.quantity - previousQuantity,
+      quantityAfter: updatedStock.quantity,
+      reason: "Manual stock update"
+    });
+
+    return updatedStock;
   });
 
   return { success: true, stock };

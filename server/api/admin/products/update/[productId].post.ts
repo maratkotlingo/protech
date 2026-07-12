@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
   if (body.name !== undefined) data.name = body.name;
   if (body.description !== undefined) data.description = body.description;
   if (body.currentPrice !== undefined) data.currentPrice = body.currentPrice;
+  if (body.costPrice !== undefined) data.costPrice = body.costPrice;
   if (body.oldPrice !== undefined) data.oldPrice = body.oldPrice;
   if (body.article !== undefined) data.article = body.article;
   if (body.mainImage !== undefined) data.mainImage = body.mainImage;
