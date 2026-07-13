@@ -8,28 +8,30 @@ export default defineEventHandler(async (event) => {
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
   const body = await validateBody(event, updateProductStockSchema);
 
-  const product = await prisma.product.findUnique({
-    where: { id: productId },
-    select: {
-      id: true,
-      productStocks: {
-        select: {
-          quantity: true
-        }
-      }
-    }
-  });
-
-  if (!product) {
-    throw createError({
-      statusCode: 404,
-      message: "Товар не найден"
-    });
-  }
-
-  const previousQuantity = product.productStocks[0]?.quantity ?? 0;
+  let previousQuantity = 0;
 
   const stock = await prisma.$transaction(async (tx) => {
+    const product = await tx.product.findUnique({
+      where: { id: productId },
+      select: {
+        id: true,
+        productStocks: {
+          select: {
+            quantity: true
+          }
+        }
+      }
+    });
+
+    if (!product) {
+      throw createError({
+        statusCode: 404,
+        message: "Товар не найден"
+      });
+    }
+
+    previousQuantity = product.productStocks[0]?.quantity ?? 0;
+
     const updatedStock = await tx.productStock.upsert({
       where: { productId },
       create: {

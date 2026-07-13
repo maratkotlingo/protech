@@ -68,6 +68,9 @@ export default defineEventHandler(async (event) => {
         },
 
         reviews: {
+          orderBy: {
+            createdAt: "desc",
+          },
           select: {
             id: true,
             rating: true,
@@ -76,6 +79,13 @@ export default defineEventHandler(async (event) => {
             comment: true,
             createdAt: true,
             updatedAt: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true
+              }
+            },
 
             reviewPhotos: {
               select: {
@@ -108,8 +118,8 @@ export default defineEventHandler(async (event) => {
     }
 
     return product;
-  } catch (error: any) {
-    if (error.statusCode) {
+  } catch (error) {
+    if (error && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
 

@@ -42,9 +42,10 @@ export default defineNuxtConfig({
     css: true
   },
   runtimeConfig: {
-    yookassaShopId: process.env.YOKASSA_SHOP_ID,
-    yookassaSecretKey: process.env.YOKASSA_SECRET_KEY,
+    yookassaShopId: process.env.YOOKASSA_SHOP_ID ?? process.env.YOKASSA_SHOP_ID,
+    yookassaSecretKey: process.env.YOOKASSA_SECRET_KEY ?? process.env.YOKASSA_SECRET_KEY,
     yookassaApiUrl: process.env.YOOKASSA_API_URL,
+    yookassaReturnUrl: process.env.YOOKASSA_RETURN_URL ?? process.env.YOKASSA_RETURN_URL,
     public: {
       appUrl: process.env.NUXT_PUBLIC_APP_URL
     }

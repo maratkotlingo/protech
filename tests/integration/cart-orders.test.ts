@@ -327,6 +327,31 @@ describe("cart/order integration", () => {
     });
   });
 
+  it("does not allow cart quantity to exceed available stock", async () => {
+    const user = await createTestUser();
+    const product = await createTestProduct(1);
+
+    await $fetch(`/api/public/cart/add/${product.id}`, {
+      method: "POST",
+      headers: user.headers
+    });
+
+    await expect($fetch(`/api/public/cart/add/${product.id}`, {
+      method: "POST",
+      headers: user.headers
+    })).rejects.toMatchObject({
+      statusCode: 409
+    });
+
+    await expect($fetch(`/api/public/cart/update/${product.id}`, {
+      method: "POST",
+      headers: user.headers,
+      body: { quantity: 2 }
+    })).rejects.toMatchObject({
+      statusCode: 409
+    });
+  });
+
   it("creates an offline pickup order and reserves product stock", async () => {
     const user = await createTestUser();
     const product = await createTestProduct(5);

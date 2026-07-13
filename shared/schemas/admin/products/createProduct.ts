@@ -19,6 +19,19 @@ const productAttributeSchema = z.strictObject({
     .max(255, "Значение характеристики должно быть не более 255 символов")
 });
 
+function emptyToUndefined(value: unknown) {
+  return value === "" || value === null ? undefined : value;
+}
+
+function isOzonUrl(value: string) {
+  try {
+    const hostname = new URL(value).hostname.toLowerCase();
+    return hostname === "ozon.ru" || hostname.endsWith(".ozon.ru");
+  } catch {
+    return false;
+  }
+}
+
 export const createProductSchema = z.strictObject({
   name: z
     .string("Название продукта необходимо")
@@ -37,17 +50,21 @@ export const createProductSchema = z.strictObject({
     .number("Цена продукта необходима")
     .positive("Цена должна быть больше нуля"),
 
-  costPrice: z
-    .coerce
-    .number()
-    .nonnegative("Себестоимость не может быть отрицательной")
-    .optional(),
+  costPrice: z.preprocess(
+    emptyToUndefined,
+    z.coerce
+      .number()
+      .nonnegative("Себестоимость не может быть отрицательной")
+      .optional()
+  ),
 
-  oldPrice: z
-    .coerce
-    .number()
-    .positive("Старая цена должна быть больше нуля")
-    .optional(),
+  oldPrice: z.preprocess(
+    emptyToUndefined,
+    z.coerce
+      .number()
+      .positive("Старая цена должна быть больше нуля")
+      .optional()
+  ),
 
   article: z
     .string("Артикул продукта необходим")
@@ -57,11 +74,14 @@ export const createProductSchema = z.strictObject({
 
   mainImage: imagePathSchema,
 
-  ozonLink: z
-    .url("Ссылка должна иметь корректный формат адреса")
-    .max(500, "Ссылка не должна быть более 500 символов")
-    .includes("ozon", { message: "Укажите ссылку с сайта OZON" })
-    .optional(),
+  ozonLink: z.preprocess(
+    emptyToUndefined,
+    z
+      .url("Ссылка должна иметь корректный формат адреса")
+      .max(500, "Ссылка не должна быть более 500 символов")
+      .refine(isOzonUrl, { message: "Укажите ссылку с сайта OZON" })
+      .optional()
+  ),
 
   categoryId: z
     .coerce

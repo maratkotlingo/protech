@@ -10,7 +10,12 @@ export default defineEventHandler(async (event) => {
           isActive: true
         },
         select: {
-          id: true
+          id: true,
+          productStocks: {
+            select: {
+              quantity: true
+            }
+          }
         }
       });
 
@@ -46,10 +51,21 @@ export default defineEventHandler(async (event) => {
         }
       });
 
-      if (existingCartItem && existingCartItem.quantity >= 99) {
+      const stockQuantity = product.productStocks[0]?.quantity ?? 0;
+      const nextQuantity = (existingCartItem?.quantity ?? 0) + 1;
+      const maxAllowedQuantity = Math.min(stockQuantity, 99);
+
+      if (stockQuantity <= 0) {
         throw createError({
-          statusCode: 400,
-          message: "Количество товара должно быть целым числом от 1 до 99"
+          statusCode: 409,
+          message: "Товара нет в наличии"
+        });
+      }
+
+      if (nextQuantity > maxAllowedQuantity) {
+        throw createError({
+          statusCode: 409,
+          message: `На складе доступно только ${maxAllowedQuantity} шт.`
         });
       }
 

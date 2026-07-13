@@ -4,11 +4,14 @@ export default defineEventHandler(async (event) => {
       select: {
         id: true,
         name: true
+      },
+      orderBy: {
+        name: "asc"
       }
     });
 
     return categories;
-  } catch (error: any) {
+  } catch {
     throw createError({
       statusCode: 500,
       message: "Ошибка сервера при получении категорий"

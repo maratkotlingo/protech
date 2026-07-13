@@ -180,9 +180,22 @@ export default defineEventHandler(async (event) => {
       select: {
         id: true,
         name: true,
+        article: true,
+        description: true,
         currentPrice: true,
         oldPrice: true,
         mainImage: true,
+        category: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        productStocks: {
+          select: {
+            quantity: true
+          }
+        },
 
         _count: {
           select: {
@@ -216,13 +229,17 @@ export default defineEventHandler(async (event) => {
     return products.map((product) => ({
       id: product.id,
       name: product.name,
+      article: product.article,
+      description: product.description,
       currentPrice: product.currentPrice,
       oldPrice: product.oldPrice,
       mainImage: product.mainImage,
+      category: product.category,
+      stockQuantity: product.productStocks[0]?.quantity ?? 0,
       reviewsCount: product._count.reviews,
       averageRating: ratingByProductId.get(product.id) ?? null
     }));
-  } catch (error: any) {
+  } catch {
     throw createError({
       statusCode: 500,
       message: "Ошибка сервера при получении товаров"

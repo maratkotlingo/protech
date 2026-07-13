@@ -18,6 +18,12 @@ export default defineEventHandler(async (event) => {
             currentPrice: true,
             oldPrice: true,
             mainImage: true,
+            isActive: true,
+            productStocks: {
+              select: {
+                quantity: true
+              }
+            },
 
             _count: {
               select: {
@@ -61,6 +67,8 @@ export default defineEventHandler(async (event) => {
         currentPrice: item.product.currentPrice,
         oldPrice: item.product.oldPrice,
         mainImage: item.product.mainImage,
+        isActive: item.product.isActive,
+        stockQuantity: item.product.productStocks[0]?.quantity ?? 0,
         reviewsCount: item.product._count.reviews,
         averageRating: ratingByProductId.get(item.product.id) ?? null
       }

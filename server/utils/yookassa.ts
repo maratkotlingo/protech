@@ -58,6 +58,8 @@ export async function createYooKassaPayment(
     });
   }
 
+  const returnUrl = String(config.yookassaReturnUrl || `${config.public.appUrl}/orders/${input.orderId}`);
+
   const response = await fetch(`${getYooKassaApiUrl(event)}/v3/payments`, {
     method: "POST",
     headers: {
@@ -74,7 +76,7 @@ export async function createYooKassaPayment(
       capture: true,
       confirmation: {
         type: "redirect",
-        return_url: `${config.public.appUrl}/orders/${input.orderId}`
+        return_url: returnUrl
       },
       description: input.description,
       metadata: {
