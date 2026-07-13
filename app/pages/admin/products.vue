@@ -143,7 +143,7 @@
       </div>
 
       <div class="overflow-x-auto">
-        <table class="min-w-[980px] divide-y divide-[var(--admin-border)] text-sm">
+        <table class="w-full min-w-[980px] divide-y divide-[var(--admin-border)] text-sm">
           <thead class="bg-[var(--admin-surface-muted)]">
             <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
               <th class="w-12 px-4 py-3">
@@ -298,6 +298,7 @@
       :categories="categories"
       :attributes="attributes"
       @saved="handleSaved"
+      @dictionaries-updated="refreshDictionaries"
     />
 
     <AdminConfirmModal
@@ -376,7 +377,7 @@ const productsQuery = computed(() => buildQuery({
   isActive: filters.products.isActive === "all" ? null : filters.products.isActive
 }));
 
-const { data: dictionaries } = await useAsyncData("admin-product-dictionaries", async () => {
+const { data: dictionaries, refresh: refreshDictionaries } = await useAsyncData("admin-product-dictionaries", async () => {
   const [categories, attributes] = await Promise.all([
     $fetch<Category[]>("/api/admin/categories"),
     $fetch<Attribute[]>("/api/admin/products/attributes")

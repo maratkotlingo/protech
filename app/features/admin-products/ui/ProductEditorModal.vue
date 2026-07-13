@@ -4,7 +4,7 @@
     :title="productId ? 'Редактировать товар' : 'Новый товар'"
     :description="productId ? 'Обновите карточку товара, цены, изображения и характеристики.' : 'Заполните карточку товара и добавьте медиа.'"
     scrollable
-    :ui="{ content: 'max-w-5xl' }"
+    :ui="{ content: 'max-w-6xl', body: 'p-6 sm:p-8' }"
   >
     <template #body>
       <div
@@ -19,218 +19,236 @@
 
       <form
         v-else
-        class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]"
+        class="space-y-7"
         @submit.prevent="save"
       >
-        <div class="space-y-5">
-          <div class="grid gap-4 sm:grid-cols-2">
-            <UFormField
-              label="Название"
-              required
-              :error="fieldErrors.name"
-            >
-              <UInput
-                v-model="form.name"
-                class="w-full"
-                size="lg"
-                placeholder="Например, Аккумулятор ProTech X"
-              />
-            </UFormField>
+        <UFormField
+          label="Название"
+          required
+          :error="fieldErrors.name"
+        >
+          <UInput
+            v-model="form.name"
+            class="w-full"
+            size="xl"
+            placeholder="Например, Аккумулятор ProTech X"
+          />
+        </UFormField>
 
-            <UFormField
-              label="Артикул"
-              required
-              :error="fieldErrors.article"
-            >
-              <UInput
-                v-model="form.article"
-                class="w-full"
-                size="lg"
-                placeholder="PT-X-001"
-              />
-            </UFormField>
-          </div>
-
+        <div class="grid gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
           <UFormField
-            label="Описание"
+            label="Артикул"
             required
-            :error="fieldErrors.description"
+            :error="fieldErrors.article"
           >
-            <UTextarea
-              v-model="form.description"
+            <UInput
+              v-model="form.article"
               class="w-full"
-              size="lg"
-              autoresize
-              :rows="5"
-              placeholder="Коротко опишите свойства, комплектацию и назначение товара"
+              size="xl"
+              placeholder="PT-X-001"
             />
           </UFormField>
 
-          <div class="grid gap-4 sm:grid-cols-3">
-            <UFormField
-              label="Цена"
-              required
-              :error="fieldErrors.currentPrice"
-            >
-              <UInput
-                v-model.number="form.currentPrice"
-                class="w-full"
-                size="lg"
-                type="number"
-                min="0"
-                step="0.01"
-              />
-            </UFormField>
+          <UFormField
+            label="Категория"
+            required
+            :error="fieldErrors.categoryId"
+          >
+            <USelect
+              :model-value="form.categoryId"
+              class="w-full"
+              size="xl"
+              :items="categoryItems"
+              placeholder="Выберите категорию"
+              @update:model-value="handleCategorySelect"
+            />
+          </UFormField>
+        </div>
 
-            <UFormField
-              label="Себестоимость"
-              :error="fieldErrors.costPrice"
-            >
-              <UInput
-                v-model.number="form.costPrice"
-                class="w-full"
-                size="lg"
-                type="number"
-                min="0"
-                step="0.01"
-              />
-            </UFormField>
+        <UFormField
+          label="Описание"
+          required
+          :error="fieldErrors.description"
+        >
+          <UTextarea
+            v-model="form.description"
+            class="w-full"
+            size="xl"
+            autoresize
+            :rows="8"
+            :maxrows="18"
+            :ui="{ base: 'min-h-48 text-base leading-7' }"
+            placeholder="Коротко опишите свойства, комплектацию и назначение товара"
+          />
+        </UFormField>
 
-            <UFormField
-              label="Старая цена"
-              :error="fieldErrors.oldPrice"
+        <div class="grid gap-5 lg:grid-cols-3">
+          <UFormField
+            label="Цена"
+            required
+            :error="fieldErrors.currentPrice"
+          >
+            <UInput
+              v-model.number="form.currentPrice"
+              class="w-full"
+              size="xl"
+              type="number"
+              min="0"
+              step="0.01"
+            />
+          </UFormField>
+
+          <UFormField
+            label="Себестоимость"
+            :error="fieldErrors.costPrice"
+          >
+            <UInput
+              v-model.number="form.costPrice"
+              class="w-full"
+              size="xl"
+              type="number"
+              min="0"
+              step="0.01"
+            />
+          </UFormField>
+
+          <UFormField
+            label="Старая цена"
+            :error="fieldErrors.oldPrice"
+          >
+            <UInput
+              v-model.number="form.oldPrice"
+              class="w-full"
+              size="xl"
+              type="number"
+              min="0"
+              step="0.01"
+            />
+          </UFormField>
+        </div>
+
+        <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
+          <UFormField
+            label="Ссылка OZON"
+            :error="fieldErrors.ozonLink"
+          >
+            <UInput
+              v-model="form.ozonLink"
+              class="w-full"
+              size="xl"
+              placeholder="https://www.ozon.ru/..."
+            />
+          </UFormField>
+
+          <div class="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-5">
+            <USwitch
+              v-model="form.isActive"
+              label="Товар активен"
+              description="Показывать товар в публичном каталоге"
+            />
+          </div>
+        </div>
+
+        <section class="space-y-5 rounded-lg border border-[var(--admin-border)] p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="text-lg font-semibold text-[var(--admin-text)]">
+                Характеристики
+              </h3>
+              <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
+                Значения будут заменены при сохранении товара.
+              </p>
+            </div>
+            <UButton
+              color="primary"
+              variant="soft"
+              type="button"
+              size="lg"
+              @click="addAttribute"
             >
-              <UInput
-                v-model.number="form.oldPrice"
-                class="w-full"
-                size="lg"
-                type="number"
-                min="0"
-                step="0.01"
-              />
-            </UFormField>
+              <Plus class="size-4" />
+              Добавить
+            </UButton>
           </div>
 
-          <div class="grid gap-4 sm:grid-cols-2">
-            <UFormField
-              label="Категория"
-              required
-              :error="fieldErrors.categoryId"
-            >
-              <USelect
-                v-model="form.categoryId"
-                class="w-full"
-                size="lg"
-                :items="categoryItems"
-                placeholder="Выберите категорию"
-              />
-            </UFormField>
-
-            <UFormField
-              label="Ссылка OZON"
-              :error="fieldErrors.ozonLink"
-            >
-              <UInput
-                v-model="form.ozonLink"
-                class="w-full"
-                size="lg"
-                placeholder="https://www.ozon.ru/..."
-              />
-            </UFormField>
-          </div>
-
-          <USwitch
-            v-model="form.isActive"
-            label="Товар активен"
-            description="Показывать товар в публичном каталоге"
+          <UAlert
+            v-if="fieldErrors.productAttributes"
+            color="error"
+            variant="soft"
+            :description="fieldErrors.productAttributes"
           />
 
-          <section class="space-y-3 rounded-lg border border-[var(--admin-border)] p-4">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 class="text-sm font-semibold text-[var(--admin-text)]">
-                  Характеристики
-                </h3>
-                <p class="text-xs text-[var(--admin-text-muted)]">
-                  Значения будут заменены при сохранении товара.
-                </p>
-              </div>
-              <UButton
-                color="primary"
-                variant="soft"
-                type="button"
-                @click="addAttribute"
-              >
-                <Plus class="size-4" />
-                Добавить
-              </UButton>
-            </div>
-
-            <div class="space-y-3">
-              <UAlert
-                v-if="fieldErrors.productAttributes"
-                color="error"
-                variant="soft"
-                :description="fieldErrors.productAttributes"
-              />
-              <div
-                v-for="(attribute, index) in form.productAttributes"
-                :key="index"
-                class="grid gap-3 rounded-lg bg-[var(--admin-surface-muted)] p-3 sm:grid-cols-[1fr_1fr_auto]"
-              >
+          <div class="space-y-4">
+            <div
+              v-for="(attribute, index) in form.productAttributes"
+              :key="index"
+              class="grid gap-3 rounded-lg bg-[var(--admin-surface-muted)] p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end"
+            >
+              <UFormField label="Характеристика">
                 <USelect
-                  v-model="attribute.attributeId"
+                  :model-value="attribute.attributeId"
                   class="w-full"
-                  size="lg"
+                  size="xl"
                   :items="attributeItems"
-                  placeholder="Характеристика"
+                  placeholder="Выберите характеристику"
+                  @update:model-value="handleAttributeSelect(index, $event)"
                 />
+              </UFormField>
+              <UFormField label="Значение">
                 <UInput
                   v-model="attribute.value"
                   class="w-full"
-                  size="lg"
+                  size="xl"
                   placeholder="Значение"
                 />
-                <UButton
-                  color="error"
-                  variant="ghost"
-                  type="button"
-                  aria-label="Удалить характеристику"
-                  @click="removeAttribute(index)"
-                >
-                  <Trash2 class="size-4" />
-                </UButton>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <div class="space-y-5">
-          <section class="space-y-4 rounded-lg border border-[var(--admin-border)] p-4">
-            <div>
-              <h3 class="text-sm font-semibold text-[var(--admin-text)]">
-                Основное изображение
-              </h3>
-              <p class="text-xs text-[var(--admin-text-muted)]">
-                Можно вставить URL или загрузить файл.
-              </p>
-            </div>
-
-            <div class="overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)]">
-              <img
-                v-if="form.mainImage"
-                :src="form.mainImage"
-                alt=""
-                class="aspect-[4/3] w-full object-cover"
+              </UFormField>
+              <UButton
+                color="error"
+                variant="ghost"
+                type="button"
+                size="lg"
+                aria-label="Удалить характеристику"
+                @click="removeAttribute(index)"
               >
-              <div
-                v-else
-                class="grid aspect-[4/3] place-items-center text-[var(--admin-text-muted)]"
-              >
-                <ImageIcon class="size-10" />
-              </div>
+                <Trash2 class="size-4" />
+              </UButton>
             </div>
 
+            <div
+              v-if="!form.productAttributes.length"
+              class="grid min-h-24 place-items-center rounded-lg bg-[var(--admin-surface-muted)] px-4 text-center text-sm text-[var(--admin-text-muted)]"
+            >
+              Добавьте характеристику или создайте новую через селектор.
+            </div>
+          </div>
+        </section>
+
+        <section class="space-y-5 rounded-lg border border-[var(--admin-border)] p-5 sm:p-6">
+          <div>
+            <h3 class="text-lg font-semibold text-[var(--admin-text)]">
+              Основное изображение
+            </h3>
+            <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
+              Можно вставить URL или загрузить файл.
+            </p>
+          </div>
+
+          <div class="overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)]">
+            <img
+              v-if="form.mainImage"
+              :src="form.mainImage"
+              alt=""
+              class="aspect-[16/7] w-full object-cover"
+            >
+            <div
+              v-else
+              class="grid aspect-[16/7] place-items-center text-[var(--admin-text-muted)]"
+            >
+              <ImageIcon class="size-12" />
+            </div>
+          </div>
+
+          <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
             <UFormField
               label="URL изображения"
               :error="fieldErrors.mainImage"
@@ -238,7 +256,7 @@
               <UInput
                 v-model="form.mainImage"
                 class="w-full"
-                size="lg"
+                size="xl"
                 placeholder="/uploads/file.webp или https://..."
               />
             </UFormField>
@@ -254,79 +272,104 @@
                 color="neutral"
                 variant="outline"
                 type="button"
+                size="lg"
                 :loading="uploadingMain"
                 class="w-full justify-center"
                 as="span"
               >
                 <Upload class="size-4" />
-                Загрузить изображение
+                Загрузить
               </UButton>
             </label>
-          </section>
+          </div>
+        </section>
 
-          <section class="space-y-3 rounded-lg border border-[var(--admin-border)] p-4">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 class="text-sm font-semibold text-[var(--admin-text)]">
-                  Галерея
-                </h3>
-                <p class="text-xs text-[var(--admin-text-muted)]">
-                  Дополнительные изображения товара.
-                </p>
-              </div>
+        <section class="space-y-5 rounded-lg border border-[var(--admin-border)] p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="text-lg font-semibold text-[var(--admin-text)]">
+                Галерея
+              </h3>
+              <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
+                Дополнительные изображения товара.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <label class="block">
+                <input
+                  class="sr-only"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  @change="uploadGalleryImage"
+                >
+                <UButton
+                  color="neutral"
+                  variant="outline"
+                  type="button"
+                  size="lg"
+                  :loading="uploadingGallery"
+                  class="w-full justify-center sm:w-auto"
+                  as="span"
+                >
+                  <Upload class="size-4" />
+                  Загрузить
+                </UButton>
+              </label>
               <UButton
                 color="primary"
                 variant="soft"
                 type="button"
+                size="lg"
                 @click="addGalleryUrl"
               >
                 <Plus class="size-4" />
                 URL
               </UButton>
             </div>
+          </div>
 
-            <label class="block">
-              <input
-                class="sr-only"
-                type="file"
-                accept="image/png,image/jpeg,image/webp,image/gif"
-                @change="uploadGalleryImage"
-              >
-              <UButton
-                color="neutral"
-                variant="outline"
-                type="button"
-                :loading="uploadingGallery"
-                class="w-full justify-center"
-                as="span"
-              >
-                <Upload class="size-4" />
-                Загрузить в галерею
-              </UButton>
-            </label>
+          <UAlert
+            v-if="fieldErrors.productImages"
+            color="error"
+            variant="soft"
+            :description="fieldErrors.productImages"
+          />
 
-            <div class="space-y-3">
-              <UAlert
-                v-if="fieldErrors.productImages"
-                color="error"
-                variant="soft"
-                :description="fieldErrors.productImages"
-              />
-              <div
-                v-for="(image, index) in form.productImages"
-                :key="index"
-                class="grid grid-cols-[1fr_auto] gap-2"
-              >
+          <div
+            v-if="form.productImages.length"
+            class="grid gap-4 md:grid-cols-2"
+          >
+            <div
+              v-for="(image, index) in form.productImages"
+              :key="index"
+              class="space-y-3 rounded-lg bg-[var(--admin-surface-muted)] p-3"
+            >
+              <div class="overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)]">
+                <img
+                  v-if="image.url"
+                  :src="image.url"
+                  alt=""
+                  class="aspect-[4/3] w-full object-cover"
+                >
+                <div
+                  v-else
+                  class="grid aspect-[4/3] place-items-center text-[var(--admin-text-muted)]"
+                >
+                  <ImageIcon class="size-8" />
+                </div>
+              </div>
+              <div class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
                 <UInput
                   v-model="image.url"
                   class="w-full"
-                  size="lg"
+                  size="xl"
                   placeholder="URL изображения"
                 />
                 <UButton
                   color="error"
                   variant="ghost"
                   type="button"
+                  size="lg"
                   aria-label="Удалить изображение"
                   @click="removeGalleryImage(index)"
                 >
@@ -334,8 +377,15 @@
                 </UButton>
               </div>
             </div>
-          </section>
-        </div>
+          </div>
+
+          <div
+            v-else
+            class="grid min-h-32 place-items-center rounded-lg bg-[var(--admin-surface-muted)] px-4 text-center text-sm text-[var(--admin-text-muted)]"
+          >
+            Добавьте URL или загрузите изображение в галерею.
+          </div>
+        </section>
       </form>
     </template>
 
@@ -344,17 +394,128 @@
         <UButton
           color="neutral"
           variant="ghost"
+          size="lg"
           @click="closeEditor"
         >
           Отмена
         </UButton>
         <UButton
           color="primary"
+          size="lg"
           :loading="submitting"
           @click="save"
         >
           <Save class="size-4" />
           Сохранить товар
+        </UButton>
+      </div>
+    </template>
+  </UModal>
+
+  <UModal
+    v-model:open="categoryCreateOpen"
+    title="Новая категория"
+    description="Категория будет создана и сразу выбрана для товара."
+    :ui="{ content: 'max-w-lg' }"
+  >
+    <template #body>
+      <UFormField
+        label="Название категории"
+        required
+        :error="newCategoryError"
+      >
+        <UInput
+          v-model="newCategoryName"
+          class="w-full"
+          size="xl"
+          autofocus
+          placeholder="Например, Аккумуляторы"
+          :disabled="creatingCategory"
+          @keydown.enter.prevent="createCategory"
+        />
+      </UFormField>
+    </template>
+
+    <template #footer>
+      <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="lg"
+          @click="closeCategoryCreator"
+        >
+          Отмена
+        </UButton>
+        <UButton
+          color="primary"
+          size="lg"
+          :loading="creatingCategory"
+          @click="createCategory"
+        >
+          <Plus class="size-4" />
+          Создать
+        </UButton>
+      </div>
+    </template>
+  </UModal>
+
+  <UModal
+    v-model:open="attributeCreateOpen"
+    title="Новая характеристика"
+    description="Характеристика будет создана и сразу подставлена в выбранную строку."
+    :ui="{ content: 'max-w-2xl' }"
+  >
+    <template #body>
+      <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_180px]">
+        <UFormField
+          label="Название"
+          required
+          :error="newAttributeErrors.name"
+        >
+          <UInput
+            v-model="newAttributeForm.name"
+            class="w-full"
+            size="xl"
+            autofocus
+            placeholder="Например, Ёмкость"
+            :disabled="creatingAttribute"
+            @keydown.enter.prevent="createAttribute"
+          />
+        </UFormField>
+        <UFormField
+          label="Ед. изм."
+          :error="newAttributeErrors.unit"
+        >
+          <UInput
+            v-model="newAttributeForm.unit"
+            class="w-full"
+            size="xl"
+            placeholder="А·ч"
+            :disabled="creatingAttribute"
+            @keydown.enter.prevent="createAttribute"
+          />
+        </UFormField>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="lg"
+          @click="closeAttributeCreator"
+        >
+          Отмена
+        </UButton>
+        <UButton
+          color="primary"
+          size="lg"
+          :loading="creatingAttribute"
+          @click="createAttribute"
+        >
+          <Plus class="size-4" />
+          Создать
         </UButton>
       </div>
     </template>
@@ -367,8 +528,15 @@ import { toast } from "vue-sonner";
 import { getErrorMessage, toNumber } from "~~/app/shared/lib/adminFormatters";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
 import type { Attribute, Category, ProductDetails, ProductFormState } from "~~/app/shared/types/admin";
+import { categorySchema } from "~~/shared/schemas/admin/products/category";
+import { createAttributeSchema } from "~~/shared/schemas/admin/products/createAttribute";
 import { createProductSchema } from "~~/shared/schemas/admin/products/createProduct";
 import { updateProductSchema } from "~~/shared/schemas/admin/products/updateProduct";
+
+const CREATE_CATEGORY_VALUE = "__create_category__";
+const CREATE_ATTRIBUTE_VALUE = "__create_attribute__";
+
+type SelectValue = number | string | null | undefined;
 
 const open = defineModel<boolean>("open", { default: false });
 
@@ -380,12 +548,27 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   saved: [];
+  dictionariesUpdated: [];
 }>();
 
 const loading = ref(false);
 const submitting = ref(false);
 const uploadingMain = ref(false);
 const uploadingGallery = ref(false);
+const creatingCategory = ref(false);
+const creatingAttribute = ref(false);
+const categoryCreateOpen = ref(false);
+const attributeCreateOpen = ref(false);
+const pendingAttributeIndex = ref<number | null>(null);
+const newCategoryName = ref("");
+const newCategoryError = ref<string | undefined>();
+const newAttributeForm = reactive({
+  name: "",
+  unit: ""
+});
+const newAttributeErrors = reactive<Record<string, string | undefined>>({});
+const localCategories = ref<Category[]>([]);
+const localAttributes = ref<Attribute[]>([]);
 const fieldErrors = reactive<Record<string, string | undefined>>({});
 
 function createEmptyForm(): ProductFormState {
@@ -407,14 +590,116 @@ function createEmptyForm(): ProductFormState {
 
 const form = reactive<ProductFormState>(createEmptyForm());
 
-const categoryItems = computed(() => props.categories.map((category) => ({
-  label: category.name,
-  value: category.id
-})));
-const attributeItems = computed(() => props.attributes.map((attribute) => ({
-  label: attribute.unit ? `${attribute.name}, ${attribute.unit}` : attribute.name,
-  value: attribute.id
-})));
+watch(
+  () => props.categories,
+  (categories) => {
+    localCategories.value = sortByName(categories);
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.attributes,
+  (attributes) => {
+    localAttributes.value = sortByName(attributes);
+  },
+  { immediate: true }
+);
+
+const categoryItems = computed(() => [
+  ...localCategories.value.map((category) => ({
+    label: category.name,
+    value: category.id
+  })),
+  { type: "separator" as const },
+  {
+    label: "Создать новую категорию",
+    value: CREATE_CATEGORY_VALUE,
+    class: "text-[var(--admin-accent)]"
+  }
+]);
+
+const attributeItems = computed(() => [
+  ...localAttributes.value.map((attribute) => ({
+    label: attribute.unit ? `${attribute.name}, ${attribute.unit}` : attribute.name,
+    value: attribute.id
+  })),
+  { type: "separator" as const },
+  {
+    label: "Создать новую характеристику",
+    value: CREATE_ATTRIBUTE_VALUE,
+    class: "text-[var(--admin-accent)]"
+  }
+]);
+
+function sortByName<T extends { name: string }>(items: T[]) {
+  return [...items].sort((first, second) => first.name.localeCompare(second.name, "ru"));
+}
+
+function upsertCategory(category: Category) {
+  localCategories.value = sortByName([
+    ...localCategories.value.filter((item) => item.id !== category.id),
+    category
+  ]);
+}
+
+function upsertAttribute(attribute: Attribute) {
+  localAttributes.value = sortByName([
+    ...localAttributes.value.filter((item) => item.id !== attribute.id),
+    attribute
+  ]);
+}
+
+function toPositiveInt(value: SelectValue) {
+  const numericValue = Number(value);
+  return Number.isInteger(numericValue) && numericValue > 0 ? numericValue : undefined;
+}
+
+function handleCategorySelect(value: SelectValue) {
+  if (value === CREATE_CATEGORY_VALUE) {
+    openCategoryCreator();
+    return;
+  }
+
+  form.categoryId = toPositiveInt(value);
+  fieldErrors.categoryId = undefined;
+}
+
+function handleAttributeSelect(index: number, value: SelectValue) {
+  if (value === CREATE_ATTRIBUTE_VALUE) {
+    openAttributeCreator(index);
+    return;
+  }
+
+  const target = form.productAttributes[index];
+
+  if (target) {
+    target.attributeId = toPositiveInt(value);
+  }
+}
+
+function openCategoryCreator() {
+  newCategoryName.value = "";
+  newCategoryError.value = undefined;
+  categoryCreateOpen.value = true;
+}
+
+function closeCategoryCreator() {
+  categoryCreateOpen.value = false;
+}
+
+function openAttributeCreator(index: number | null = null) {
+  pendingAttributeIndex.value = index;
+  newAttributeForm.name = "";
+  newAttributeForm.unit = "";
+  clearFieldErrors(newAttributeErrors);
+  attributeCreateOpen.value = true;
+}
+
+function closeAttributeCreator() {
+  pendingAttributeIndex.value = null;
+  attributeCreateOpen.value = false;
+}
 
 function resetForm(next = createEmptyForm()) {
   clearFieldErrors(fieldErrors);
@@ -457,6 +742,93 @@ async function loadProduct() {
     open.value = false;
   } finally {
     loading.value = false;
+  }
+}
+
+async function createCategory() {
+  if (creatingCategory.value) {
+    return;
+  }
+
+  const parsed = categorySchema.safeParse({ name: newCategoryName.value });
+
+  if (!parsed.success) {
+    newCategoryError.value = getZodFieldErrors(parsed.error).name ?? "Проверьте название категории";
+    return;
+  }
+
+  newCategoryError.value = undefined;
+  creatingCategory.value = true;
+
+  try {
+    const result = await $fetch<{ success: boolean; category: Category }>("/api/admin/categories", {
+      method: "POST",
+      body: parsed.data
+    });
+
+    upsertCategory(result.category);
+    form.categoryId = result.category.id;
+    fieldErrors.categoryId = undefined;
+    newCategoryName.value = "";
+    categoryCreateOpen.value = false;
+    emit("dictionariesUpdated");
+    toast.success(`Категория "${result.category.name}" создана`);
+  } catch (error) {
+    toast.error(getErrorMessage(error, "Не удалось создать категорию"));
+  } finally {
+    creatingCategory.value = false;
+  }
+}
+
+async function createAttribute() {
+  if (creatingAttribute.value) {
+    return;
+  }
+
+  const parsed = createAttributeSchema.safeParse({
+    name: newAttributeForm.name,
+    unit: newAttributeForm.unit
+  });
+
+  if (!parsed.success) {
+    replaceFieldErrors(newAttributeErrors, getZodFieldErrors(parsed.error));
+    return;
+  }
+
+  clearFieldErrors(newAttributeErrors);
+  creatingAttribute.value = true;
+
+  try {
+    const result = await $fetch<{ success: boolean; attribute: Attribute }>("/api/admin/products/attributes", {
+      method: "POST",
+      body: parsed.data
+    });
+
+    upsertAttribute(result.attribute);
+
+    const targetIndex = pendingAttributeIndex.value;
+    const targetAttribute = targetIndex === null ? undefined : form.productAttributes[targetIndex];
+
+    if (targetAttribute) {
+      targetAttribute.attributeId = result.attribute.id;
+    } else {
+      form.productAttributes.push({
+        attributeId: result.attribute.id,
+        value: ""
+      });
+    }
+
+    fieldErrors.productAttributes = undefined;
+    newAttributeForm.name = "";
+    newAttributeForm.unit = "";
+    pendingAttributeIndex.value = null;
+    attributeCreateOpen.value = false;
+    emit("dictionariesUpdated");
+    toast.success(`Характеристика "${result.attribute.name}" создана`);
+  } catch (error) {
+    toast.error(getErrorMessage(error, "Не удалось создать характеристику"));
+  } finally {
+    creatingAttribute.value = false;
   }
 }
 

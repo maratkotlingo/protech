@@ -134,7 +134,7 @@
       :ui="{ body: 'p-0' }"
     >
       <div class="overflow-x-auto">
-        <table class="min-w-[780px] divide-y divide-[var(--admin-border)] text-sm">
+        <table class="w-full min-w-[780px] divide-y divide-[var(--admin-border)] text-sm">
           <thead class="bg-[var(--admin-surface-muted)]">
             <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
               <th class="w-12 px-4 py-3">
