@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from "@prisma/client";
+import { AuditAction, OrderStatus, PaymentStatus } from "@prisma/client";
 import { reserveProductStock, restoreProductStock } from "~~/server/utils/orderStock";
 import { updatePaymentStatusSchema } from "~~/shared/schemas/admin/orders/updatePaymentStatus";
 
@@ -7,7 +7,7 @@ function getOrderStatusForActivePayment(paymentStatus: PaymentStatus) {
 }
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const { userId } = await requireAdmin(event);
 
   const body = await validateBody(event, updatePaymentStatusSchema);
   const paymentStatus = body.paymentStatus as PaymentStatus;
@@ -114,6 +114,18 @@ export default defineEventHandler(async (event) => {
     }
 
     throw error;
+  });
+
+  await recordAdminAudit({
+    adminId: userId,
+    action: AuditAction.PAYMENT_STATUS,
+    entityType: "payment",
+    entityId: updatedPayment.id,
+    summary: `Updated payment for order ${updatedPayment.orderId}`,
+    metadata: {
+      orderId: updatedPayment.orderId,
+      paymentStatus: updatedPayment.paymentStatus
+    }
   });
 
   return { success: true, payment: updatedPayment };

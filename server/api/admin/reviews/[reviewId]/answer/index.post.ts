@@ -1,3 +1,4 @@
+import { AuditAction } from "@prisma/client";
 import { reviewAnswerSchema } from "~~/shared/schemas/admin/reviews/reviewAnswer";
 
 export default defineEventHandler(async (event) => {
@@ -40,6 +41,18 @@ export default defineEventHandler(async (event) => {
     }
 
     throw error;
+  });
+
+  await recordAdminAudit({
+    adminId: userId,
+    action: AuditAction.ANSWER,
+    entityType: "review",
+    entityId: reviewId,
+    summary: `Answered review ${reviewId}`,
+    metadata: {
+      answerId: answer.id,
+      productId: review.productId
+    }
   });
 
   return { success: true, answer };

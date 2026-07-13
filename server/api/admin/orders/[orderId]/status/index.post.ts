@@ -1,9 +1,9 @@
-import { OrderStatus, PaymentStatus } from "@prisma/client";
+import { AuditAction, OrderStatus, PaymentStatus } from "@prisma/client";
 import { reserveProductStock, restoreProductStock } from "~~/server/utils/orderStock";
 import { updateOrderStatusSchema } from "~~/shared/schemas/admin/orders/updateOrderStatus";
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const { userId } = await requireAdmin(event);
 
   const orderId = getPositiveIntRouterParam(event, "orderId", "Некорректный ID заказа");
   const body = await validateBody(event, updateOrderStatusSchema);
@@ -103,6 +103,18 @@ export default defineEventHandler(async (event) => {
     }
 
     throw error;
+  });
+
+  await recordAdminAudit({
+    adminId: userId,
+    action: AuditAction.ORDER_STATUS,
+    entityType: "order",
+    entityId: order.id,
+    summary: `Updated order ${order.id} status`,
+    metadata: {
+      orderStatus: order.orderStatus,
+      stockReserved: order.stockReserved
+    }
   });
 
   return { success: true, order };

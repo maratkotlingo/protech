@@ -1,3 +1,4 @@
+import { AuditAction } from "@prisma/client";
 import { shopAnswerSchema } from "~~/shared/schemas/admin/faq/shopAnswer";
 
 export default defineEventHandler(async (event) => {
@@ -38,6 +39,18 @@ export default defineEventHandler(async (event) => {
     }
 
     throw error;
+  });
+
+  await recordAdminAudit({
+    adminId: userId,
+    action: AuditAction.ANSWER,
+    entityType: "shop_question",
+    entityId: body.shopQuestionId,
+    summary: `Answered FAQ question ${body.shopQuestionId}`,
+    metadata: {
+      answerId: answer.id,
+      title: question.title
+    }
   });
 
   return { success: true, answer };

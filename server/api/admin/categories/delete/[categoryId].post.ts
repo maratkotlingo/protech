@@ -1,5 +1,7 @@
+import { AuditAction } from "@prisma/client";
+
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const { userId } = await requireAdmin(event);
 
   const categoryId = getPositiveIntRouterParam(event, "categoryId", "Некорректный ID категории");
 
@@ -15,8 +17,21 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+      select: { id: true, name: true }
+    });
+
     await prisma.category.delete({
       where: { id: categoryId }
+    });
+
+    await recordAdminAudit({
+      adminId: userId,
+      action: AuditAction.DELETE,
+      entityType: "category",
+      entityId: categoryId,
+      summary: `Deleted category ${category?.name ?? categoryId}`
     });
 
     return { success: true };

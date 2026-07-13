@@ -1,8 +1,8 @@
-import { Prisma } from "@prisma/client";
+import { AuditAction, Prisma } from "@prisma/client";
 import { updateProductSchema } from "~~/shared/schemas/admin/products/updateProduct";
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const { userId } = await requireAdmin(event);
 
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
   const body = await validateBody(event, updateProductSchema);
@@ -89,6 +89,19 @@ export default defineEventHandler(async (event) => {
         })
       ]))[0]
       : await updateProduct;
+
+    await recordAdminAudit({
+      adminId: userId,
+      action: AuditAction.UPDATE,
+      entityType: "product",
+      entityId: product.id,
+      summary: `Updated product ${product.name}`,
+      metadata: {
+        fields: Object.keys(body),
+        article: product.article,
+        priceChanged
+      }
+    });
 
     return { success: true, product };
   } catch (error) {

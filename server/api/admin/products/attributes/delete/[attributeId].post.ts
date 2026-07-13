@@ -1,5 +1,7 @@
+import { AuditAction } from "@prisma/client";
+
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const { userId } = await requireAdmin(event);
 
   const attributeId = getPositiveIntRouterParam(
     event,
@@ -8,8 +10,22 @@ export default defineEventHandler(async (event) => {
   );
 
   try {
+    const attribute = await prisma.attribute.findUnique({
+      where: { id: attributeId },
+      select: { id: true, name: true, unit: true }
+    });
+
     await prisma.attribute.delete({
       where: { id: attributeId }
+    });
+
+    await recordAdminAudit({
+      adminId: userId,
+      action: AuditAction.DELETE,
+      entityType: "attribute",
+      entityId: attributeId,
+      summary: `Deleted attribute ${attribute?.name ?? attributeId}`,
+      metadata: { unit: attribute?.unit }
     });
 
     return { success: true };

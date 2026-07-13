@@ -25,6 +25,7 @@ model User {
     shopAnswers          ShopAnswer[]
     reviewAnswers        ReviewAnswer[]
     message              Message[]
+    auditLogs            AuditLog[]
 
     @@map("user")
 }

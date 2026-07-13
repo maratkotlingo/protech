@@ -1,7 +1,8 @@
+import { AuditAction } from "@prisma/client";
 import { categorySchema } from "~~/shared/schemas/admin/products/category";
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const { userId } = await requireAdmin(event);
 
   const categoryId = getPositiveIntRouterParam(event, "categoryId", "Некорректный ID категории");
   const body = await validateBody(event, categorySchema);
@@ -10,6 +11,14 @@ export default defineEventHandler(async (event) => {
     const category = await prisma.category.update({
       where: { id: categoryId },
       data: { name: body.name }
+    });
+
+    await recordAdminAudit({
+      adminId: userId,
+      action: AuditAction.UPDATE,
+      entityType: "category",
+      entityId: category.id,
+      summary: `Updated category ${category.name}`
     });
 
     return { success: true, category };

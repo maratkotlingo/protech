@@ -1,8 +1,9 @@
+import { AuditAction } from "@prisma/client";
 import { recordStockAdjustment } from "~~/server/utils/orderStock";
 import { updateProductStockSchema } from "~~/shared/schemas/admin/products/updateProductStock";
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const { userId } = await requireAdmin(event);
 
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
   const body = await validateBody(event, updateProductStockSchema);
@@ -48,6 +49,20 @@ export default defineEventHandler(async (event) => {
     });
 
     return updatedStock;
+  });
+
+  await recordAdminAudit({
+    adminId: userId,
+    action: AuditAction.STOCK_ADJUSTMENT,
+    entityType: "product_stock",
+    entityId: productId,
+    summary: "Updated product stock",
+    metadata: {
+      productId,
+      previousQuantity,
+      quantity: stock.quantity,
+      quantityDelta: stock.quantity - previousQuantity
+    }
   });
 
   return { success: true, stock };

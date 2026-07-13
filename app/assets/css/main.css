@@ -1,1 +1,63 @@
 @import "tailwindcss";
+@import "@nuxt/ui";
+
+:root {
+  --admin-accent: #16a34a;
+  --admin-accent-soft: #dcfce7;
+  --admin-accent-strong: #15803d;
+  --admin-surface: #ffffff;
+  --admin-surface-muted: #f6f8f7;
+  --admin-surface-elevated: #ffffff;
+  --admin-border: #dfe7e2;
+  --admin-text: #102018;
+  --admin-text-muted: #65756c;
+  --admin-danger: #dc2626;
+  --admin-warning: #d97706;
+  --admin-info: #0284c7;
+  --admin-chart-green: #16a34a;
+  --admin-chart-blue: #0ea5e9;
+  --admin-chart-amber: #f59e0b;
+  --admin-chart-red: #ef4444;
+  --admin-chart-violet: #8b5cf6;
+}
+
+.dark {
+  --admin-accent: #22c55e;
+  --admin-accent-soft: #052e16;
+  --admin-accent-strong: #86efac;
+  --admin-surface: #101613;
+  --admin-surface-muted: #0b110e;
+  --admin-surface-elevated: #141d18;
+  --admin-border: #243229;
+  --admin-text: #ecfdf3;
+  --admin-text-muted: #9db0a4;
+  --admin-danger: #f87171;
+  --admin-warning: #fbbf24;
+  --admin-info: #38bdf8;
+  --admin-chart-green: #22c55e;
+  --admin-chart-blue: #38bdf8;
+  --admin-chart-amber: #fbbf24;
+  --admin-chart-red: #f87171;
+  --admin-chart-violet: #a78bfa;
+}
+
+html {
+  background: var(--admin-surface-muted);
+}
+
+body {
+  min-width: 320px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--admin-accent) 8%, transparent), transparent 26rem),
+    var(--admin-surface-muted);
+  color: var(--admin-text);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+* {
+  min-width: 0;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--admin-accent) 24%, transparent);
+}

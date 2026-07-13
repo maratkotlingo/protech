@@ -35,6 +35,10 @@ function getMailFrom() {
   return "ProTech <no-reply@protech.local>";
 }
 
+function shouldSkipTransactionalEmail() {
+  return parseBooleanEnv(process.env.MAIL_DISABLE_SEND || process.env.SMTP_DISABLE_SEND, false);
+}
+
 function getTransporter() {
   const host = process.env.SMTP_HOST || process.env.MAIL_HOST;
 
@@ -60,6 +64,13 @@ function getTransporter() {
 }
 
 export async function sendTransactionalEmail({ to, subject, html, text }: TransactionalEmail) {
+  if (shouldSkipTransactionalEmail()) {
+    console.info(`[email:skip] Transactional email was skipped by MAIL_DISABLE_SEND/SMTP_DISABLE_SEND`);
+    console.info(`[email:skip] To: ${to}`);
+    console.info(`[email:skip] Subject: ${subject}`);
+    return;
+  }
+
   const transport = getTransporter();
 
   if (!transport) {

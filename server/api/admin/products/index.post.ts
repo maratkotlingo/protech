@@ -1,7 +1,8 @@
 import { createProductSchema } from "~~/shared/schemas/admin/products/createProduct";
+import { AuditAction } from "@prisma/client";
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const { userId } = await requireAdmin(event);
 
   const body = await validateBody(event, createProductSchema);
 
@@ -65,6 +66,18 @@ export default defineEventHandler(async (event) => {
         },
         productStocks: true,
         productPrices: true
+      }
+    });
+
+    await recordAdminAudit({
+      adminId: userId,
+      action: AuditAction.CREATE,
+      entityType: "product",
+      entityId: product.id,
+      summary: `Created product ${product.name}`,
+      metadata: {
+        article: product.article,
+        categoryId: product.categoryId
       }
     });
 
