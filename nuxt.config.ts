@@ -3,6 +3,11 @@ import vue from "@vitejs/plugin-vue";
 import type { InputPluginOption } from "rollup";
 import process from "process";
 
+const publicAppUrl = process.env.NUXT_PUBLIC_APP_URL;
+const siteUrl = publicAppUrl && !/localhost|127\.0\.0\.1/.test(publicAppUrl)
+  ? publicAppUrl
+  : undefined;
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   modules: [
@@ -21,10 +26,13 @@ export default defineNuxtConfig({
     { path: "~/shared/ui/charts", pathPrefix: false },
     { path: "~/entities/product/ui", pathPrefix: false },
     { path: "~/entities/order/ui", pathPrefix: false },
+    { path: "~/features/cart/ui", pathPrefix: false },
+    { path: "~/features/checkout/ui", pathPrefix: false },
     { path: "~/features/admin-products/ui", pathPrefix: false },
     { path: "~/features/admin-catalog/ui", pathPrefix: false },
     { path: "~/features/admin-feedback/ui", pathPrefix: false },
-    { path: "~/widgets/admin/ui", pathPrefix: false }
+    { path: "~/widgets/admin/ui", pathPrefix: false },
+    { path: "~/widgets/public/ui", pathPrefix: false }
   ],
   imports: {
     dirs: ["app/shared/lib"]
@@ -51,6 +59,12 @@ export default defineNuxtConfig({
     public: {
       appUrl: process.env.NUXT_PUBLIC_APP_URL
     }
+  },
+  site: {
+    ...(siteUrl ? { url: siteUrl } : {}),
+    name: "ProTech",
+    description: "Интернет-магазин техники, аксессуаров и комплектующих ProTech",
+    defaultLocale: "ru"
   },
   nitro: {
     compressPublicAssets: true,

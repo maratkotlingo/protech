@@ -40,3 +40,42 @@ export const ADMIN_THEME_COLORS = {
 } as const;
 
 export type AdminThemeColor = typeof ADMIN_THEME_COLORS;
+
+export const SHOP_THEME_COLORS = {
+  accent: "#16a34a",
+  accentSoft: "#dcfce7",
+  accentMuted: "#bbf7d0",
+  accentStrong: "#15803d",
+  surface: "#ffffff",
+  surfaceMuted: "#f4f7f5",
+  surfaceElevated: "#ffffff",
+  border: "#dce7e0",
+  text: "#102018",
+  textMuted: "#617269",
+  textSubtle: "#839189",
+  danger: "#dc2626",
+  warning: "#d97706",
+  info: "#0284c7",
+  success: "#16a34a",
+  ring: "#86efac",
+  dark: {
+    accent: "#22c55e",
+    accentSoft: "#052e16",
+    accentMuted: "#14532d",
+    accentStrong: "#86efac",
+    surface: "#0f1713",
+    surfaceMuted: "#0a100d",
+    surfaceElevated: "#141e19",
+    border: "#26352c",
+    text: "#ecfdf3",
+    textMuted: "#a7b8ae",
+    textSubtle: "#78887f",
+    danger: "#f87171",
+    warning: "#fbbf24",
+    info: "#38bdf8",
+    success: "#22c55e",
+    ring: "#14532d"
+  }
+} as const;
+
+export type ShopThemeColor = typeof SHOP_THEME_COLORS;

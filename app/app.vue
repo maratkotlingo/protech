@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 useHead({
-  title: "ProTech Admin",
-  titleTemplate: (title) => title ? `${title} · ProTech` : "ProTech Admin"
+  title: "ProTech",
+  titleTemplate: (title) => title ? `${title} · ProTech` : "ProTech"
 });
 </script>

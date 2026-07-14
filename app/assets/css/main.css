@@ -2,6 +2,23 @@
 @import "@nuxt/ui";
 
 :root {
+  --shop-accent: #16a34a;
+  --shop-accent-soft: #dcfce7;
+  --shop-accent-muted: #bbf7d0;
+  --shop-accent-strong: #15803d;
+  --shop-surface: #ffffff;
+  --shop-surface-muted: #f4f7f5;
+  --shop-surface-elevated: #ffffff;
+  --shop-border: #dce7e0;
+  --shop-text: #102018;
+  --shop-text-muted: #617269;
+  --shop-text-subtle: #839189;
+  --shop-danger: #dc2626;
+  --shop-warning: #d97706;
+  --shop-info: #0284c7;
+  --shop-success: #16a34a;
+  --shop-ring: #86efac;
+
   --admin-accent: #16a34a;
   --admin-accent-soft: #dcfce7;
   --admin-accent-strong: #15803d;
@@ -22,6 +39,23 @@
 }
 
 .dark {
+  --shop-accent: #22c55e;
+  --shop-accent-soft: #052e16;
+  --shop-accent-muted: #14532d;
+  --shop-accent-strong: #86efac;
+  --shop-surface: #0f1713;
+  --shop-surface-muted: #0a100d;
+  --shop-surface-elevated: #141e19;
+  --shop-border: #26352c;
+  --shop-text: #ecfdf3;
+  --shop-text-muted: #a7b8ae;
+  --shop-text-subtle: #78887f;
+  --shop-danger: #f87171;
+  --shop-warning: #fbbf24;
+  --shop-info: #38bdf8;
+  --shop-success: #22c55e;
+  --shop-ring: #14532d;
+
   --admin-accent: #22c55e;
   --admin-accent-soft: #052e16;
   --admin-accent-strong: #86efac;
@@ -42,16 +76,16 @@
 }
 
 html {
-  background: var(--admin-surface-muted);
+  background: var(--shop-surface-muted);
   overflow-x: hidden;
 }
 
 body {
   overflow-x: hidden;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--admin-accent) 8%, transparent), transparent 26rem),
-    var(--admin-surface-muted);
-  color: var(--admin-text);
+    linear-gradient(180deg, color-mix(in srgb, var(--shop-accent) 8%, transparent), transparent 26rem),
+    var(--shop-surface-muted);
+  color: var(--shop-text);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
@@ -60,5 +94,13 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--admin-accent) 24%, transparent);
+  background: color-mix(in srgb, var(--shop-accent) 24%, transparent);
+}
+
+.prose-shop {
+  color: var(--shop-text-muted);
+}
+
+.prose-shop :where(p, li) {
+  line-height: 1.75;
 }
