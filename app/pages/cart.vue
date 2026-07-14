@@ -1,45 +1,48 @@
 <template>
-  <div class="mx-auto w-full max-w-[1480px] px-4 py-8 sm:px-6 lg:py-10 xl:px-8">
-    <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <div>
+  <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+    <section class="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-3xl">
         <UBadge
           color="primary"
           variant="soft"
-          class="mb-4"
+          class="rounded-full"
         >
           Покупки
         </UBadge>
-        <h1 class="text-4xl font-semibold tracking-normal text-[var(--shop-text)]">Корзина</h1>
-        <p class="mt-3 text-[var(--shop-text-muted)]">
+        <h1 class="mt-2 text-3xl font-semibold tracking-normal text-zinc-950 sm:text-4xl dark:text-white">Корзина</h1>
+        <p class="mt-3 max-w-2xl text-zinc-500 dark:text-zinc-400">
           Проверьте количество товаров перед оформлением заказа.
         </p>
       </div>
       <UButton
         color="neutral"
-        variant="outline"
+        variant="ghost"
         to="/"
+        class="rounded-full bg-white px-5 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
       >
         Продолжить покупки
       </UButton>
-    </div>
+    </section>
 
     <div
       v-if="loading"
       class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]"
     >
-      <USkeleton class="h-80 rounded-lg" />
-      <USkeleton class="h-80 rounded-lg" />
+      <USkeleton class="h-80 rounded-3xl" />
+      <USkeleton class="h-80 rounded-3xl" />
     </div>
 
     <div
       v-else-if="!auth.user"
-      class="grid min-h-80 place-items-center rounded-lg border border-dashed border-[var(--shop-border)] bg-[var(--shop-surface)] px-6 text-center"
+      class="grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
     >
       <div>
-        <ShoppingCart class="mx-auto size-12 text-[var(--shop-text-muted)]" />
-        <h2 class="mt-4 text-2xl font-semibold text-[var(--shop-text)]">Войдите, чтобы открыть корзину</h2>
+        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
+          <ShoppingCart class="size-7" />
+        </div>
+        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Войдите, чтобы открыть корзину</h2>
         <UButton
-          class="mt-5"
+          class="mt-5 rounded-full"
           color="primary"
           to="/auth?redirect=/cart"
         >
@@ -50,14 +53,16 @@
 
     <div
       v-else-if="!cart.items.length"
-      class="grid min-h-80 place-items-center rounded-lg border border-dashed border-[var(--shop-border)] bg-[var(--shop-surface)] px-6 text-center"
+      class="grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
     >
       <div>
-        <ShoppingCart class="mx-auto size-12 text-[var(--shop-text-muted)]" />
-        <h2 class="mt-4 text-2xl font-semibold text-[var(--shop-text)]">Корзина пуста</h2>
-        <p class="mt-2 text-sm text-[var(--shop-text-muted)]">Добавьте товары из каталога, чтобы оформить заказ.</p>
+        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
+          <ShoppingCart class="size-7" />
+        </div>
+        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Корзина пуста</h2>
+        <p class="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">Добавьте товары из каталога, чтобы оформить заказ.</p>
         <UButton
-          class="mt-5"
+          class="mt-5 rounded-full"
           color="primary"
           to="/"
         >
@@ -97,6 +102,7 @@
                 size="xl"
                 block
                 to="/checkout"
+                class="rounded-full"
               >
                 Оформить заказ
               </UButton>
@@ -104,6 +110,7 @@
                 color="error"
                 variant="ghost"
                 block
+                class="rounded-full"
                 :loading="cart.pending"
                 @click="clearCart"
               >

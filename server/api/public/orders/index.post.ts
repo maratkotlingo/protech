@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   const { user } = await requireUser(event);
   const body = await validateBody(event, createOrderSchema);
 
-  const order = await prisma.$transaction(async (tx) => {
+  const orderId = await prisma.$transaction(async (tx) => {
     const productIds = body.orderItems.map((item) => item.productId);
 
     const products = await tx.product.findMany({
@@ -118,55 +118,56 @@ export default defineEventHandler(async (event) => {
         orderStatus:
           body.paymentMethod === "ONLINE"
             ? OrderStatus.NEW
-            : OrderStatus.CONFIRMED,
+            : OrderStatus.CONFIRMED
+      }
+    });
 
-        orderItems: {
-          create: body.orderItems.map((item) => {
-            const product = productById.get(item.productId)!;
-            const price = priceByProductId.get(item.productId)!;
+    await tx.orderItem.createMany({
+      data: body.orderItems.map((item) => {
+        const product = productById.get(item.productId)!;
+        const price = priceByProductId.get(item.productId)!;
 
-            return {
-              productId: item.productId,
-              quantity: item.quantity,
-              price,
-              costPrice: product.costPrice,
-              lineTotal: price.mul(item.quantity),
-              productName: product.name,
-              productArticle: product.article,
-              productMainImage: product.mainImage,
-              categoryId: product.category.id,
-              categoryName: product.category.name
-            };
-          })
-        },
+        return {
+          orderId: createdOrder.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          price,
+          costPrice: product.costPrice,
+          lineTotal: price.mul(item.quantity),
+          productName: product.name,
+          productArticle: product.article,
+          productMainImage: product.mainImage,
+          categoryId: product.category.id,
+          categoryName: product.category.name
+        };
+      })
+    });
 
-        delivery:
-          body.obtainingMethod === "DELIVERY"
-            ? {
-              create: {
-                address: body.delivery.address,
-                apartment: body.delivery.apartment,
-                entrance: body.delivery.entrance,
-                floor: body.delivery.floor,
-                intercom: body.delivery.intercom,
-                comment: body.delivery.comment,
-                deliveryMethod: body.delivery.deliveryMethod
-              }
-            }
-            : undefined,
-
-        payment: {
-          create: {
-            paymentStatus:
-              body.paymentMethod === "ONLINE"
-                ? PaymentStatus.PENDING
-                : PaymentStatus.UPON_RECEIPT,
-
-            amount: totalAmount
-          }
+    if (body.obtainingMethod === "DELIVERY") {
+      await tx.delivery.create({
+        data: {
+          orderId: createdOrder.id,
+          address: body.delivery.address,
+          apartment: body.delivery.apartment,
+          entrance: body.delivery.entrance,
+          floor: body.delivery.floor,
+          intercom: body.delivery.intercom,
+          comment: body.delivery.comment,
+          deliveryMethod: body.delivery.deliveryMethod
         }
-      },
-      include: orderInclude
+      });
+    }
+
+    await tx.payment.create({
+      data: {
+        orderId: createdOrder.id,
+        paymentStatus:
+          body.paymentMethod === "ONLINE"
+            ? PaymentStatus.PENDING
+            : PaymentStatus.UPON_RECEIPT,
+
+        amount: totalAmount
+      }
     });
 
     await reserveProductStock(tx, body.orderItems, {
@@ -174,7 +175,7 @@ export default defineEventHandler(async (event) => {
       reason: "Order created"
     });
 
-    return createdOrder;
+    return createdOrder.id;
   }).catch((error) => {
     const prismaError = toPrismaHttpError(error, {
       P2003: "Один или несколько товаров не найдены"
@@ -185,6 +186,13 @@ export default defineEventHandler(async (event) => {
     }
 
     throw error;
+  });
+
+  const order = await prisma.order.findUniqueOrThrow({
+    where: {
+      id: orderId
+    },
+    include: orderInclude
   });
 
   if (body.paymentMethod === "OFFLINE") {

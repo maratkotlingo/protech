@@ -1,48 +1,51 @@
 <template>
-  <div class="mx-auto w-full max-w-[1480px] px-4 py-8 sm:px-6 lg:py-10 xl:px-8">
-    <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <div>
+  <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+    <section class="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-3xl">
         <UBadge
           color="primary"
           variant="soft"
-          class="mb-4"
+          class="rounded-full"
         >
           Подборка
         </UBadge>
-        <h1 class="text-4xl font-semibold tracking-normal text-[var(--shop-text)]">Избранное</h1>
-        <p class="mt-3 text-[var(--shop-text-muted)]">
+        <h1 class="mt-2 text-3xl font-semibold tracking-normal text-zinc-950 sm:text-4xl dark:text-white">Избранное</h1>
+        <p class="mt-3 max-w-2xl text-zinc-500 dark:text-zinc-400">
           Сохраненные товары для быстрого возвращения к покупке.
         </p>
       </div>
       <UButton
         color="neutral"
-        variant="outline"
+        variant="ghost"
         to="/"
+        class="rounded-full bg-white px-5 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
       >
         В каталог
       </UButton>
-    </div>
+    </section>
 
     <div
       v-if="loading"
-      class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
     >
       <USkeleton
-        v-for="item in 4"
+        v-for="item in 8"
         :key="item"
-        class="h-[430px] rounded-lg"
+        class="h-[520px] rounded-3xl"
       />
     </div>
 
     <div
       v-else-if="!auth.user"
-      class="grid min-h-80 place-items-center rounded-lg border border-dashed border-[var(--shop-border)] bg-[var(--shop-surface)] px-6 text-center"
+      class="mt-8 grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
     >
       <div>
-        <Heart class="mx-auto size-12 text-[var(--shop-text-muted)]" />
-        <h2 class="mt-4 text-2xl font-semibold text-[var(--shop-text)]">Войдите, чтобы открыть избранное</h2>
+        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
+          <Heart class="size-7" />
+        </div>
+        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Войдите, чтобы открыть избранное</h2>
         <UButton
-          class="mt-5"
+          class="mt-5 rounded-full"
           color="primary"
           to="/auth?redirect=/favorites"
         >
@@ -53,19 +56,21 @@
 
     <div
       v-else-if="!favorites.items.length"
-      class="grid min-h-80 place-items-center rounded-lg border border-dashed border-[var(--shop-border)] bg-[var(--shop-surface)] px-6 text-center"
+      class="mt-8 grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
     >
       <div>
-        <Heart class="mx-auto size-12 text-[var(--shop-text-muted)]" />
-        <h2 class="mt-4 text-2xl font-semibold text-[var(--shop-text)]">Пока ничего нет</h2>
-        <p class="mt-2 text-sm text-[var(--shop-text-muted)]">Добавляйте товары сердечком в каталоге или карточке товара.</p>
+        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
+          <Heart class="size-7" />
+        </div>
+        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Пока ничего нет</h2>
+        <p class="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">Добавляйте товары сердечком в каталоге или карточке товара.</p>
       </div>
     </div>
 
     <div
       v-else
       v-auto-animate
-      class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
     >
       <ProductCard
         v-for="favorite in favorites.items"

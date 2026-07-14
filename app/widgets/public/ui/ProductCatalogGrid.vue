@@ -1,0 +1,64 @@
+<template>
+  <div
+    v-if="pending && !products.length"
+    class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
+  >
+    <USkeleton
+      v-for="item in 8"
+      :key="item"
+      class="h-[520px] rounded-3xl"
+    />
+  </div>
+
+  <div
+    v-else-if="products.length"
+    v-auto-animate
+    class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
+  >
+    <ProductCatalogCard
+      v-for="product in products"
+      :key="product.id"
+      :product="product"
+      :favorite="favoriteProductIds.includes(product.id)"
+      :loading-favorite="syncingFavoriteProductId === product.id"
+      :loading-cart="syncingCartProductId === product.id"
+      @add-to-cart="$emit('addToCart', $event)"
+      @toggle-favorite="$emit('toggleFavorite', $event)"
+    />
+  </div>
+
+  <div
+    v-else
+    class="mt-8 grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900"
+  >
+    <div>
+      <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
+        <UIcon
+          name="i-lucide-search-x"
+          class="size-7"
+        />
+      </div>
+      <h2 class="mt-4 text-xl font-semibold tracking-normal">Товары не найдены</h2>
+      <p class="mt-2 max-w-sm text-sm leading-6 text-zinc-500 dark:text-zinc-400">
+        Попробуйте расширить диапазон цены, убрать характеристику или изменить поисковый запрос.
+      </p>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { ProductCardItem } from "~~/app/shared/types/shop";
+
+defineProps<{
+  favoriteProductIds: number[];
+  pending: boolean;
+  products: ProductCardItem[];
+  syncingCartProductId: number | null;
+  syncingFavoriteProductId: number | null;
+}>();
+
+defineEmits<{
+  addToCart: [product: ProductCardItem];
+  toggleFavorite: [product: ProductCardItem];
+}>();
+</script>

@@ -25,6 +25,16 @@ export type ProductCardItem = {
   stockQuantity?: number;
   reviewsCount?: number;
   averageRating?: number | null;
+  productAttributes?: Array<{
+    id: number;
+    value: string;
+    attributeId: number;
+    attribute: {
+      id: number;
+      name: string;
+      unit: string;
+    };
+  }>;
 };
 
 export type ProductDetails = {

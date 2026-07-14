@@ -1,8 +1,15 @@
+import { getAuthSession } from "~~/server/utils/request";
+import { prisma } from "~~/server/utils/prisma";
+
 export default defineEventHandler(async (event) => {
-  const { userId } = await requireUser(event);
+  const session = await getAuthSession(event);
+
+  if (!session) {
+    return { user: null };
+  }
 
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id: session.user.id },
     select: {
       id: true,
       email: true,
@@ -11,13 +18,6 @@ export default defineEventHandler(async (event) => {
       role: true
     }
   });
-
-  if (!user) {
-    throw createError({
-      statusCode: 401,
-      message: "Пользователь не найден"
-    });
-  }
 
   return { user };
 });

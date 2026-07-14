@@ -1,9 +1,8 @@
-// server/utils/yookassa.ts
 import { Buffer } from "node:buffer";
 import { createError, type H3Event } from "h3";
 import type { Prisma } from "@prisma/client";
 
-type YooKassaPayment = {
+export type YooKassaPayment = {
   id: string;
   status: "pending" | "waiting_for_capture" | "succeeded" | "canceled";
   paid: boolean;
@@ -41,6 +40,41 @@ function getYooKassaApiUrl(event: H3Event) {
   return url.replace(/\/$/, "");
 }
 
+function getYooKassaReturnUrl(event: H3Event, orderId: number) {
+  const config = useRuntimeConfig(event);
+  const appUrl = String(config.public.appUrl || "").replace(/\/$/, "");
+
+  if (!appUrl) {
+    throw createError({
+      statusCode: 500,
+      message: "РќРµ РЅР°СЃС‚СЂРѕРµРЅ NUXT_PUBLIC_APP_URL"
+    });
+  }
+
+  const configuredReturnUrl = String(config.yookassaReturnUrl || "").trim();
+
+  if (!configuredReturnUrl) {
+    return `${appUrl}/orders/${orderId}`;
+  }
+
+  if (configuredReturnUrl.includes("{orderId}")) {
+    return configuredReturnUrl.replaceAll("{orderId}", String(orderId));
+  }
+
+  const returnUrl = new URL(configuredReturnUrl, `${appUrl}/`);
+
+  if (returnUrl.pathname === "/" || returnUrl.pathname === "") {
+    returnUrl.pathname = `/orders/${orderId}`;
+    return returnUrl.toString();
+  }
+
+  if (!returnUrl.searchParams.has("orderId")) {
+    returnUrl.searchParams.set("orderId", String(orderId));
+  }
+
+  return returnUrl.toString();
+}
+
 export async function createYooKassaPayment(
   event: H3Event,
   input: {
@@ -58,7 +92,7 @@ export async function createYooKassaPayment(
     });
   }
 
-  const returnUrl = String(config.yookassaReturnUrl || `${config.public.appUrl}/orders/${input.orderId}`);
+  const returnUrl = getYooKassaReturnUrl(event, input.orderId);
 
   const response = await fetch(`${getYooKassaApiUrl(event)}/v3/payments`, {
     method: "POST",

@@ -29,7 +29,6 @@ export default defineNuxtConfig({
     { path: "~/features/cart/ui", pathPrefix: false },
     { path: "~/features/checkout/ui", pathPrefix: false },
     { path: "~/features/admin-products/ui", pathPrefix: false },
-    { path: "~/features/admin-catalog/ui", pathPrefix: false },
     { path: "~/features/admin-feedback/ui", pathPrefix: false },
     { path: "~/widgets/admin/ui", pathPrefix: false },
     { path: "~/widgets/public/ui", pathPrefix: false }

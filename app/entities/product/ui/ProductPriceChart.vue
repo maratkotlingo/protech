@@ -1,15 +1,16 @@
 <template>
-  <div class="rounded-lg border border-[var(--shop-border)] bg-[var(--shop-surface)] p-5">
+  <div class="rounded-[2rem] bg-white p-5 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h2 class="text-xl font-semibold text-[var(--shop-text)]">Динамика цены</h2>
-        <p class="mt-1 text-sm text-[var(--shop-text-muted)]">
+        <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Динамика цены</h2>
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           История изменений по данным карточки товара
         </p>
       </div>
       <UBadge
         color="primary"
         variant="soft"
+        class="rounded-full"
       >
         {{ entries.length }} точек
       </UBadge>
@@ -17,7 +18,7 @@
 
     <div
       v-if="entries.length > 1"
-      class="mt-6 overflow-hidden rounded-lg bg-[var(--shop-surface-muted)] p-4"
+      class="mt-6 overflow-hidden rounded-3xl bg-[#f9fafb] p-4 dark:bg-zinc-800/60"
     >
       <svg
         viewBox="0 0 640 220"
@@ -75,7 +76,7 @@
         </text>
       </svg>
 
-      <div class="mt-4 flex flex-wrap justify-between gap-3 text-sm text-[var(--shop-text-muted)]">
+      <div class="mt-4 flex flex-wrap justify-between gap-3 text-sm text-zinc-500 dark:text-zinc-400">
         <span>{{ formatDate(entries[0]?.createdAt) }}</span>
         <span>{{ formatDate(entries[entries.length - 1]?.createdAt) }}</span>
       </div>
@@ -83,7 +84,7 @@
 
     <div
       v-else
-      class="mt-6 grid min-h-40 place-items-center rounded-lg bg-[var(--shop-surface-muted)] px-6 text-center text-sm text-[var(--shop-text-muted)]"
+      class="mt-6 grid min-h-40 place-items-center rounded-3xl bg-[#f9fafb] px-6 text-center text-sm text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400"
     >
       Пока недостаточно изменений цены для графика.
     </div>

@@ -2,14 +2,15 @@
   <section class="space-y-6">
     <div class="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h2 class="text-2xl font-semibold text-[var(--shop-text)]">Отзывы</h2>
-        <p class="mt-1 text-sm text-[var(--shop-text-muted)]">
+        <h2 class="text-2xl font-semibold text-zinc-950 dark:text-white">Отзывы</h2>
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           {{ reviews.length ? `${reviews.length} отзывов покупателей` : "Пока отзывов нет" }}
         </p>
       </div>
       <UButton
         color="primary"
         variant="soft"
+        class="rounded-full"
         @click="toggleReviewForm"
       >
         <MessageSquarePlus class="size-4" />
@@ -19,7 +20,7 @@
 
     <UCard
       v-if="reviewFormOpen"
-      class="border border-[var(--shop-border)] bg-[var(--shop-surface)]"
+      class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
       :ui="{ body: 'p-5 sm:p-6' }"
     >
       <form
@@ -27,13 +28,13 @@
         @submit.prevent="submitReview"
       >
         <div>
-          <p class="mb-2 text-sm font-medium text-[var(--shop-text)]">Оценка</p>
+          <p class="mb-2 text-sm font-medium text-zinc-950 dark:text-white">Оценка</p>
           <div class="flex gap-1">
             <button
               v-for="rating in 5"
               :key="rating"
               type="button"
-              class="rounded-lg p-1 text-amber-500 transition hover:bg-amber-100 dark:hover:bg-amber-950"
+              class="rounded-full p-1 text-amber-500 transition hover:bg-amber-100 dark:hover:bg-amber-950"
               :aria-label="`Поставить ${rating}`"
               @click="form.rating = rating"
             >
@@ -49,17 +50,21 @@
           <UFormField label="Плюсы">
             <UTextarea
               v-model="form.advantages"
-              class="w-full"
+              class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
               :rows="3"
+              variant="none"
               placeholder="Что понравилось"
+              :ui="reviewTextareaUi"
             />
           </UFormField>
           <UFormField label="Минусы">
             <UTextarea
               v-model="form.disadvantages"
-              class="w-full"
+              class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
               :rows="3"
+              variant="none"
               placeholder="Что можно улучшить"
+              :ui="reviewTextareaUi"
             />
           </UFormField>
         </div>
@@ -67,15 +72,18 @@
         <UFormField label="Комментарий">
           <UTextarea
             v-model="form.comment"
-            class="w-full"
+            class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
             :rows="4"
+            variant="none"
             placeholder="Поделитесь опытом использования"
+            :ui="reviewTextareaUi"
           />
         </UFormField>
 
         <div class="flex justify-end">
           <UButton
             color="primary"
+            class="rounded-full"
             type="submit"
             :loading="submitting"
           >
@@ -93,7 +101,7 @@
       <UCard
         v-for="review in reviews"
         :key="review.id"
-        class="border border-[var(--shop-border)] bg-[var(--shop-surface)]"
+        class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
         :ui="{ body: 'p-5 sm:p-6' }"
       >
         <div class="flex flex-wrap items-start justify-between gap-4">
@@ -106,15 +114,15 @@
             >
             <div
               v-else
-              class="grid size-11 place-items-center rounded-full bg-[var(--shop-accent-soft)] font-semibold text-[var(--shop-accent)]"
+              class="grid size-11 place-items-center rounded-full bg-emerald-100 font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
             >
               {{ (review.user?.name ?? "П").slice(0, 1).toUpperCase() }}
             </div>
             <div>
-              <p class="font-semibold text-[var(--shop-text)]">
+              <p class="font-semibold text-zinc-950 dark:text-white">
                 {{ review.user?.name || "Покупатель" }}
               </p>
-              <p class="text-sm text-[var(--shop-text-muted)]">
+              <p class="text-sm text-zinc-500 dark:text-zinc-400">
                 {{ formatDate(review.createdAt) }}
               </p>
             </div>
@@ -129,27 +137,27 @@
           </div>
         </div>
 
-        <div class="mt-5 grid gap-4 text-sm leading-6 text-[var(--shop-text-muted)] md:grid-cols-3">
+        <div class="mt-5 grid gap-4 text-sm leading-6 text-zinc-500 md:grid-cols-3 dark:text-zinc-400">
           <div v-if="review.advantages">
-            <p class="font-medium text-[var(--shop-text)]">Плюсы</p>
+            <p class="font-medium text-zinc-950 dark:text-white">Плюсы</p>
             <p class="mt-1">{{ review.advantages }}</p>
           </div>
           <div v-if="review.disadvantages">
-            <p class="font-medium text-[var(--shop-text)]">Минусы</p>
+            <p class="font-medium text-zinc-950 dark:text-white">Минусы</p>
             <p class="mt-1">{{ review.disadvantages }}</p>
           </div>
           <div v-if="review.comment">
-            <p class="font-medium text-[var(--shop-text)]">Комментарий</p>
+            <p class="font-medium text-zinc-950 dark:text-white">Комментарий</p>
             <p class="mt-1">{{ review.comment }}</p>
           </div>
         </div>
 
         <div
           v-if="review.reviewAnswers.length"
-          class="mt-5 rounded-lg bg-[var(--shop-surface-muted)] p-4"
+          class="mt-5 rounded-3xl bg-[#f9fafb] p-4 dark:bg-zinc-800/60"
         >
-          <p class="text-sm font-semibold text-[var(--shop-text)]">Ответ магазина</p>
-          <p class="mt-2 text-sm leading-6 text-[var(--shop-text-muted)]">
+          <p class="text-sm font-semibold text-zinc-950 dark:text-white">Ответ магазина</p>
+          <p class="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
             {{ review.reviewAnswers[0]?.text }}
           </p>
         </div>
@@ -157,7 +165,7 @@
 
       <div
         v-if="!reviews.length"
-        class="grid min-h-40 place-items-center rounded-lg border border-dashed border-[var(--shop-border)] bg-[var(--shop-surface)] px-6 text-center text-[var(--shop-text-muted)]"
+        class="grid min-h-40 place-items-center rounded-[2rem] bg-white px-6 text-center text-zinc-500 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:text-zinc-400 dark:shadow-black/20"
       >
         Будьте первым, кто оставит отзыв на этот товар.
       </div>
@@ -192,6 +200,7 @@ const form = reactive({
   disadvantages: "",
   comment: ""
 });
+const reviewTextareaUi = { base: "rounded-2xl bg-transparent" };
 
 async function submitReview() {
   if (!auth.user) {

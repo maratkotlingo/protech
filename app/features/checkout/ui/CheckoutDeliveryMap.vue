@@ -1,21 +1,22 @@
 <template>
-  <div class="overflow-hidden rounded-lg border border-[var(--shop-border)] bg-[var(--shop-surface)]">
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--shop-border)] px-4 py-3">
+  <div class="overflow-hidden rounded-[2rem] bg-white shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20">
+    <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
       <div>
-        <p class="font-semibold text-[var(--shop-text)]">Карта доставки</p>
-        <p class="text-sm text-[var(--shop-text-muted)]">
+        <p class="font-semibold text-zinc-950 dark:text-white">Карта доставки</p>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">
           {{ statusText }}
         </p>
       </div>
       <UBadge
         :color="house ? 'primary' : 'neutral'"
         variant="soft"
+        class="rounded-full"
       >
         {{ house ? "Дом отмечен" : "Уточняется" }}
       </UBadge>
     </div>
 
-    <div class="relative aspect-[4/3] min-h-80 bg-[var(--shop-surface-muted)]">
+    <div class="relative mx-3 mb-3 aspect-[4/3] min-h-80 overflow-hidden rounded-[1.45rem] bg-[#f9fafb] dark:bg-zinc-800/60">
       <iframe
         :src="mapSrc"
         class="absolute inset-0 size-full border-0"
@@ -25,13 +26,13 @@
       />
       <div
         v-if="pending"
-        class="absolute inset-x-4 top-4 rounded-lg border border-[var(--shop-border)] bg-[var(--shop-surface)]/95 px-4 py-3 text-sm text-[var(--shop-text-muted)] shadow-lg backdrop-blur"
+        class="absolute inset-x-4 top-4 rounded-2xl bg-white/95 px-4 py-3 text-sm text-zinc-500 shadow-lg shadow-zinc-950/10 backdrop-blur dark:bg-zinc-900/90 dark:text-zinc-400"
       >
         Ищу адрес на карте...
       </div>
       <div
         v-if="error"
-        class="absolute inset-x-4 bottom-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-200"
+        class="absolute inset-x-4 bottom-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 shadow-lg shadow-red-950/10 dark:bg-red-950 dark:text-red-200"
       >
         {{ error }}
       </div>

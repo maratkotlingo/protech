@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-4">
-    <div class="relative overflow-hidden rounded-lg border border-[var(--shop-border)] bg-[var(--shop-surface)]">
+    <div class="relative overflow-hidden rounded-[2rem] bg-white p-3 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20">
       <img
         :src="activeImage.url"
         :alt="alt"
-        class="aspect-square w-full object-cover md:aspect-[5/4]"
+        class="aspect-square w-full rounded-[1.45rem] bg-zinc-100 object-cover dark:bg-zinc-800 md:aspect-[5/4]"
       >
 
       <div class="absolute bottom-4 right-4 flex gap-2">
@@ -13,6 +13,7 @@
             color="neutral"
             variant="soft"
             square
+            class="rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur dark:bg-zinc-900/85"
             :disabled="imageItems.length < 2"
             aria-label="Предыдущее фото"
             @click="previous"
@@ -25,6 +26,7 @@
             color="neutral"
             variant="soft"
             square
+            class="rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur dark:bg-zinc-900/85"
             aria-label="Увеличить фото"
             @click="openZoom"
           >
@@ -36,6 +38,7 @@
             color="neutral"
             variant="soft"
             square
+            class="rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur dark:bg-zinc-900/85"
             :disabled="imageItems.length < 2"
             aria-label="Следующее фото"
             @click="next"
@@ -54,8 +57,8 @@
       <button
         v-for="(image, index) in imageItems"
         :key="image.url"
-        class="overflow-hidden rounded-lg border bg-[var(--shop-surface)] transition"
-        :class="index === selectedIndex ? 'border-[var(--shop-accent)] ring-2 ring-[var(--shop-ring)]' : 'border-[var(--shop-border)] hover:border-[var(--shop-accent)]'"
+        class="overflow-hidden rounded-2xl bg-white p-1 shadow-sm shadow-zinc-950/5 transition dark:bg-zinc-900"
+        :class="index === selectedIndex ? 'ring-2 ring-emerald-500' : 'hover:ring-2 hover:ring-emerald-200 dark:hover:ring-emerald-800'"
         type="button"
         :aria-label="`Открыть фото ${index + 1}`"
         @click="selectedIndex = index"
@@ -63,7 +66,7 @@
         <img
           :src="image.url"
           :alt="alt"
-          class="aspect-square w-full object-cover"
+          class="aspect-square w-full rounded-xl object-cover"
           loading="lazy"
         >
       </button>
@@ -72,7 +75,7 @@
     <UModal
       v-model:open="zoomOpen"
       title="Фото товара"
-      :ui="{ content: 'max-w-6xl', body: 'p-0' }"
+      :ui="{ content: 'max-w-6xl rounded-[2rem] overflow-hidden', body: 'p-0' }"
     >
       <template #body>
         <div class="bg-black">

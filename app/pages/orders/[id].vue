@@ -1,10 +1,10 @@
 <template>
-  <div class="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6 lg:py-10 xl:px-8">
+  <div class="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
     <UButton
       color="neutral"
       variant="ghost"
       to="/orders"
-      class="mb-6"
+      class="mb-6 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
     >
       <ArrowLeft class="size-4" />
       К заказам
@@ -14,8 +14,8 @@
       v-if="loading"
       class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]"
     >
-      <USkeleton class="h-96 rounded-lg" />
-      <USkeleton class="h-80 rounded-lg" />
+      <USkeleton class="h-96 rounded-[2rem]" />
+      <USkeleton class="h-80 rounded-[2rem]" />
     </div>
 
     <UAlert
@@ -24,6 +24,7 @@
       variant="soft"
       title="Заказ не найден"
       description="Проверьте номер заказа или войдите в нужный аккаунт."
+      class="rounded-3xl"
     />
 
     <div
@@ -32,7 +33,7 @@
     >
       <div class="space-y-6">
         <UCard
-          class="border border-[var(--shop-border)] bg-[var(--shop-surface)]"
+          class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
           :ui="{ body: 'p-5 sm:p-6' }"
         >
           <div class="flex flex-wrap items-start justify-between gap-4">
@@ -40,14 +41,14 @@
               <UBadge
                 color="primary"
                 variant="soft"
-                class="mb-4"
+                class="mb-4 rounded-full"
               >
                 Заказ №{{ order.id }}
               </UBadge>
-              <h1 class="text-3xl font-semibold tracking-normal text-[var(--shop-text)]">
+              <h1 class="text-3xl font-semibold tracking-normal text-zinc-950 dark:text-white">
                 Детали заказа
               </h1>
-              <p class="mt-2 text-sm text-[var(--shop-text-muted)]">
+              <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
                 Создан {{ formatDateTime(order.createdAt) }}
               </p>
             </div>
@@ -66,31 +67,31 @@
         </UCard>
 
         <UCard
-          class="border border-[var(--shop-border)] bg-[var(--shop-surface)]"
+          class="overflow-hidden rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
           :ui="{ body: 'p-0' }"
         >
-          <div class="border-b border-[var(--shop-border)] p-5 sm:p-6">
-            <h2 class="text-xl font-semibold text-[var(--shop-text)]">Состав заказа</h2>
+          <div class="p-5 sm:p-6">
+            <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Состав заказа</h2>
           </div>
-          <div class="divide-y divide-[var(--shop-border)]">
+          <div class="space-y-3 px-3 pb-3 sm:px-4 sm:pb-4">
             <div
               v-for="item in order.orderItems"
               :key="item.id"
-              class="grid gap-4 p-5 sm:grid-cols-[84px_minmax(0,1fr)_auto] sm:p-6"
+              class="grid gap-4 rounded-3xl bg-[#f9fafb] p-4 sm:grid-cols-[84px_minmax(0,1fr)_auto] dark:bg-zinc-800/60"
             >
               <img
-                :src="item.productMainImage || item.product?.mainImage"
+                :src="item.productMainImage || item.product?.mainImage || '/favicon.ico'"
                 :alt="item.productName"
-                class="size-20 rounded-lg object-cover"
+                class="size-20 rounded-2xl object-cover"
               >
               <div>
-                <p class="font-semibold text-[var(--shop-text)]">{{ item.productName }}</p>
-                <p class="mt-1 text-sm text-[var(--shop-text-muted)]">Арт. {{ item.productArticle }}</p>
-                <p class="mt-2 text-sm text-[var(--shop-text-muted)]">
+                <p class="font-semibold text-zinc-950 dark:text-white">{{ item.productName }}</p>
+                <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Арт. {{ item.productArticle }}</p>
+                <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
                   {{ item.quantity }} × {{ formatCurrency(item.price) }}
                 </p>
               </div>
-              <p class="text-lg font-semibold text-[var(--shop-text)] sm:text-right">
+              <p class="text-lg font-semibold text-zinc-950 sm:text-right dark:text-white">
                 {{ formatCurrency(item.lineTotal) }}
               </p>
             </div>
@@ -100,20 +101,20 @@
 
       <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
         <UCard
-          class="border border-[var(--shop-border)] bg-[var(--shop-surface)]"
+          class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
           :ui="{ body: 'p-5 sm:p-6' }"
         >
-          <h2 class="text-xl font-semibold text-[var(--shop-text)]">Итого</h2>
+          <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Итого</h2>
           <div class="mt-5 space-y-3 text-sm">
-            <div class="flex justify-between gap-4 text-[var(--shop-text-muted)]">
+            <div class="flex justify-between gap-4 text-zinc-500 dark:text-zinc-400">
               <span>Получение</span>
               <span>{{ order.obtainingMethod === "DELIVERY" ? "Доставка" : "Самовывоз" }}</span>
             </div>
-            <div class="flex justify-between gap-4 text-[var(--shop-text-muted)]">
+            <div class="flex justify-between gap-4 text-zinc-500 dark:text-zinc-400">
               <span>Оплата</span>
               <span>{{ order.paymentMethod === "ONLINE" ? "Онлайн" : "При получении" }}</span>
             </div>
-            <div class="flex justify-between gap-4 text-lg font-semibold text-[var(--shop-text)]">
+            <div class="flex justify-between gap-4 rounded-3xl bg-[#f9fafb] p-4 text-lg font-semibold text-zinc-950 dark:bg-zinc-800/60 dark:text-white">
               <span>Сумма</span>
               <span>{{ formatCurrency(order.payment?.amount) }}</span>
             </div>
@@ -122,12 +123,12 @@
 
         <UCard
           v-if="order.delivery"
-          class="border border-[var(--shop-border)] bg-[var(--shop-surface)]"
+          class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
           :ui="{ body: 'p-5 sm:p-6' }"
         >
-          <h2 class="text-xl font-semibold text-[var(--shop-text)]">Доставка</h2>
-          <div class="mt-4 space-y-2 text-sm leading-6 text-[var(--shop-text-muted)]">
-            <p class="font-medium text-[var(--shop-text)]">{{ order.delivery.address }}</p>
+          <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Доставка</h2>
+          <div class="mt-4 space-y-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
+            <p class="font-medium text-zinc-950 dark:text-white">{{ order.delivery.address }}</p>
             <p v-if="order.delivery.apartment">Квартира: {{ order.delivery.apartment }}</p>
             <p v-if="order.delivery.entrance">Подъезд: {{ order.delivery.entrance }}</p>
             <p v-if="order.delivery.floor">Этаж: {{ order.delivery.floor }}</p>

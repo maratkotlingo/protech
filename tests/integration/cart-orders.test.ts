@@ -15,6 +15,7 @@ import { prisma } from "../../server/utils/prisma";
 import { expireUnpaidOrders } from "../../server/utils/orderExpiry";
 
 const mockYooKassaPayments = new Map<string, unknown>();
+const mockYooKassaCreateRequests: Array<{ body: Record<string, unknown> }> = [];
 const mockYooKassaServer: Server = createServer((request, response) => {
   const url = request.url ?? "";
   const paymentId = url.startsWith("/v3/payments/")
@@ -27,6 +28,38 @@ const mockYooKassaServer: Server = createServer((request, response) => {
       "Content-Type": "application/json"
     });
     response.end(JSON.stringify(payment));
+    return;
+  }
+
+  if (request.method === "POST" && url === "/v3/payments") {
+    let rawBody = "";
+
+    request.setEncoding("utf8");
+    request.on("data", (chunk) => {
+      rawBody += chunk;
+    });
+    request.on("end", () => {
+      const body = JSON.parse(rawBody || "{}") as Record<string, unknown>;
+      const id = `mock-yookassa-${randomUUID()}`;
+      const payment = {
+        id,
+        status: "pending",
+        paid: false,
+        amount: body.amount,
+        confirmation: {
+          type: "redirect",
+          confirmation_url: `https://yookassa.test/payments/${id}`
+        },
+        metadata: body.metadata
+      };
+
+      mockYooKassaCreateRequests.push({ body });
+      mockYooKassaPayments.set(id, payment);
+      response.writeHead(200, {
+        "Content-Type": "application/json"
+      });
+      response.end(JSON.stringify(payment));
+    });
     return;
   }
 
@@ -47,6 +80,7 @@ process.env.ORDER_EXPIRY_JOB_DISABLED = "true";
 process.env.YOOKASSA_SHOP_ID = process.env.YOOKASSA_SHOP_ID || "test-shop";
 process.env.YOOKASSA_SECRET_KEY = process.env.YOOKASSA_SECRET_KEY || "test-secret";
 process.env.YOOKASSA_API_URL = `http://127.0.0.1:${mockYooKassaAddress.port}`;
+process.env.YOOKASSA_RETURN_URL = "http://localhost:3000/";
 
 await setup({
   server: true,
@@ -57,7 +91,8 @@ await setup({
     ORDER_EXPIRY_JOB_DISABLED: "true",
     YOOKASSA_SHOP_ID: process.env.YOOKASSA_SHOP_ID,
     YOOKASSA_SECRET_KEY: process.env.YOOKASSA_SECRET_KEY,
-    YOOKASSA_API_URL: process.env.YOOKASSA_API_URL
+    YOOKASSA_API_URL: process.env.YOOKASSA_API_URL,
+    YOOKASSA_RETURN_URL: process.env.YOOKASSA_RETURN_URL
   }
 });
 
@@ -252,6 +287,7 @@ async function getStockQuantity(productId: number) {
 
 afterEach(async () => {
   mockYooKassaPayments.clear();
+  mockYooKassaCreateRequests.length = 0;
   await cleanupTestData();
 });
 
@@ -392,6 +428,102 @@ describe("cart/order integration", () => {
       confirmationUrl: null
     });
     expect(await getStockQuantity(product.id)).toBe(3);
+  });
+
+  it("creates an online YooKassa payment with a return URL for the order", async () => {
+    const user = await createTestUser();
+    const product = await createTestProduct(5);
+
+    const response = await $fetch<{
+      order: {
+        id: number;
+        payment: {
+          paymentStatus: PaymentStatus;
+        };
+      };
+      payment: {
+        type: string;
+        confirmationUrl: string | null;
+      };
+    }>("/api/public/orders", {
+      method: "POST",
+      headers: user.headers,
+      body: {
+        obtainingMethod: "PICKUP",
+        paymentMethod: "ONLINE",
+        orderItems: [
+          {
+            productId: product.id,
+            quantity: 2
+          }
+        ]
+      }
+    });
+
+    const createRequest = mockYooKassaCreateRequests.at(-1);
+    const confirmation = createRequest?.body.confirmation as { return_url?: string } | undefined;
+
+    expect(response.payment.type).toBe("yookassa");
+    expect(response.payment.confirmationUrl).toMatch(/^https:\/\/yookassa\.test\/payments\//);
+    expect(response.order.payment.paymentStatus).toBe(PaymentStatus.PENDING);
+    expect(confirmation?.return_url).toBe(`http://localhost:3000/orders/${response.order.id}`);
+  });
+
+  it("syncs pending YooKassa payments when listing orders", async () => {
+    const user = await createTestUser();
+    const product = await createTestProduct(3);
+    const transactionId = `${testPrefix}-yk-${randomUUID()}`;
+
+    const order = await prisma.order.create({
+      data: {
+        userId: user.id,
+        obtainingMethod: "PICKUP",
+        paymentMethod: PaymentMethod.ONLINE,
+        orderStatus: OrderStatus.NEW,
+        stockReserved: false,
+        orderItems: {
+          create: createOrderItemData(product, 2)
+        },
+        payment: {
+          create: {
+            paymentStatus: PaymentStatus.PENDING,
+            amount: new Prisma.Decimal("200.00"),
+            transactionId
+          }
+        }
+      }
+    });
+
+    mockYooKassaPayments.set(transactionId, {
+      id: transactionId,
+      status: "succeeded",
+      paid: true,
+      amount: {
+        value: "200.00",
+        currency: "RUB"
+      },
+      metadata: {
+        orderId: String(order.id)
+      }
+    });
+
+    const orders = await $fetch<Array<{
+      id: number;
+      orderStatus: OrderStatus;
+      stockReserved: boolean;
+      payment: {
+        paymentStatus: PaymentStatus;
+      } | null;
+    }>>("/api/public/orders", {
+      headers: user.headers
+    });
+
+    const syncedOrder = orders.find((item) => item.id === order.id);
+
+    expect(syncedOrder?.orderStatus).toBe(OrderStatus.CONFIRMED);
+    expect(syncedOrder?.stockReserved).toBe(true);
+    expect(syncedOrder?.payment?.paymentStatus).toBe(PaymentStatus.PAID);
+    expect(await getStockQuantity(product.id)).toBe(1);
   });
 
   it("processes a successful YooKassa webhook", async () => {

@@ -33,7 +33,7 @@
             size="xl"
             type="email"
             autocomplete="email"
-            placeholder="admin@example.com"
+            placeholder="admin.demo@protech.local"
           >
             <template #leading>
               <Mail class="size-5 text-[var(--admin-text-muted)]" />

@@ -1,17 +1,17 @@
 <template>
-  <header class="sticky top-0 z-40 border-b border-[var(--shop-border)] bg-[var(--shop-surface-elevated)]/92 backdrop-blur-xl">
-    <div class="mx-auto flex h-20 w-full max-w-[1480px] items-center gap-4 px-4 sm:px-6 xl:px-8">
+  <header class="sticky top-0 z-40 bg-[#f9fafb]/90 shadow-sm shadow-zinc-950/5 backdrop-blur-xl dark:bg-zinc-950/85 dark:shadow-black/20">
+    <div class="mx-auto flex h-20 w-full max-w-370 items-center gap-4 px-4 sm:px-6 lg:px-8">
       <NuxtLink
         to="/"
         class="flex shrink-0 items-center gap-3"
         aria-label="На главную ProTech"
       >
-        <span class="grid size-11 place-items-center rounded-lg bg-[var(--shop-accent)] text-white shadow-lg shadow-green-900/15">
+        <span class="grid size-11 place-items-center rounded-2xl bg-emerald-600 text-white shadow-lg shadow-green-900/15">
           <Zap class="size-6" />
         </span>
         <span class="hidden leading-tight sm:block">
-          <span class="block text-lg font-semibold tracking-normal text-[var(--shop-text)]">ProTech</span>
-          <span class="block text-xs text-[var(--shop-text-muted)]">Техника и аксессуары</span>
+          <span class="block text-lg font-semibold tracking-normal text-zinc-950 dark:text-white">ProTech</span>
+          <span class="block text-xs text-zinc-500 dark:text-zinc-400">Техника и аксессуары</span>
         </span>
       </NuxtLink>
 
@@ -20,6 +20,7 @@
           color="neutral"
           variant="ghost"
           to="/"
+          class="rounded-full"
         >
           Каталог
         </UButton>
@@ -27,6 +28,7 @@
           color="neutral"
           variant="ghost"
           to="/orders"
+          class="rounded-full"
         >
           Заказы
         </UButton>
@@ -38,12 +40,14 @@
       >
         <UInput
           v-model="ui.catalog.search"
-          class="w-full"
+          class="w-full rounded-full bg-white shadow-sm shadow-zinc-950/5 dark:bg-zinc-900"
           size="lg"
+          variant="none"
           placeholder="Найти товар, бренд или артикул"
+          :ui="searchInputUi"
         >
           <template #leading>
-            <Search class="size-4 text-[var(--shop-text-muted)]" />
+            <Search class="size-4 text-zinc-400" />
           </template>
         </UInput>
       </form>
@@ -54,6 +58,7 @@
             color="neutral"
             variant="ghost"
             square
+            class="rounded-full"
             aria-label="Переключить тему"
             @click="ui.toggleTheme"
           >
@@ -77,7 +82,7 @@
             square
             to="/favorites"
             aria-label="Избранное"
-            class="relative"
+            class="relative rounded-full"
           >
             <Heart class="size-5" />
             <span
@@ -96,7 +101,7 @@
             square
             to="/cart"
             aria-label="Корзина"
-            class="relative"
+            class="relative rounded-full"
           >
             <ShoppingCart class="size-5" />
             <span
@@ -114,6 +119,7 @@
               color="neutral"
               variant="soft"
               to="/orders"
+              class="rounded-full"
             >
               <span
                 v-if="!auth.user.image"
@@ -134,6 +140,7 @@
                 color="neutral"
                 variant="ghost"
                 square
+                class="rounded-full"
                 :loading="auth.pending"
                 aria-label="Выйти"
                 @click="logout"
@@ -147,6 +154,7 @@
             color="primary"
             variant="solid"
             to="/auth"
+            class="rounded-full"
           >
             <UserRound class="size-4" />
             Войти
@@ -157,7 +165,7 @@
           color="neutral"
           variant="ghost"
           square
-          class="md:hidden"
+          class="rounded-full md:hidden"
           aria-label="Открыть меню"
           @click="openMobileMenu"
         >
@@ -175,10 +183,10 @@
         aria-label="Закрыть меню"
         @click="closeMobileMenu"
       />
-      <aside class="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-[var(--shop-border)] bg-[var(--shop-surface)] p-5 shadow-2xl">
+      <aside class="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col rounded-l-[2rem] bg-white p-5 shadow-2xl shadow-zinc-950/20 dark:bg-zinc-900">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="grid size-10 place-items-center rounded-lg bg-[var(--shop-accent)] text-white">
+            <span class="grid size-10 place-items-center rounded-2xl bg-emerald-600 text-white">
               <Zap class="size-5" />
             </span>
             <span class="font-semibold">ProTech</span>
@@ -187,6 +195,7 @@
             color="neutral"
             variant="ghost"
             square
+            class="rounded-full"
             aria-label="Закрыть меню"
             @click="closeMobileMenu"
           >
@@ -200,12 +209,14 @@
         >
           <UInput
             v-model="ui.catalog.search"
-            class="w-full"
+            class="w-full rounded-full bg-[#f9fafb] dark:bg-zinc-800"
             size="lg"
+            variant="none"
             placeholder="Поиск по каталогу"
+            :ui="searchInputUi"
           >
             <template #leading>
-              <Search class="size-4 text-[var(--shop-text-muted)]" />
+              <Search class="size-4 text-zinc-400" />
             </template>
           </UInput>
         </form>
@@ -215,7 +226,7 @@
             color="neutral"
             variant="ghost"
             to="/"
-            class="justify-start"
+            class="justify-start rounded-full"
             @click="closeMobileMenu"
           >
             <PackageSearch class="size-5" />
@@ -225,7 +236,7 @@
             color="neutral"
             variant="ghost"
             to="/favorites"
-            class="justify-start"
+            class="justify-start rounded-full"
             @click="closeMobileMenu"
           >
             <Heart class="size-5" />
@@ -235,7 +246,7 @@
             color="neutral"
             variant="ghost"
             to="/cart"
-            class="justify-start"
+            class="justify-start rounded-full"
             @click="closeMobileMenu"
           >
             <ShoppingCart class="size-5" />
@@ -245,7 +256,7 @@
             color="neutral"
             variant="ghost"
             to="/orders"
-            class="justify-start"
+            class="justify-start rounded-full"
             @click="closeMobileMenu"
           >
             <PackageCheck class="size-5" />
@@ -259,6 +270,7 @@
             color="neutral"
             variant="outline"
             block
+            class="rounded-full"
             :loading="auth.pending"
             @click="logout"
           >
@@ -270,6 +282,7 @@
             color="primary"
             block
             to="/auth"
+            class="rounded-full"
             @click="closeMobileMenu"
           >
             <UserRound class="size-4" />
@@ -296,6 +309,9 @@ const cart = useCartStore();
 const favorites = useFavoritesStore();
 const ui = useShopUiStore();
 const mobileOpen = ref(false);
+const searchInputUi = {
+  base: "h-11 rounded-full bg-transparent"
+};
 
 async function goToCatalog() {
   mobileOpen.value = false;

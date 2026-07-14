@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { hashPassword } from "better-auth/crypto";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import {
@@ -24,6 +25,8 @@ const pool = new Pool({ connectionString });
 const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
 const seedTag = "shop-demo-ozon";
+const demoAdminEmail = "admin.demo@protech.local";
+const demoAdminPassword = "ProTechAdmin123!";
 const rub = (value: number) => new Prisma.Decimal(value.toFixed(2));
 const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 const attrKey = (name: string, unit = "") => `${name}\u0000${unit}`;
@@ -862,21 +865,50 @@ async function upsertUsers() {
     orderBy: { createdAt: "asc" }
   });
 
-  const supportUser = admin ?? await prisma.user.upsert({
-    where: { email: "admin.demo@protech.local" },
+  const demoAdmin = await prisma.user.upsert({
+    where: { email: demoAdminEmail },
     update: {
       name: "Администратор ProTech",
       role: Role.ADMIN,
       emailVerified: true
     },
     create: {
-      email: "admin.demo@protech.local",
+      email: demoAdminEmail,
       name: "Администратор ProTech",
       role: Role.ADMIN,
       emailVerified: true
     }
   });
 
+  const adminPasswordHash = await hashPassword(demoAdminPassword);
+  const credentialAccount = await prisma.account.findFirst({
+    where: {
+      userId: demoAdmin.id,
+      providerId: "credential"
+    },
+    select: { id: true }
+  });
+
+  if (credentialAccount) {
+    await prisma.account.update({
+      where: { id: credentialAccount.id },
+      data: {
+        accountId: demoAdmin.id,
+        password: adminPasswordHash
+      }
+    });
+  } else {
+    await prisma.account.create({
+      data: {
+        accountId: demoAdmin.id,
+        providerId: "credential",
+        userId: demoAdmin.id,
+        password: adminPasswordHash
+      }
+    });
+  }
+
+  const supportUser = admin ?? demoAdmin;
   const customers = [];
 
   for (const user of demoUsers) {

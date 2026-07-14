@@ -196,6 +196,20 @@ export default defineEventHandler(async (event) => {
             quantity: true
           }
         },
+        productAttributes: {
+          select: {
+            id: true,
+            value: true,
+            attributeId: true,
+            attribute: {
+              select: {
+                id: true,
+                name: true,
+                unit: true
+              }
+            }
+          }
+        },
 
         _count: {
           select: {
@@ -237,7 +251,8 @@ export default defineEventHandler(async (event) => {
       category: product.category,
       stockQuantity: product.productStocks[0]?.quantity ?? 0,
       reviewsCount: product._count.reviews,
-      averageRating: ratingByProductId.get(product.id) ?? null
+      averageRating: ratingByProductId.get(product.id) ?? null,
+      productAttributes: product.productAttributes
     }));
   } catch {
     throw createError({

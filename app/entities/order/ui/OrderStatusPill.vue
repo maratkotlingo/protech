@@ -2,6 +2,7 @@
   <UBadge
     :color="color"
     variant="soft"
+    class="rounded-full px-3 py-1"
   >
     {{ label }}
   </UBadge>

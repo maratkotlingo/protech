@@ -30,7 +30,7 @@ export const useAuthStore = defineStore("shop-auth", {
       this.pending = true;
 
       try {
-        const data = await shopFetch<{ user: ShopUser }>("/api/public/auth/me");
+        const data = await shopFetch<{ user: ShopUser | null }>("/api/public/auth/me");
         this.user = data.user;
         return data.user;
       } catch {

@@ -1,53 +1,54 @@
 <template>
-  <div class="mx-auto grid min-h-[calc(100dvh-9rem)] w-full max-w-[1180px] items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1fr)] xl:px-8">
+  <div class="mx-auto grid min-h-[calc(100dvh-9rem)] w-full max-w-[1180px] items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1fr)] lg:px-8">
     <section class="hidden lg:block">
       <UBadge
         color="primary"
         variant="soft"
+        class="rounded-full"
       >
         Аккаунт покупателя
       </UBadge>
-      <h1 class="mt-5 text-5xl font-semibold tracking-normal text-[var(--shop-text)]">
+      <h1 class="mt-5 text-5xl font-semibold tracking-normal text-zinc-950 dark:text-white">
         Войдите, чтобы покупки стали удобнее
       </h1>
       <div class="mt-8 grid gap-4">
         <div
           v-for="item in benefits"
           :key="item.title"
-          class="flex gap-4"
+          class="flex gap-4 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
         >
-          <div class="grid size-11 shrink-0 place-items-center rounded-lg bg-[var(--shop-accent-soft)] text-[var(--shop-accent)]">
+          <div class="grid size-11 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
             <component
               :is="item.icon"
               class="size-5"
             />
           </div>
           <div>
-            <p class="font-semibold text-[var(--shop-text)]">{{ item.title }}</p>
-            <p class="mt-1 text-sm leading-6 text-[var(--shop-text-muted)]">{{ item.description }}</p>
+            <p class="font-semibold text-zinc-950 dark:text-white">{{ item.title }}</p>
+            <p class="mt-1 text-sm leading-6 text-zinc-500 dark:text-zinc-400">{{ item.description }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <UCard
-      class="border border-[var(--shop-border)] bg-[var(--shop-surface)] shadow-2xl shadow-green-950/10 dark:shadow-black/30"
+      class="rounded-[2rem] bg-white ring-0 shadow-2xl shadow-zinc-950/10 dark:bg-zinc-900 dark:shadow-black/30"
       :ui="{ body: 'p-6 sm:p-8' }"
     >
       <div class="mb-7">
-        <div class="grid grid-cols-2 rounded-lg bg-[var(--shop-surface-muted)] p-1">
+        <div class="grid grid-cols-2 rounded-full bg-[#f9fafb] p-1 dark:bg-zinc-800">
           <button
             type="button"
-            class="rounded-md px-4 py-2 text-sm font-medium transition"
-            :class="mode === 'login' ? 'bg-[var(--shop-surface)] text-[var(--shop-text)] shadow-sm' : 'text-[var(--shop-text-muted)]'"
+            class="rounded-full px-4 py-2 text-sm font-medium transition"
+            :class="mode === 'login' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:text-white' : 'text-zinc-500 dark:text-zinc-400'"
             @click="mode = 'login'"
           >
             Вход
           </button>
           <button
             type="button"
-            class="rounded-md px-4 py-2 text-sm font-medium transition"
-            :class="mode === 'register' ? 'bg-[var(--shop-surface)] text-[var(--shop-text)] shadow-sm' : 'text-[var(--shop-text-muted)]'"
+            class="rounded-full px-4 py-2 text-sm font-medium transition"
+            :class="mode === 'register' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:text-white' : 'text-zinc-500 dark:text-zinc-400'"
             @click="mode = 'register'"
           >
             Регистрация
@@ -67,13 +68,15 @@
         >
           <UInput
             v-model="form.name"
-            class="w-full"
+            class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
             size="xl"
+            variant="none"
             autocomplete="name"
             placeholder="Как к вам обращаться"
+            :ui="{ base: 'h-12 rounded-2xl bg-transparent' }"
           >
             <template #leading>
-              <UserRound class="size-5 text-[var(--shop-text-muted)]" />
+              <UserRound class="size-5 text-zinc-400" />
             </template>
           </UInput>
         </UFormField>
@@ -85,14 +88,16 @@
         >
           <UInput
             v-model="form.email"
-            class="w-full"
+            class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
             size="xl"
+            variant="none"
             type="email"
             autocomplete="email"
             placeholder="you@example.com"
+            :ui="{ base: 'h-12 rounded-2xl bg-transparent' }"
           >
             <template #leading>
-              <Mail class="size-5 text-[var(--shop-text-muted)]" />
+              <Mail class="size-5 text-zinc-400" />
             </template>
           </UInput>
         </UFormField>
@@ -104,14 +109,16 @@
         >
           <UInput
             v-model="form.password"
-            class="w-full"
+            class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
             size="xl"
+            variant="none"
             :type="showPassword ? 'text' : 'password'"
             autocomplete="current-password"
             placeholder="Минимум 8 символов"
+            :ui="{ base: 'h-12 rounded-2xl bg-transparent' }"
           >
             <template #leading>
-              <LockKeyhole class="size-5 text-[var(--shop-text-muted)]" />
+              <LockKeyhole class="size-5 text-zinc-400" />
             </template>
             <template #trailing>
               <UButton
@@ -119,6 +126,7 @@
                 variant="ghost"
                 size="sm"
                 square
+                class="rounded-full"
                 type="button"
                 :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
                 @click="togglePasswordVisibility"
@@ -145,6 +153,7 @@
           color="primary"
           size="xl"
           block
+          class="rounded-full"
           type="submit"
           :loading="auth.pending"
         >

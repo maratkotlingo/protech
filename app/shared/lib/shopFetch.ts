@@ -1,14 +1,21 @@
 type ShopFetchOptions = Omit<NonNullable<Parameters<typeof $fetch>[1]>, "headers"> & {
-  headers?: Record<string, string>;
+  forwardRequestHeaders?: boolean;
+  headers?: Record<string, string | undefined>;
 };
 
 export function shopFetch<T>(request: string, options: ShopFetchOptions = {}) {
+  const {
+    forwardRequestHeaders = true,
+    headers,
+    ...fetchOptions
+  } = options;
+
   return $fetch<T>(request, {
     credentials: "include",
-    ...options,
+    ...fetchOptions,
     headers: {
-      ...(import.meta.server ? useRequestHeaders(["cookie"]) : {}),
-      ...(options.headers ?? {})
+      ...(import.meta.server && forwardRequestHeaders ? useRequestHeaders(["cookie"]) : {}),
+      ...(headers ?? {})
     }
   });
 }
