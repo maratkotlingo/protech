@@ -61,7 +61,7 @@ export default defineNuxtConfig({
   },
   site: {
     ...(siteUrl ? { url: siteUrl } : {}),
-    name: "ProTech",
+    name: "ПроТех76",
     description: "Интернет-магазин техники, аксессуаров и комплектующих ProTech",
     defaultLocale: "ru"
   },

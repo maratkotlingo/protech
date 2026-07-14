@@ -5,11 +5,7 @@
     </NuxtLayout>
 
     <ClientOnly>
-      <Toaster
-        rich-colors
-        close-button
-        position="top-right"
-      />
+      <Toaster rich-colors close-button position="top-right" />
     </ClientOnly>
   </UApp>
 </template>
@@ -17,6 +13,6 @@
 <script setup lang="ts">
 useHead({
   title: "ProTech",
-  titleTemplate: (title) => title ? `${title} · ProTech` : "ProTech"
+  titleTemplate: (title) => title ? `${title} · ПроТех76` : "ПроТех76",
 });
 </script>
