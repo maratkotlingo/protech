@@ -24,7 +24,7 @@
         <div class="grid grid-cols-3 gap-3 text-center">
           <div>
             <p class="text-2xl font-semibold text-[var(--shop-text)]">{{ products.length }}</p>
-            <p class="text-xs text-[var(--shop-text-muted)]">на странице</p>
+            <p class="text-xs text-[var(--shop-text-muted)]">загружено</p>
           </div>
           <div>
             <p class="text-2xl font-semibold text-[var(--shop-text)]">{{ categories.length }}</p>
@@ -115,6 +115,69 @@
             v-model="ui.catalog.discountOnly"
             label="Только со скидкой"
           />
+
+          <div class="space-y-4 border-t border-[var(--shop-border)] pt-5">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-sm font-semibold text-[var(--shop-text)]">
+                Характеристики
+              </h3>
+              <UButton
+                v-if="ui.catalog.attributes.length"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                @click="ui.clearCatalogAttributeFilters"
+              >
+                Очистить
+              </UButton>
+            </div>
+
+            <div
+              v-if="attributesPending"
+              class="space-y-3"
+            >
+              <USkeleton
+                v-for="item in 3"
+                :key="item"
+                class="h-20 rounded-lg"
+              />
+            </div>
+
+            <div
+              v-else-if="attributes.length"
+              class="space-y-5"
+            >
+              <div
+                v-for="attribute in attributes"
+                :key="attribute.id"
+                class="space-y-2"
+              >
+                <p class="text-sm font-medium text-[var(--shop-text)]">
+                  {{ attribute.name }}<span v-if="attribute.unit">, {{ attribute.unit }}</span>
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="option in attribute.values"
+                    :key="`${attribute.id}-${option.value}`"
+                    size="xs"
+                    :color="ui.isCatalogAttributeSelected(attribute.id, option.value) ? 'primary' : 'neutral'"
+                    :variant="ui.isCatalogAttributeSelected(attribute.id, option.value) ? 'soft' : 'outline'"
+                    @click="toggleAttribute(attribute.id, option.value)"
+                  >
+                    {{ option.value }}
+                    <span class="text-[11px] opacity-70">{{ option.count }}</span>
+                  </UButton>
+                </div>
+              </div>
+            </div>
+
+            <p
+              v-else
+              class="text-sm leading-6 text-[var(--shop-text-muted)]"
+            >
+              Для текущего набора товаров нет дополнительных характеристик.
+            </p>
+          </div>
         </UCard>
       </aside>
 
@@ -122,7 +185,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p class="text-sm text-[var(--shop-text-muted)]">
-              Страница {{ page }}
+              Загружено {{ products.length }} товаров
             </p>
             <h2 class="text-2xl font-semibold text-[var(--shop-text)]">Карточки товаров</h2>
           </div>
@@ -130,7 +193,7 @@
             color="neutral"
             variant="outline"
             :loading="pending"
-            @click="refresh()"
+            @click="reloadProducts"
           >
             <RefreshCw class="size-4" />
             Обновить
@@ -186,25 +249,29 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between gap-3">
-          <UButton
-            color="neutral"
-            variant="outline"
-            :disabled="page <= 1 || pending"
-            @click="previousPage"
+        <div
+          ref="loadMoreTarget"
+          class="grid min-h-24 place-items-center py-4"
+        >
+          <div
+            v-if="loadingMore"
+            class="flex items-center gap-3 text-sm text-[var(--shop-text-muted)]"
           >
-            <ChevronLeft class="size-4" />
-            Назад
-          </UButton>
-          <UButton
-            color="primary"
-            variant="soft"
-            :disabled="!canGoNext || pending"
-            @click="nextPage"
+            <LoaderCircle class="size-5 animate-spin text-[var(--shop-accent)]" />
+            Подгружаю еще товары
+          </div>
+          <p
+            v-else-if="products.length && reachedEnd"
+            class="text-sm text-[var(--shop-text-muted)]"
           >
-            Вперед
-            <ChevronRight class="size-4" />
-          </UButton>
+            Все подходящие товары уже показаны
+          </p>
+          <p
+            v-else-if="products.length"
+            class="text-sm text-[var(--shop-text-muted)]"
+          >
+            Прокрутите ниже, чтобы увидеть больше
+          </p>
         </div>
       </div>
     </section>
@@ -212,16 +279,18 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronLeft, ChevronRight, PackageSearch, RefreshCw, Search } from "@lucide/vue";
-import { watchDebounced } from "@vueuse/core";
+import { LoaderCircle, PackageSearch, RefreshCw, Search } from "@lucide/vue";
+import { useIntersectionObserver, watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import { buildQuery, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
 import { shopFetch } from "~~/app/shared/lib/shopFetch";
-import type { Category, ProductCardItem } from "~~/app/shared/types/shop";
+import type { AttributeFilter, Category, ProductCardItem } from "~~/app/shared/types/shop";
 import { useAuthStore } from "~~/app/stores/auth";
 import { useCartStore } from "~~/app/stores/cart";
 import { useFavoritesStore } from "~~/app/stores/favorites";
 import { useShopUiStore } from "~~/app/stores/shopUi";
+
+const PRODUCT_PAGE_SIZE = 20;
 
 useSeoMeta({
   title: "Каталог товаров",
@@ -237,38 +306,54 @@ const favorites = useFavoritesStore();
 const ui = useShopUiStore();
 const page = ref(1);
 const debouncedSearch = ref(ui.catalog.search);
-
-watchDebounced(
-  () => ui.catalog.search,
-  (value) => {
-    debouncedSearch.value = value;
-    page.value = 1;
-  },
-  { debounce: 350, maxWait: 1000 }
-);
-
-watch(
-  () => [
-    ui.catalog.categoryId,
-    ui.catalog.sort,
-    ui.catalog.minPrice,
-    ui.catalog.maxPrice,
-    ui.catalog.discountOnly
-  ],
-  () => {
-    page.value = 1;
-  }
-);
-
-const productQuery = computed(() => buildQuery({
-  page: page.value,
+const products = ref<ProductCardItem[]>([]);
+const pending = ref(false);
+const loadingMore = ref(false);
+const reachedEnd = ref(false);
+const error = shallowRef<unknown>(null);
+const loadMoreTarget = ref<HTMLElement | null>(null);
+const requestVersion = ref(0);
+const attributeSelectionKey = computed(() => JSON.stringify(ui.catalog.attributes));
+const filterSignature = computed(() => JSON.stringify({
   search: debouncedSearch.value,
   categoryId: ui.catalog.categoryId,
   sort: ui.catalog.sort,
   minPrice: ui.catalog.minPrice,
   maxPrice: ui.catalog.maxPrice,
-  discountOnly: ui.catalog.discountOnly ? 1 : null
+  discountOnly: ui.catalog.discountOnly,
+  attributes: ui.catalog.attributes
 }));
+
+watchDebounced(
+  () => ui.catalog.search,
+  (value) => {
+    debouncedSearch.value = value;
+  },
+  { debounce: 350, maxWait: 1000 }
+);
+
+watch(
+  () => ui.catalog.categoryId,
+  () => {
+    ui.clearCatalogAttributeFilters();
+  }
+);
+
+watch(filterSignature, () => {
+  void fetchProducts({ reset: true });
+});
+
+useIntersectionObserver(
+  loadMoreTarget,
+  ([entry]) => {
+    if (entry?.isIntersecting) {
+      void fetchProducts({ reset: false });
+    }
+  },
+  {
+    rootMargin: "640px 0px"
+  }
+);
 
 const { data: categoriesData } = await useAsyncData(
   "shop-categories",
@@ -276,18 +361,21 @@ const { data: categoriesData } = await useAsyncData(
   { default: () => [] }
 );
 
-const { data: productsData, pending, error, refresh } = await useAsyncData(
-  "shop-products",
-  () => shopFetch<ProductCardItem[]>(`/api/public/product${productQuery.value}`),
+const attributeQuery = computed(() => buildQuery({
+  categoryId: ui.catalog.categoryId
+}));
+
+const { data: attributesData, pending: attributesPending } = await useAsyncData(
+  "shop-product-attributes",
+  () => shopFetch<AttributeFilter[]>(`/api/public/product/attributes${attributeQuery.value}`),
   {
-    watch: [productQuery],
+    watch: [attributeQuery],
     default: () => []
   }
 );
 
 const categories = computed(() => categoriesData.value ?? []);
-const products = computed(() => productsData.value ?? []);
-const canGoNext = computed(() => products.value.length === 20);
+const attributes = computed(() => attributesData.value ?? []);
 const favoriteProductIds = computed(() => favorites.productIds);
 const categoryItems = computed(() => [
   { label: "Все категории", value: null },
@@ -302,6 +390,68 @@ const sortItems = [
   { label: "Сначала дороже", value: "price_desc" },
   { label: "Сначала старые", value: "oldest" }
 ];
+
+await fetchProducts({ reset: true });
+
+function buildProductsQuery(pageNumber: number) {
+  return buildQuery({
+    page: pageNumber,
+    search: debouncedSearch.value,
+    categoryId: ui.catalog.categoryId,
+    sort: ui.catalog.sort,
+    minPrice: ui.catalog.minPrice,
+    maxPrice: ui.catalog.maxPrice,
+    discountOnly: ui.catalog.discountOnly ? 1 : null,
+    attributes: attributeSelectionKey.value === "[]" ? null : attributeSelectionKey.value
+  });
+}
+
+async function fetchProducts(options: { reset: boolean }) {
+  if (!options.reset && (pending.value || loadingMore.value || reachedEnd.value)) {
+    return;
+  }
+
+  const nextPage = options.reset ? 1 : page.value + 1;
+  const currentVersion = requestVersion.value + 1;
+  requestVersion.value = currentVersion;
+
+  if (options.reset) {
+    pending.value = true;
+    reachedEnd.value = false;
+  } else {
+    loadingMore.value = true;
+  }
+
+  try {
+    const items = await shopFetch<ProductCardItem[]>(`/api/public/product${buildProductsQuery(nextPage)}`);
+
+    if (requestVersion.value !== currentVersion) {
+      return;
+    }
+
+    products.value = options.reset ? items : [...products.value, ...items];
+    page.value = nextPage;
+    reachedEnd.value = items.length < PRODUCT_PAGE_SIZE;
+    error.value = null;
+  } catch (err) {
+    if (requestVersion.value === currentVersion) {
+      error.value = err;
+    }
+  } finally {
+    if (requestVersion.value === currentVersion) {
+      pending.value = false;
+      loadingMore.value = false;
+    }
+  }
+}
+
+async function reloadProducts() {
+  await fetchProducts({ reset: true });
+}
+
+function toggleAttribute(attributeId: number, value: string) {
+  ui.toggleCatalogAttribute(attributeId, value);
+}
 
 async function requireAuth() {
   if (auth.user || await auth.fetchMe()) {
@@ -341,14 +491,5 @@ async function toggleFavorite(product: ProductCardItem) {
 
 function resetFilters() {
   ui.resetCatalogFilters();
-  page.value = 1;
-}
-
-function previousPage() {
-  page.value -= 1;
-}
-
-function nextPage() {
-  page.value += 1;
 }
 </script>

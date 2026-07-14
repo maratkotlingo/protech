@@ -33,7 +33,7 @@
       </nav>
 
       <form
-        class="hidden min-w-0 flex-1 md:block"
+        class="hidden w-full max-w-md min-w-0 md:block xl:max-w-lg"
         @submit.prevent="goToCatalog"
       >
         <UInput
