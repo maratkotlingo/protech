@@ -269,6 +269,7 @@
 <script setup lang="ts">
 import { Pencil, Plus, RefreshCw, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
 import type { Attribute, Category } from "~~/app/shared/types/admin";
@@ -309,8 +310,8 @@ let confirmedAction: (() => Promise<void>) | null = null;
 
 const { data, pending, error, refresh } = await useAsyncData("admin-catalog-dictionaries", async () => {
   const [categories, attributes] = await Promise.all([
-    $fetch<Category[]>("/api/admin/categories"),
-    $fetch<Attribute[]>("/api/admin/products/attributes")
+    adminFetch<Category[]>("/api/admin/categories"),
+    adminFetch<Attribute[]>("/api/admin/products/attributes")
   ]);
 
   return { categories, attributes };

@@ -404,6 +404,7 @@ import {
   orderStatusLabels,
   paymentMethodLabels
 } from "~~/app/shared/lib/adminFormatters";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { useAdminFiltersStore } from "~~/app/stores/adminFilters";
 import type {
   CategoryAnalyticsResponse,
@@ -458,11 +459,11 @@ const dashboardQuery = computed(() => buildQuery({
 
 const { data, pending, error, refresh } = await useAsyncData("admin-analytics-bundle", async () => {
   const [dashboard, sales, products, inventory, categories] = await Promise.all([
-    $fetch<DashboardStatsResponse>(`/api/admin/dashboard/stats${dashboardQuery.value}`),
-    $fetch<SalesAnalyticsResponse>(`/api/admin/analytics/sales${analyticsQuery.value}`),
-    $fetch<ProductAnalyticsResponse>(`/api/admin/analytics/products${analyticsQuery.value}`),
-    $fetch<InventoryAnalyticsResponse>(`/api/admin/analytics/inventory${analyticsQuery.value}`),
-    $fetch<CategoryAnalyticsResponse>(`/api/admin/analytics/categories${analyticsQuery.value}`)
+    adminFetch<DashboardStatsResponse>(`/api/admin/dashboard/stats${dashboardQuery.value}`),
+    adminFetch<SalesAnalyticsResponse>(`/api/admin/analytics/sales${analyticsQuery.value}`),
+    adminFetch<ProductAnalyticsResponse>(`/api/admin/analytics/products${analyticsQuery.value}`),
+    adminFetch<InventoryAnalyticsResponse>(`/api/admin/analytics/inventory${analyticsQuery.value}`),
+    adminFetch<CategoryAnalyticsResponse>(`/api/admin/analytics/categories${analyticsQuery.value}`)
   ]);
 
   return {

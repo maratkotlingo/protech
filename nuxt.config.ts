@@ -11,7 +11,9 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
     "@vueuse/nuxt",
-    "vue-sonner/nuxt"
+    "vue-sonner/nuxt",
+    '@formkit/auto-animate/nuxt',
+    "@nuxtjs/seo"
   ],
   css: ["./app/assets/css/main.css"],
   components: [

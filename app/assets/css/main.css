@@ -43,10 +43,11 @@
 
 html {
   background: var(--admin-surface-muted);
+  overflow-x: hidden;
 }
 
 body {
-  min-width: 320px;
+  overflow-x: hidden;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--admin-accent) 8%, transparent), transparent 26rem),
     var(--admin-surface-muted);

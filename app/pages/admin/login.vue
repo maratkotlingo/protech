@@ -105,6 +105,7 @@ import { Eye, EyeOff, LockKeyhole, LogIn, Mail, ShieldCheck } from "@lucide/vue"
 import { z } from "zod";
 import { toast } from "vue-sonner";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import type { AdminUser } from "~~/app/shared/types/admin";
 
@@ -152,11 +153,12 @@ async function login() {
   try {
     await $fetch("/api/auth/sign-in/email", {
       method: "POST",
+      credentials: "include",
       body: parsed.data
     });
 
-    await $fetch<{ user: AdminUser }>("/api/admin/me");
-    await $fetch("/api/admin/auth/login-audit", { method: "POST" }).catch(() => undefined);
+    await adminFetch<{ user: AdminUser }>("/api/admin/me");
+    await adminFetch("/api/admin/auth/login-audit", { method: "POST" }).catch(() => undefined);
     toast.success("Добро пожаловать в админ-панель");
     await navigateTo(redirectTo.value, { replace: true });
   } catch (error) {

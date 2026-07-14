@@ -193,6 +193,7 @@ import {
   paymentMethodLabels,
   paymentStatusLabels
 } from "~~/app/shared/lib/adminFormatters";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { useAdminFiltersStore } from "~~/app/stores/adminFilters";
 import type {
   OrderListItem,
@@ -221,7 +222,7 @@ const query = computed(() => buildQuery({
 
 const { data: ordersData, pending, error, refresh } = await useAsyncData(
   "admin-orders-list",
-  () => $fetch<PaginatedResponse<OrderListItem>>(`/api/admin/orders${query.value}`),
+  () => adminFetch<PaginatedResponse<OrderListItem>>(`/api/admin/orders${query.value}`),
   { watch: [query] }
 );
 

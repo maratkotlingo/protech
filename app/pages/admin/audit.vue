@@ -66,7 +66,10 @@
       class="overflow-hidden border border-[var(--admin-border)] bg-[var(--admin-surface)]"
       :ui="{ body: 'p-0' }"
     >
-      <div class="overflow-x-auto">
+      <div
+        v-if="logs.length"
+        class="overflow-x-auto"
+      >
         <table class="w-full min-w-[920px] divide-y divide-[var(--admin-border)] text-sm">
           <thead class="bg-[var(--admin-surface-muted)]">
             <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
@@ -147,6 +150,7 @@
 <script setup lang="ts">
 import { RefreshCw, ScrollText, Search } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { buildQuery, formatDate, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import type { AuditAction, AuditLogItem, PaginatedResponse } from "~~/app/shared/types/admin";
 
@@ -199,7 +203,7 @@ const query = computed(() => buildQuery({
 
 const { data: auditData, pending, error, refresh } = await useAsyncData(
   "admin-audit-list",
-  () => $fetch<AuditResponse>(`/api/admin/audit${query.value}`),
+  () => adminFetch<AuditResponse>(`/api/admin/audit${query.value}`),
   { watch: [query] }
 );
 

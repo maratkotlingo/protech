@@ -142,7 +142,10 @@
         </div>
       </div>
 
-      <div class="overflow-x-auto">
+      <div
+        v-if="products.length"
+        class="overflow-x-auto"
+      >
         <table class="w-full min-w-[980px] divide-y divide-[var(--admin-border)] text-sm">
           <thead class="bg-[var(--admin-surface-muted)]">
             <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
@@ -320,6 +323,7 @@ import {
   formatDate,
   getErrorMessage
 } from "~~/app/shared/lib/adminFormatters";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { downloadCsv } from "~~/app/shared/lib/csvExport";
 import { useAdminFiltersStore } from "~~/app/stores/adminFilters";
 import type {
@@ -379,8 +383,8 @@ const productsQuery = computed(() => buildQuery({
 
 const { data: dictionaries, refresh: refreshDictionaries } = await useAsyncData("admin-product-dictionaries", async () => {
   const [categories, attributes] = await Promise.all([
-    $fetch<Category[]>("/api/admin/categories"),
-    $fetch<Attribute[]>("/api/admin/products/attributes")
+    adminFetch<Category[]>("/api/admin/categories"),
+    adminFetch<Attribute[]>("/api/admin/products/attributes")
   ]);
 
   return { categories, attributes };
@@ -388,7 +392,7 @@ const { data: dictionaries, refresh: refreshDictionaries } = await useAsyncData(
 
 const { data: productsData, pending, error, refresh } = await useAsyncData(
   "admin-products-list",
-  () => $fetch<PaginatedResponse<ProductListItem>>(`/api/admin/products${productsQuery.value}`),
+  () => adminFetch<PaginatedResponse<ProductListItem>>(`/api/admin/products${productsQuery.value}`),
   { watch: [productsQuery] }
 );
 

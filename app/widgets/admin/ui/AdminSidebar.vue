@@ -2,7 +2,7 @@
   <aside
     :class="[
       'flex h-full flex-col border-r border-[var(--admin-border)] bg-[var(--admin-surface-elevated)] transition-all duration-200',
-      collapsed ? 'w-24' : 'w-[21rem]'
+      collapsed ? 'w-24' : fluid ? 'w-full max-w-[21rem]' : 'w-[21rem]'
     ]"
   >
     <div class="flex h-24 items-center gap-4 border-b border-[var(--admin-border)] px-5">
@@ -54,7 +54,10 @@
       </UTooltip>
     </nav>
 
-    <div class="border-t border-[var(--admin-border)] p-4">
+    <div
+      v-if="showCollapse"
+      class="border-t border-[var(--admin-border)] p-4"
+    >
       <UButton
         color="neutral"
         variant="ghost"
@@ -93,6 +96,8 @@ import { useAdminUiStore } from "~~/app/stores/adminUi";
 
 const props = defineProps<{
   collapsed?: boolean;
+  fluid?: boolean;
+  showCollapse?: boolean;
 }>();
 
 defineEmits<{
@@ -122,4 +127,6 @@ function isActive(path: string) {
 }
 
 const collapsed = computed(() => props.collapsed ?? false);
+const fluid = computed(() => props.fluid ?? false);
+const showCollapse = computed(() => props.showCollapse ?? true);
 </script>

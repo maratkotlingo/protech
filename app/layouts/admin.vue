@@ -66,8 +66,12 @@
           aria-label="Закрыть меню"
           @click="mobileMenuOpen = false"
         />
-        <div class="relative h-full w-[21rem] shadow-2xl">
-          <AdminSidebar @navigate="mobileMenuOpen = false" />
+        <div class="relative h-full w-full max-w-[21rem] shadow-2xl">
+          <AdminSidebar
+            fluid
+            :show-collapse="false"
+            @navigate="mobileMenuOpen = false"
+          />
         </div>
       </div>
 
@@ -88,13 +92,16 @@
 
 <script setup lang="ts">
 import { LoaderCircle, LockKeyhole } from "@lucide/vue";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { useAdminUiStore } from "~~/app/stores/adminUi";
 import type { AdminUser } from "~~/app/shared/types/admin";
 
 const ui = useAdminUiStore();
 const mobileMenuOpen = ref(false);
 
-const { data, pending, error, refresh } = await useAsyncData("admin-me", () => $fetch<{ user: AdminUser }>("/api/admin/me"));
+const { data, pending, error, refresh } = await useAsyncData("admin-me", () =>
+  adminFetch<{ user: AdminUser }>("/api/admin/me")
+);
 
 onMounted(() => {
   ui.hydrateColorMode();

@@ -133,7 +133,10 @@
       class="overflow-hidden border border-[var(--admin-border)] bg-[var(--admin-surface)]"
       :ui="{ body: 'p-0' }"
     >
-      <div class="overflow-x-auto">
+      <div
+        v-if="filteredStocks.length"
+        class="overflow-x-auto"
+      >
         <table class="w-full min-w-[780px] divide-y divide-[var(--admin-border)] text-sm">
           <thead class="bg-[var(--admin-surface-muted)]">
             <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
@@ -232,6 +235,7 @@
 import { CircleOff, Download, PackagePlus, PackageX, RefreshCw, Save, Search, Warehouse } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { formatDate, formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { downloadCsv } from "~~/app/shared/lib/csvExport";
 import { getZodFieldErrors } from "~~/app/shared/lib/zodValidation";
 import type { ProductStock } from "~~/app/shared/types/admin";
@@ -250,7 +254,7 @@ const bulkArrivalQuantity = ref<number | null>(1);
 const bulkArrivalReason = ref("");
 const draftQuantities = reactive<Record<number, number>>({});
 
-const { data, pending, error, refresh } = await useAsyncData("admin-product-stocks", () => $fetch<ProductStock[]>("/api/admin/products/stock"));
+const { data, pending, error, refresh } = await useAsyncData("admin-product-stocks", () => adminFetch<ProductStock[]>("/api/admin/products/stock"));
 
 const stocks = computed(() => data.value ?? []);
 const lowStockCount = computed(() => stocks.value.filter((stock) => stock.quantity > 0 && stock.quantity <= 5).length);

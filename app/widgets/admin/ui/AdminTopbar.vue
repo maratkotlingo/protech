@@ -105,6 +105,7 @@
 <script setup lang="ts">
 import { LogOut, Menu, Monitor, Moon, Sun } from "@lucide/vue";
 import { toast } from "vue-sonner";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { useAdminUiStore } from "~~/app/stores/adminUi";
 import type { AdminUser } from "~~/app/shared/types/admin";
 
@@ -146,8 +147,11 @@ async function logout() {
   loggingOut.value = true;
 
   try {
-    await $fetch("/api/admin/auth/logout-audit", { method: "POST" }).catch(() => undefined);
-    await $fetch("/api/auth/sign-out", { method: "POST" });
+    await adminFetch("/api/admin/auth/logout-audit", { method: "POST" }).catch(() => undefined);
+    await $fetch("/api/auth/sign-out", {
+      method: "POST",
+      credentials: "include"
+    });
     clearNuxtData("admin-me");
     toast.success("Вы вышли из админ-панели");
     await navigateTo("/admin/login", { replace: true });

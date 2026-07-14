@@ -381,6 +381,7 @@
 <script setup lang="ts">
 import { CheckCircle2, CircleOff, Download, MessageSquareText, Pencil, Plus, RefreshCw, Star, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { buildQuery, formatDate, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { downloadCsv } from "~~/app/shared/lib/csvExport";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
@@ -434,7 +435,7 @@ const query = computed(() => buildQuery({
 
 const { data: reviewsData, pending, error, refresh } = await useAsyncData(
   "admin-reviews-list",
-  () => $fetch<PaginatedResponse<ReviewListItem>>(`/api/admin/reviews${query.value}`),
+  () => adminFetch<PaginatedResponse<ReviewListItem>>(`/api/admin/reviews${query.value}`),
   { watch: [query] }
 );
 
