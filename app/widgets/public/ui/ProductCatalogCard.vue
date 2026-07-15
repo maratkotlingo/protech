@@ -45,16 +45,17 @@
       </UTooltip>
 
       <UButton
-        color="neutral"
-        variant="solid"
-        icon="i-lucide-shopping-bag"
+        :color="inCart ? 'error' : 'neutral'"
+        :variant="inCart ? 'soft' : 'solid'"
+        :icon="cartButtonIcon"
         size="lg"
         class="absolute inset-x-4 bottom-4 justify-center rounded-full opacity-100 shadow-lg shadow-zinc-950/15 transition duration-300 sm:translate-y-3 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 sm:group-focus-within:translate-y-0 sm:group-focus-within:opacity-100"
-        :disabled="isOutOfStock(product)"
+        :class="inCart ? 'bg-red-50/95 text-red-700 hover:bg-red-100 dark:bg-red-950/80 dark:text-red-200 dark:hover:bg-red-950' : ''"
+        :disabled="!inCart && isOutOfStock(product)"
         :loading="loadingCart"
-        @click="onAddToCart"
+        @click="onToggleCart"
       >
-        {{ isOutOfStock(product) ? "Ожидается" : "В корзину" }}
+        {{ cartButtonLabel }}
       </UButton>
     </div>
 
@@ -115,7 +116,7 @@
 
       <div class="mt-4 flex items-center justify-between gap-3 text-xs text-zinc-400">
         <span v-if="product.article">Арт. {{ product.article }}</span>
-        <span class="ml-auto">{{ stockLabel(product) }}</span>
+        <span class="ml-auto">{{ inCart ? `В корзине ${cartQuantity} шт.` : stockLabel(product) }}</span>
       </div>
     </div>
   </article>
@@ -135,18 +136,29 @@ import type { ProductCardItem } from "~~/app/shared/types/shop";
 
 const props = defineProps<{
   favorite?: boolean;
+  inCart?: boolean;
+  cartQuantity?: number;
   loadingCart?: boolean;
   loadingFavorite?: boolean;
   product: ProductCardItem;
 }>();
 
 const emit = defineEmits<{
-  addToCart: [product: ProductCardItem];
+  toggleCart: [product: ProductCardItem];
   toggleFavorite: [product: ProductCardItem];
 }>();
 
-function onAddToCart() {
-  emit("addToCart", props.product);
+const cartButtonIcon = computed(() => props.inCart ? "i-lucide-trash-2" : "i-lucide-shopping-bag");
+const cartButtonLabel = computed(() => {
+  if (props.inCart) {
+    return "Удалить из корзины";
+  }
+
+  return isOutOfStock(props.product) ? "Ожидается" : "В корзину";
+});
+
+function onToggleCart() {
+  emit("toggleCart", props.product);
 }
 
 function onToggleFavorite() {

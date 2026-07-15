@@ -8,13 +8,6 @@
         Живой каталог из вашей базы.
       </h1>
     </div>
-
-    <div class="flex items-center gap-3 rounded-full bg-white px-4 py-3 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900">
-      <span class="text-sm text-zinc-500 dark:text-zinc-400">В корзине</span>
-      <span class="grid size-8 place-items-center rounded-full bg-zinc-950 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">
-        {{ cartTotal }}
-      </span>
-    </div>
   </section>
 </template>
 

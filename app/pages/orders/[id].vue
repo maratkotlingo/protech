@@ -1,21 +1,34 @@
 <template>
-  <div class="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-    <UButton
-      color="neutral"
-      variant="ghost"
-      to="/orders"
-      class="mb-6 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-    >
-      <ArrowLeft class="size-4" />
-      К заказам
-    </UButton>
+  <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+    <div class="mb-6 flex flex-wrap items-center gap-3">
+      <UButton
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-arrow-left"
+        to="/orders"
+        class="rounded-full bg-white/90 px-4 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-[1.02] dark:bg-zinc-950/80"
+      >
+        К заказам
+      </UButton>
+
+      <UButton
+        v-if="order"
+        color="primary"
+        variant="soft"
+        icon="i-lucide-maximize-2"
+        class="rounded-full px-4 transition duration-300 hover:scale-[1.02]"
+        @click="openDetailsModal"
+      >
+        Открыть окно
+      </UButton>
+    </div>
 
     <div
       v-if="loading"
-      class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]"
+      class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]"
     >
+      <USkeleton class="h-[34rem] rounded-[2rem]" />
       <USkeleton class="h-96 rounded-[2rem]" />
-      <USkeleton class="h-80 rounded-[2rem]" />
     </div>
 
     <UAlert
@@ -29,29 +42,27 @@
 
     <div
       v-else
-      class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]"
+      class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]"
     >
       <div class="space-y-6">
-        <UCard
-          class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-          :ui="{ body: 'p-5 sm:p-6' }"
-        >
-          <div class="flex flex-wrap items-start justify-between gap-4">
+        <section class="rounded-[2rem] bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8 dark:bg-zinc-950/80 dark:shadow-black/25">
+          <div class="flex flex-wrap items-start justify-between gap-5">
             <div>
-              <UBadge
-                color="primary"
-                variant="soft"
-                class="mb-4 rounded-full"
-              >
+              <p class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200">
+                <UIcon
+                  name="i-lucide-receipt-text"
+                  class="size-4"
+                />
                 Заказ №{{ order.id }}
-              </UBadge>
-              <h1 class="text-3xl font-semibold tracking-normal text-zinc-950 dark:text-white">
+              </p>
+              <h1 class="mt-4 text-4xl font-semibold tracking-normal text-zinc-950 sm:text-5xl dark:text-white">
                 Детали заказа
               </h1>
-              <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+              <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
                 Создан {{ formatDateTime(order.createdAt) }}
               </p>
             </div>
+
             <div class="flex flex-wrap gap-2">
               <OrderStatusPill
                 type="order"
@@ -64,99 +75,163 @@
               />
             </div>
           </div>
-        </UCard>
 
-        <UCard
-          class="overflow-hidden rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-          :ui="{ body: 'p-0' }"
-        >
-          <div class="p-5 sm:p-6">
-            <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Состав заказа</h2>
-          </div>
-          <div class="space-y-3 px-3 pb-3 sm:px-4 sm:pb-4">
+          <div class="mt-8 grid gap-3 md:grid-cols-3">
             <div
+              v-for="metric in detailMetrics"
+              :key="metric.label"
+              class="rounded-[1.5rem] bg-[#f9fafb] p-4 dark:bg-zinc-900/80"
+            >
+              <div class="flex items-center justify-between gap-4">
+                <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ metric.label }}</p>
+                <UIcon
+                  :name="metric.icon"
+                  class="size-5 text-zinc-400"
+                />
+              </div>
+              <p class="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">{{ metric.value }}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6 dark:bg-zinc-950/80 dark:shadow-black/20">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-semibold tracking-normal text-zinc-950 dark:text-white">Маршрут заказа</h2>
+              <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Ключевые этапы обработки и получения.</p>
+            </div>
+            <UIcon
+              name="i-lucide-route"
+              class="size-6 text-zinc-400"
+            />
+          </div>
+
+          <div
+            v-auto-animate
+            class="mt-6 grid gap-3 md:grid-cols-4"
+          >
+            <div
+              v-for="step in timelineSteps"
+              :key="step.label"
+              class="rounded-[1.5rem] p-4"
+              :class="step.active ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100' : 'bg-[#f9fafb] text-zinc-500 dark:bg-zinc-900/80 dark:text-zinc-400'"
+            >
+              <UIcon
+                :name="step.icon"
+                class="size-5"
+              />
+              <p class="mt-3 text-sm font-semibold">{{ step.label }}</p>
+              <p class="mt-1 text-xs leading-5 opacity-80">{{ step.text }}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6 dark:bg-zinc-950/80 dark:shadow-black/20">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-semibold tracking-normal text-zinc-950 dark:text-white">Состав заказа</h2>
+              <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ order.orderItems.length }} позиций в заказе.</p>
+            </div>
+            <UBadge
+              color="neutral"
+              variant="soft"
+              class="rounded-full bg-[#f3f4f6] px-3 py-1.5 dark:bg-zinc-900"
+            >
+              {{ formatCurrency(order.payment?.amount) }}
+            </UBadge>
+          </div>
+
+          <div
+            v-auto-animate
+            class="mt-6 space-y-3"
+          >
+            <OrderLineItem
               v-for="item in order.orderItems"
               :key="item.id"
-              class="grid gap-4 rounded-3xl bg-[#f9fafb] p-4 sm:grid-cols-[84px_minmax(0,1fr)_auto] dark:bg-zinc-800/60"
-            >
-              <img
-                :src="item.productMainImage || item.product?.mainImage || '/favicon.ico'"
-                :alt="item.productName"
-                class="size-20 rounded-2xl object-cover"
-              >
-              <div>
-                <p class="font-semibold text-zinc-950 dark:text-white">{{ item.productName }}</p>
-                <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Арт. {{ item.productArticle }}</p>
-                <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                  {{ item.quantity }} × {{ formatCurrency(item.price) }}
-                </p>
-              </div>
-              <p class="text-lg font-semibold text-zinc-950 sm:text-right dark:text-white">
-                {{ formatCurrency(item.lineTotal) }}
-              </p>
-            </div>
+              :item="item"
+            />
           </div>
-        </UCard>
+        </section>
       </div>
 
-      <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
-        <UCard
-          class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-          :ui="{ body: 'p-5 sm:p-6' }"
-        >
-          <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Итого</h2>
-          <div class="mt-5 space-y-3 text-sm">
-            <div class="flex justify-between gap-4 text-zinc-500 dark:text-zinc-400">
-              <span>Получение</span>
-              <span>{{ order.obtainingMethod === "DELIVERY" ? "Доставка" : "Самовывоз" }}</span>
-            </div>
-            <div class="flex justify-between gap-4 text-zinc-500 dark:text-zinc-400">
-              <span>Оплата</span>
-              <span>{{ order.paymentMethod === "ONLINE" ? "Онлайн" : "При получении" }}</span>
-            </div>
-            <div class="flex justify-between gap-4 rounded-3xl bg-[#f9fafb] p-4 text-lg font-semibold text-zinc-950 dark:bg-zinc-800/60 dark:text-white">
-              <span>Сумма</span>
-              <span>{{ formatCurrency(order.payment?.amount) }}</span>
-            </div>
-          </div>
-        </UCard>
-
-        <UCard
-          v-if="order.delivery"
-          class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-          :ui="{ body: 'p-5 sm:p-6' }"
-        >
-          <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Доставка</h2>
-          <div class="mt-4 space-y-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
-            <p class="font-medium text-zinc-950 dark:text-white">{{ order.delivery.address }}</p>
-            <p v-if="order.delivery.apartment">Квартира: {{ order.delivery.apartment }}</p>
-            <p v-if="order.delivery.entrance">Подъезд: {{ order.delivery.entrance }}</p>
-            <p v-if="order.delivery.floor">Этаж: {{ order.delivery.floor }}</p>
-            <p v-if="order.delivery.intercom">Домофон: {{ order.delivery.intercom }}</p>
-            <p v-if="order.delivery.comment">Комментарий: {{ order.delivery.comment }}</p>
-          </div>
-        </UCard>
-      </aside>
+      <OrderSummaryPanel :order="order" />
     </div>
+
+    <OrderDetailsModal
+      v-model:open="detailsOpen"
+      :order="order"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { formatCurrency, formatDateTime, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
 import { shopFetch } from "~~/app/shared/lib/shopFetch";
-import type { ShopOrder } from "~~/app/shared/types/shop";
+import type { OrderStatus, ShopOrder } from "~~/app/shared/types/shop";
 import { useAuthStore } from "~~/app/stores/auth";
 
 const route = useRoute();
 const auth = useAuthStore();
 const order = ref<ShopOrder | null>(null);
 const loading = ref(true);
+const detailsOpen = ref(false);
 
 useSeoMeta({
   title: () => order.value ? `Заказ №${order.value.id}` : "Заказ",
   description: "Детальная информация о заказе ProTech."
+});
+
+const detailMetrics = computed(() => {
+  if (!order.value) return [];
+
+  return [
+    {
+      icon: "i-lucide-package",
+      label: "Позиций",
+      value: `${order.value.orderItems.length}`
+    },
+    {
+      icon: "i-lucide-truck",
+      label: "Получение",
+      value: order.value.obtainingMethod === "DELIVERY" ? "Доставка" : "Самовывоз"
+    },
+    {
+      icon: "i-lucide-badge-russian-ruble",
+      label: "Сумма",
+      value: formatCurrency(order.value.payment?.amount)
+    }
+  ];
+});
+const timelineSteps = computed(() => {
+  const status = order.value?.orderStatus;
+
+  return [
+    {
+      active: isStepActive(status, ["NEW", "CONFIRMED", "PROCESSING", "SHIPPED", "COMPLETED"]),
+      icon: "i-lucide-sparkles",
+      label: "Создан",
+      text: "Заказ принят системой."
+    },
+    {
+      active: isStepActive(status, ["CONFIRMED", "PROCESSING", "SHIPPED", "COMPLETED"]),
+      icon: "i-lucide-check-check",
+      label: "Подтвержден",
+      text: "Мы проверили состав."
+    },
+    {
+      active: isStepActive(status, ["PROCESSING", "SHIPPED", "COMPLETED"]),
+      icon: "i-lucide-loader-circle",
+      label: "В работе",
+      text: "Готовим товары."
+    },
+    {
+      active: isStepActive(status, ["SHIPPED", "COMPLETED"]),
+      icon: "i-lucide-truck",
+      label: "Передан",
+      text: "Заказ движется к получению."
+    }
+  ];
 });
 
 onMounted(async () => {
@@ -175,4 +250,12 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+function isStepActive(status: OrderStatus | undefined, activeStatuses: OrderStatus[]) {
+  return Boolean(status && activeStatuses.includes(status));
+}
+
+function openDetailsModal() {
+  detailsOpen.value = true;
+}
 </script>

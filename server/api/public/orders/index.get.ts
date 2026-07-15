@@ -1,6 +1,7 @@
 import { PaymentStatus } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
 import type { H3Event } from "h3";
+import { attachOrderStatusHistory, getOrderStatusHistoryAuditLogs } from "~~/server/utils/orderStatusHistory";
 import { syncYooKassaPaymentStatus } from "~~/server/utils/yookassaPaymentStatus";
 
 const orderInclude = {
@@ -77,5 +78,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  return orders;
+  const statusAuditLogs = await getOrderStatusHistoryAuditLogs(orders);
+
+  return attachOrderStatusHistory(orders, statusAuditLogs);
 });

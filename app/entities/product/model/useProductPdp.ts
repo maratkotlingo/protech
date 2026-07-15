@@ -30,9 +30,10 @@ export function useProductPdp() {
   const quantity = ref(1);
   const selectedSize = ref("");
   const selectedColor = ref("");
-  const cartAdded = ref(false);
+  const queuedCartQuantity = ref<number | null>(null);
+  const quantityUpdateInFlight = ref(false);
   const productId = computed(() => Number(route.params.id));
-  let cartSuccessTimer: ReturnType<typeof setTimeout> | undefined;
+  let quantityUpdateTimer: ReturnType<typeof setTimeout> | undefined;
 
   const { data: product, pending, error, refresh } = useAsyncData(
     () => `shop-product-${productId.value}`,
@@ -55,6 +56,11 @@ export function useProductPdp() {
   const colorOptions = computed(() => product.value ? productColorValues(product.value) : []);
   const discountValue = computed(() => product.value ? discountPercent(product.value) : 0);
   const isFavorite = computed(() => product.value ? favorites.productIds.includes(product.value.id) : false);
+  const cartItem = computed(() => product.value
+    ? cart.items.find((item) => item.product.id === product.value?.id) ?? null
+    : null);
+  const isInCart = computed(() => Boolean(cartItem.value));
+  const cartQuantity = computed(() => cartItem.value?.quantity ?? 0);
   const averageRating = computed(() => {
     const reviews = product.value?.reviews ?? [];
 
@@ -65,8 +71,14 @@ export function useProductPdp() {
     return reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
   });
   const averageRatingLabel = computed(() => averageRating.value ? averageRating.value.toFixed(1) : "—");
-  const cartButtonIcon = computed(() => cartAdded.value ? "i-lucide-check" : "i-lucide-shopping-bag");
-  const cartButtonLabel = computed(() => stockQuantity.value <= 0 ? "Нет в наличии" : cartAdded.value ? "Добавлено" : "Добавить в корзину");
+  const cartButtonIcon = computed(() => isInCart.value ? "i-lucide-trash-2" : "i-lucide-shopping-bag");
+  const cartButtonLabel = computed(() => {
+    if (isInCart.value) {
+      return "Удалить из корзины";
+    }
+
+    return stockQuantity.value <= 0 ? "Нет в наличии" : "Добавить в корзину";
+  });
   const cartSyncing = computed(() => product.value ? cart.syncingProductId === product.value.id : false);
   const favoriteSyncing = computed(() => product.value ? favorites.syncingProductId === product.value.id : false);
   const productErrorDescription = computed(() => getErrorMessage(error.value, "Не удалось загрузить карточку товара"));
@@ -110,7 +122,28 @@ export function useProductPdp() {
     };
   });
 
-  watch(stockQuantity, normalizeQuantity);
+  watch(stockQuantity, () => {
+    if (!isInCart.value) {
+      normalizeQuantity();
+    }
+  });
+  watch(productId, () => {
+    clearQueuedCartQuantity();
+    quantity.value = 1;
+  });
+  watch(
+    [() => product.value?.id, cartQuantity],
+    () => {
+      if (queuedCartQuantity.value !== null || quantityUpdateInFlight.value) {
+        return;
+      }
+
+      if (cartQuantity.value > 0) {
+        quantity.value = cartQuantity.value;
+      }
+    },
+    { immediate: true }
+  );
   watch(sizeOptions, (options) => {
     if (!options.some((option) => option.value === selectedSize.value)) {
       selectedSize.value = options[0]?.value ?? "";
@@ -122,14 +155,33 @@ export function useProductPdp() {
     }
   }, { immediate: true });
 
-  onBeforeUnmount(() => {
-    if (cartSuccessTimer) {
-      clearTimeout(cartSuccessTimer);
+  onMounted(async () => {
+    const user = auth.user ?? await auth.fetchMe();
+
+    if (user) {
+      await cart.fetchCart();
     }
   });
 
+  onBeforeUnmount(() => {
+    clearQueuedCartQuantity();
+  });
+
+  function clearQueuedCartQuantity() {
+    if (quantityUpdateTimer) {
+      clearTimeout(quantityUpdateTimer);
+      quantityUpdateTimer = undefined;
+    }
+
+    queuedCartQuantity.value = null;
+  }
+
+  function normalizeQuantityValue(value: number | string) {
+    return Math.min(Math.max(Number(value) || 1, 1), maxQuantity.value);
+  }
+
   function normalizeQuantity() {
-    quantity.value = Math.min(Math.max(Number(quantity.value) || 1, 1), maxQuantity.value);
+    quantity.value = normalizeQuantityValue(quantity.value);
   }
 
   async function requireAuth() {
@@ -143,31 +195,103 @@ export function useProductPdp() {
   }
 
   async function addToCart() {
-    if (!product.value || stockQuantity.value <= 0 || !await requireAuth()) {
+    if (!product.value || !await requireAuth()) {
       return;
     }
 
-    normalizeQuantity();
+    if (isInCart.value) {
+      try {
+        clearQueuedCartQuantity();
+        await cart.remove(product.value.id);
+        quantity.value = 1;
+        toast.success("Товар удален из корзины");
+      } catch (err) {
+        toast.error(getErrorMessage(err, "Не удалось удалить товар из корзины"));
+      }
+
+      return;
+    }
+
+    if (stockQuantity.value <= 0) {
+      return;
+    }
+
+    const requestedQuantity = normalizeQuantityValue(quantity.value);
+    quantity.value = requestedQuantity;
+
+    if (requestedQuantity > 1) {
+      queuedCartQuantity.value = requestedQuantity;
+    }
 
     try {
       await cart.add(product.value.id);
 
-      if (quantity.value > 1) {
-        await cart.updateQuantity(product.value.id, quantity.value);
+      if (requestedQuantity > 1) {
+        try {
+          await cart.updateQuantity(product.value.id, requestedQuantity);
+        } catch (err) {
+          quantity.value = cartQuantity.value || 1;
+          toast.error(getErrorMessage(err, "Товар добавлен, но не удалось обновить количество"));
+          return;
+        }
       }
 
-      cartAdded.value = true;
       toast.success("Товар добавлен в корзину");
-
-      if (cartSuccessTimer) {
-        clearTimeout(cartSuccessTimer);
-      }
-
-      cartSuccessTimer = setTimeout(() => {
-        cartAdded.value = false;
-      }, 1800);
     } catch (err) {
       toast.error(getErrorMessage(err, "Не удалось добавить товар в корзину"));
+    } finally {
+      if (queuedCartQuantity.value === requestedQuantity) {
+        queuedCartQuantity.value = null;
+      }
+    }
+  }
+
+  async function updateCartQuantity(nextQuantity: number) {
+    if (!product.value || !isInCart.value || !await requireAuth()) {
+      return;
+    }
+
+    const normalizedQuantity = normalizeQuantityValue(nextQuantity);
+    quantity.value = normalizedQuantity;
+    queuedCartQuantity.value = normalizedQuantity;
+
+    if (quantityUpdateTimer) {
+      clearTimeout(quantityUpdateTimer);
+    }
+
+    quantityUpdateTimer = setTimeout(() => {
+      void flushCartQuantityUpdate();
+    }, 260);
+  }
+
+  async function flushCartQuantityUpdate() {
+    if (!product.value || !isInCart.value || queuedCartQuantity.value === null || quantityUpdateInFlight.value) {
+      return;
+    }
+
+    const targetQuantity = queuedCartQuantity.value;
+    quantityUpdateInFlight.value = true;
+
+    try {
+      await cart.updateQuantity(product.value.id, targetQuantity);
+    } catch (err) {
+      quantity.value = cartQuantity.value || 1;
+      queuedCartQuantity.value = null;
+      toast.error(getErrorMessage(err, "Не удалось обновить количество"));
+    } finally {
+      quantityUpdateInFlight.value = false;
+
+      if (queuedCartQuantity.value === targetQuantity) {
+        queuedCartQuantity.value = null;
+      } else if (queuedCartQuantity.value !== null) {
+        if (quantityUpdateTimer) {
+          clearTimeout(quantityUpdateTimer);
+        }
+
+        quantityUpdateTimer = setTimeout(() => {
+          void flushCartQuantityUpdate();
+        }, 0);
+      }
     }
   }
 
@@ -189,7 +313,6 @@ export function useProductPdp() {
     averageRating,
     averageRatingLabel,
     brandName,
-    cartAdded,
     cartButtonIcon,
     cartButtonLabel,
     cartSyncing,
@@ -198,6 +321,7 @@ export function useProductPdp() {
     error,
     favoriteSyncing,
     isFavorite,
+    isInCart,
     maxQuantity,
     pending,
     product,
@@ -211,6 +335,7 @@ export function useProductPdp() {
     sizeOptions,
     stockQuantity,
     stockStatus,
-    toggleFavorite
+    toggleFavorite,
+    updateCartQuantity
   };
 }

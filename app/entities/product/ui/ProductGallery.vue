@@ -3,11 +3,13 @@
     <div
       class="group relative overflow-hidden rounded-4xl bg-[#f9fafb] p-2 shadow-[0_24px_80px_rgba(15,23,42,0.07)] dark:bg-zinc-900/70 dark:shadow-black/25">
       <div class="relative overflow-hidden rounded-[1.65rem] bg-white dark:bg-zinc-950">
-        <Transition mode="out-in" enter-active-class="transition duration-300 ease-out"
+        <Transition
+mode="out-in" enter-active-class="transition duration-300 ease-out"
           enter-from-class="opacity-0 scale-[1.015]" enter-to-class="opacity-100 scale-100"
           leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100"
           leave-to-class="opacity-0 scale-[0.985]">
-          <img :key="activeImage.url" :src="activeImage.url" :alt="alt"
+          <img
+:key="activeImage.url" :src="activeImage.url" :alt="alt"
             class="aspect-square w-full bg-zinc-100 object-cover dark:bg-zinc-900 md:aspect-4/4">
         </Transition>
 
@@ -20,20 +22,23 @@
         </div>
 
         <UTooltip text="Открыть полноэкранно">
-          <UButton color="neutral" variant="soft" icon="i-lucide-expand" size="lg" square
+          <UButton
+color="neutral" variant="soft" icon="i-lucide-expand" size="lg" square
             class="absolute right-4 top-4 rounded-full bg-white/90 shadow-lg shadow-zinc-950/10 backdrop-blur-xl transition duration-300 hover:scale-105 dark:bg-zinc-950/75"
             aria-label="Открыть фото полноэкранно" @click="openZoom" />
         </UTooltip>
 
         <div v-if="imageItems.length > 1" class="absolute bottom-4 right-4 flex gap-2">
           <UTooltip text="Предыдущее фото">
-            <UButton color="neutral" variant="soft" icon="i-lucide-chevron-left" size="lg" square
+            <UButton
+color="neutral" variant="soft" icon="i-lucide-chevron-left" size="lg" square
               class="rounded-full bg-white/90 shadow-lg shadow-zinc-950/10 backdrop-blur-xl transition duration-300 hover:scale-105 dark:bg-zinc-950/75"
               aria-label="Предыдущее фото" @click="previous" />
           </UTooltip>
 
           <UTooltip text="Следующее фото">
-            <UButton color="neutral" variant="soft" icon="i-lucide-chevron-right" size="lg" square
+            <UButton
+color="neutral" variant="soft" icon="i-lucide-chevron-right" size="lg" square
               class="rounded-full bg-white/90 shadow-lg shadow-zinc-950/10 backdrop-blur-xl transition duration-300 hover:scale-105 dark:bg-zinc-950/75"
               aria-label="Следующее фото" @click="next" />
           </UTooltip>
@@ -42,7 +47,8 @@
     </div>
 
     <div v-if="imageItems.length > 1" v-auto-animate class="flex gap-3 overflow-x-auto px-1 pb-2">
-      <button v-for="(image, index) in imageItems" :key="image.url"
+      <button
+v-for="(image, index) in imageItems" :key="image.url"
         class="shrink-0 rounded-2xl bg-[#f9fafb] p-1.5 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
         :class="index === selectedIndex ? 'scale-[1.04] bg-emerald-50 ring-4 ring-emerald-100 dark:bg-emerald-950/30 dark:ring-emerald-900/70' : 'ring-4 ring-transparent'"
         type="button" :aria-label="`Открыть фото ${index + 1}`" @click="selectedIndex = index">
@@ -55,10 +61,12 @@
         <div class="relative bg-zinc-950">
           <img :src="activeImage.url" :alt="alt" class="max-h-[84dvh] w-full object-contain">
           <div v-if="imageItems.length > 1" class="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4">
-            <UButton color="neutral" variant="soft" icon="i-lucide-chevron-left" size="xl" square
+            <UButton
+color="neutral" variant="soft" icon="i-lucide-chevron-left" size="xl" square
               class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
               aria-label="Предыдущее фото" @click="previous" />
-            <UButton color="neutral" variant="soft" icon="i-lucide-chevron-right" size="xl" square
+            <UButton
+color="neutral" variant="soft" icon="i-lucide-chevron-right" size="xl" square
               class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
               aria-label="Следующее фото" @click="next" />
           </div>

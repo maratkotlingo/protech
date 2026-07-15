@@ -20,9 +20,11 @@
       :key="product.id"
       :product="product"
       :favorite="favoriteProductIds.includes(product.id)"
+      :in-cart="Boolean(cartItemByProductId(product.id))"
+      :cart-quantity="cartItemByProductId(product.id)?.quantity ?? 0"
       :loading-favorite="syncingFavoriteProductId === product.id"
       :loading-cart="syncingCartProductId === product.id"
-      @add-to-cart="$emit('addToCart', $event)"
+      @toggle-cart="$emit('toggleCart', $event)"
       @toggle-favorite="$emit('toggleFavorite', $event)"
     />
   </div>
@@ -47,9 +49,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductCardItem } from "~~/app/shared/types/shop";
+import type { CartItem, ProductCardItem } from "~~/app/shared/types/shop";
 
-defineProps<{
+const props = defineProps<{
+  cartItems: CartItem[];
   favoriteProductIds: number[];
   pending: boolean;
   products: ProductCardItem[];
@@ -58,7 +61,11 @@ defineProps<{
 }>();
 
 defineEmits<{
-  addToCart: [product: ProductCardItem];
+  toggleCart: [product: ProductCardItem];
   toggleFavorite: [product: ProductCardItem];
 }>();
+
+function cartItemByProductId(productId: number) {
+  return props.cartItems.find((item) => item.product.id === productId);
+}
 </script>

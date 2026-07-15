@@ -15,10 +15,18 @@ export default defineEventHandler(async (event) => {
           select: {
             id: true,
             name: true,
+            article: true,
+            description: true,
             currentPrice: true,
             oldPrice: true,
             mainImage: true,
             isActive: true,
+            category: {
+              select: {
+                id: true,
+                name: true
+              }
+            },
             productStocks: {
               select: {
                 quantity: true
@@ -64,9 +72,12 @@ export default defineEventHandler(async (event) => {
       product: {
         id: item.product.id,
         name: item.product.name,
+        article: item.product.article,
+        description: item.product.description,
         currentPrice: item.product.currentPrice,
         oldPrice: item.product.oldPrice,
         mainImage: item.product.mainImage,
+        category: item.product.category,
         isActive: item.product.isActive,
         stockQuantity: item.product.productStocks[0]?.quantity ?? 0,
         reviewsCount: item.product._count.reviews,

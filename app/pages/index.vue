@@ -37,12 +37,13 @@
       />
 
       <ProductCatalogGrid
+        :cart-items="cart.items"
         :favorite-product-ids="favorites.productIds"
         :pending="pending"
         :products="products"
         :syncing-cart-product-id="cart.syncingProductId"
         :syncing-favorite-product-id="favorites.syncingProductId"
-        @add-to-cart="addToCart"
+        @toggle-cart="toggleCart"
         @toggle-favorite="toggleFavorite"
       />
 
@@ -70,6 +71,9 @@
       :attributes-pending="attributesPending"
       :price-max="priceMax"
       :price-min="priceMin"
+      :price-range-max="priceRangeMax"
+      :price-range-min="priceRangeMin"
+      :price-range-pending="priceRangePending"
       :selected-attributes="ui.catalog.attributes"
       @clear="clearAllFilters"
       @set-max-price="setMaxPrice"
@@ -92,7 +96,6 @@ useSeoMeta({
 
 const {
   activeDrawerFilterCount,
-  addToCart,
   attributes,
   attributesPending,
   cart,
@@ -111,6 +114,9 @@ const {
   priceMax,
   priceMin,
   priceRange,
+  priceRangeMax,
+  priceRangeMin,
+  priceRangePending,
   products,
   productCatalogSortOptions,
   reachedEnd,
@@ -119,6 +125,7 @@ const {
   setMaxPrice,
   setMinPrice,
   toggleAttribute,
+  toggleCart,
   toggleFavorite,
   ui
 } = await useProductCatalog();

@@ -1,134 +1,108 @@
 <template>
-  <div class="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-    <section class="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="max-w-3xl">
-        <UBadge
+  <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+    <section class="rounded-[2rem] bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8 dark:bg-zinc-950/80 dark:shadow-black/25">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div class="max-w-3xl">
+          <p class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200">
+            <UIcon
+              name="i-lucide-package-check"
+              class="size-4"
+            />
+            История
+          </p>
+          <h1 class="mt-4 text-4xl font-semibold tracking-normal text-zinc-950 sm:text-5xl dark:text-white">
+            Мои заказы
+          </h1>
+          <p class="mt-4 max-w-2xl text-base leading-7 text-zinc-500 dark:text-zinc-400">
+            Статусы, оплата, получение и состав заказов собраны в одном спокойном интерфейсе.
+          </p>
+        </div>
+
+        <UButton
           color="primary"
-          variant="soft"
-          class="rounded-full"
+          icon="i-lucide-layout-grid"
+          to="/"
+          size="lg"
+          class="rounded-full px-5 transition duration-300 hover:scale-[1.02]"
         >
-          История
-        </UBadge>
-        <h1 class="mt-2 text-3xl font-semibold tracking-normal text-zinc-950 sm:text-4xl dark:text-white">Мои заказы</h1>
-        <p class="mt-3 max-w-2xl text-zinc-500 dark:text-zinc-400">Статусы, оплата, доставка и состав заказов.</p>
+          В каталог
+        </UButton>
       </div>
-      <UButton
-        color="neutral"
-        variant="ghost"
-        to="/"
-        class="rounded-full bg-white px-5 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-      >
-        В каталог
-      </UButton>
+
+      <div class="mt-8 grid gap-3 md:grid-cols-4">
+        <div
+          v-for="metric in orderMetrics"
+          :key="metric.label"
+          class="rounded-[1.5rem] bg-[#f9fafb] p-4 dark:bg-zinc-900/80"
+        >
+          <div class="flex items-center justify-between gap-4">
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ metric.label }}</p>
+            <UIcon
+              :name="metric.icon"
+              class="size-5 text-zinc-400"
+            />
+          </div>
+          <p class="mt-2 text-2xl font-semibold text-zinc-950 dark:text-white">{{ metric.value }}</p>
+        </div>
+      </div>
     </section>
 
     <div
       v-if="loading"
-      class="space-y-4"
+      class="mt-8 space-y-4"
     >
       <USkeleton
         v-for="item in 3"
         :key="item"
-        class="h-40 rounded-3xl"
+        class="h-56 rounded-[2rem]"
       />
     </div>
 
-    <div
+    <OrderEmptyState
       v-else-if="!auth.user"
-      class="grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-    >
-      <div>
-        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
-          <PackageCheck class="size-7" />
-        </div>
-        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Войдите, чтобы увидеть заказы</h2>
-        <UButton
-          class="mt-5 rounded-full"
-          color="primary"
-          to="/auth?redirect=/orders"
-        >
-          Войти
-        </UButton>
-      </div>
-    </div>
+      class="mt-8"
+      icon="i-lucide-package-check"
+      title="Войдите, чтобы увидеть заказы"
+      description="После входа здесь появятся статусы, оплата и состав ваших заказов."
+      action-label="Войти"
+      action-icon="i-lucide-user-round"
+      action-to="/auth?redirect=/orders"
+    />
 
-    <div
+    <OrderEmptyState
       v-else-if="!orders.length"
-      class="grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-    >
-      <div>
-        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
-          <PackageCheck class="size-7" />
-        </div>
-        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Заказов пока нет</h2>
-        <UButton
-          class="mt-5 rounded-full"
-          color="primary"
-          to="/"
-        >
-          Начать покупки
-        </UButton>
-      </div>
-    </div>
+      class="mt-8"
+      icon="i-lucide-shopping-bag"
+      title="Заказов пока нет"
+      description="Начните с каталога: добавьте товары в корзину и оформите первый заказ."
+      action-label="Начать покупки"
+      action-icon="i-lucide-layout-grid"
+      action-to="/"
+    />
 
     <div
       v-else
       v-auto-animate
-      class="space-y-4"
+      class="mt-8 space-y-4"
     >
-      <UCard
+      <OrderCard
         v-for="order in orders"
         :key="order.id"
-        class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-zinc-950/10 dark:bg-zinc-900 dark:shadow-black/20 dark:hover:shadow-black/30"
-        :ui="{ body: 'p-5 sm:p-6' }"
-      >
-        <div class="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <NuxtLink
-              :to="`/orders/${order.id}`"
-              class="text-xl font-semibold text-zinc-950 transition hover:text-emerald-700 dark:text-white dark:hover:text-emerald-300"
-            >
-              Заказ №{{ order.id }}
-            </NuxtLink>
-            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ formatDateTime(order.createdAt) }}</p>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <OrderStatusPill
-              type="order"
-              :value="order.orderStatus"
-            />
-            <OrderStatusPill
-              v-if="order.payment"
-              type="payment"
-              :value="order.payment.paymentStatus"
-            />
-          </div>
-        </div>
-
-        <div class="mt-5 flex flex-wrap items-center justify-between gap-4">
-          <div class="flex -space-x-3">
-            <img
-              v-for="item in order.orderItems.slice(0, 4)"
-              :key="item.id"
-              :src="item.productMainImage || item.product?.mainImage || '/favicon.ico'"
-              :alt="item.productName"
-              class="size-12 rounded-full border-2 border-white object-cover dark:border-zinc-900"
-            >
-          </div>
-          <div class="text-right">
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ order.orderItems.length }} позиций</p>
-            <p class="text-xl font-semibold text-zinc-950 dark:text-white">{{ formatCurrency(order.payment?.amount) }}</p>
-          </div>
-        </div>
-      </UCard>
+        :order="order"
+        @open-details="openOrderDetails"
+      />
     </div>
+
+    <OrderDetailsModal
+      v-model:open="detailsOpen"
+      :order="selectedOrder"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { PackageCheck } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import { formatCurrency, formatDateTime, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
+import { formatCurrency, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
 import { shopFetch } from "~~/app/shared/lib/shopFetch";
 import type { ShopOrder } from "~~/app/shared/types/shop";
 import { useAuthStore } from "~~/app/stores/auth";
@@ -141,6 +115,33 @@ useSeoMeta({
 const auth = useAuthStore();
 const orders = ref<ShopOrder[]>([]);
 const loading = ref(true);
+const selectedOrder = ref<ShopOrder | null>(null);
+const detailsOpen = ref(false);
+const orderMetrics = computed(() => [
+  {
+    icon: "i-lucide-package-check",
+    label: "Всего",
+    value: `${orders.value.length}`
+  },
+  {
+    icon: "i-lucide-loader-circle",
+    label: "В работе",
+    value: `${activeOrdersCount.value}`
+  },
+  {
+    icon: "i-lucide-circle-check",
+    label: "Завершено",
+    value: `${completedOrdersCount.value}`
+  },
+  {
+    icon: "i-lucide-badge-russian-ruble",
+    label: "Сумма",
+    value: formatCurrency(ordersTotal.value)
+  }
+]);
+const activeOrdersCount = computed(() => orders.value.filter((order) => !["COMPLETED", "CANCELLED"].includes(order.orderStatus)).length);
+const completedOrdersCount = computed(() => orders.value.filter((order) => order.orderStatus === "COMPLETED").length);
+const ordersTotal = computed(() => orders.value.reduce((sum, order) => sum + Number(order.payment?.amount ?? 0), 0));
 
 onMounted(async () => {
   const user = auth.user ?? await auth.fetchMe();
@@ -158,4 +159,9 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+function openOrderDetails(order: ShopOrder) {
+  selectedOrder.value = order;
+  detailsOpen.value = true;
+}
 </script>

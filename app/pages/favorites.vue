@@ -1,27 +1,62 @@
 <template>
   <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-    <section class="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="max-w-3xl">
-        <UBadge
-          color="primary"
-          variant="soft"
-          class="rounded-full"
-        >
-          Подборка
-        </UBadge>
-        <h1 class="mt-2 text-3xl font-semibold tracking-normal text-zinc-950 sm:text-4xl dark:text-white">Избранное</h1>
-        <p class="mt-3 max-w-2xl text-zinc-500 dark:text-zinc-400">
-          Сохраненные товары для быстрого возвращения к покупке.
-        </p>
+    <section class="overflow-hidden rounded-[2rem] bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8 dark:bg-zinc-950/80 dark:shadow-black/25">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div class="max-w-3xl">
+          <p class="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1.5 text-sm font-semibold text-rose-700 dark:bg-rose-950/40 dark:text-rose-200">
+            <UIcon
+              name="i-lucide-heart"
+              class="size-4 fill-current"
+            />
+            Подборка
+          </p>
+          <h1 class="mt-4 text-4xl font-semibold tracking-normal text-zinc-950 sm:text-5xl dark:text-white">
+            Избранное
+          </h1>
+          <p class="mt-4 max-w-2xl text-base leading-7 text-zinc-500 dark:text-zinc-400">
+            Сохраняйте товары, сравнивайте варианты и возвращайтесь к покупке, когда удобно.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-3 sm:flex-row lg:justify-end">
+          <UButton
+            color="primary"
+            icon="i-lucide-layout-grid"
+            to="/"
+            size="lg"
+            class="rounded-full px-5 transition duration-300 hover:scale-[1.02]"
+          >
+            В каталог
+          </UButton>
+          <UButton
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-shopping-bag"
+            to="/cart"
+            size="lg"
+            class="rounded-full bg-[#f3f4f6] px-5 transition duration-300 hover:scale-[1.02] dark:bg-zinc-900"
+          >
+            Корзина
+          </UButton>
+        </div>
       </div>
-      <UButton
-        color="neutral"
-        variant="ghost"
-        to="/"
-        class="rounded-full bg-white px-5 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-      >
-        В каталог
-      </UButton>
+
+      <div class="mt-8 grid gap-3 sm:grid-cols-3">
+        <div
+          v-for="metric in metrics"
+          :key="metric.label"
+          class="rounded-[1.5rem] bg-[#f9fafb] p-4 dark:bg-zinc-900/80"
+        >
+          <div class="flex items-center justify-between gap-4">
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ metric.label }}</p>
+            <UIcon
+              :name="metric.icon"
+              class="size-5 text-zinc-400"
+            />
+          </div>
+          <p class="mt-2 text-2xl font-semibold text-zinc-950 dark:text-white">{{ metric.value }}</p>
+        </div>
+      </div>
     </section>
 
     <div
@@ -35,37 +70,27 @@
       />
     </div>
 
-    <div
+    <OrderEmptyState
       v-else-if="!auth.user"
-      class="mt-8 grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-    >
-      <div>
-        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
-          <Heart class="size-7" />
-        </div>
-        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Войдите, чтобы открыть избранное</h2>
-        <UButton
-          class="mt-5 rounded-full"
-          color="primary"
-          to="/auth?redirect=/favorites"
-        >
-          Войти
-        </UButton>
-      </div>
-    </div>
+      class="mt-8"
+      icon="i-lucide-heart"
+      title="Войдите, чтобы открыть избранное"
+      description="Мы сохраним подборку в аккаунте и синхронизируем ее между устройствами."
+      action-label="Войти"
+      action-icon="i-lucide-user-round"
+      action-to="/auth?redirect=/favorites"
+    />
 
-    <div
+    <OrderEmptyState
       v-else-if="!favorites.items.length"
-      class="mt-8 grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-    >
-      <div>
-        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
-          <Heart class="size-7" />
-        </div>
-        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Пока ничего нет</h2>
-        <p class="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">Добавляйте товары сердечком в каталоге или карточке товара.</p>
-      </div>
-    </div>
+      class="mt-8"
+      icon="i-lucide-heart-plus"
+      title="Пока ничего нет"
+      description="Добавляйте товары сердечком в каталоге или карточке товара — они появятся здесь."
+      action-label="Перейти в каталог"
+      action-icon="i-lucide-layout-grid"
+      action-to="/"
+    />
 
     <div
       v-else
@@ -77,9 +102,11 @@
         :key="favorite.id"
         :product="favorite.product"
         favorite
+        :in-cart="Boolean(cartItemByProductId(favorite.product.id))"
+        :cart-quantity="cartItemByProductId(favorite.product.id)?.quantity ?? 0"
         :loading-favorite="favorites.syncingProductId === favorite.product.id"
         :loading-cart="cart.syncingProductId === favorite.product.id"
-        @add-to-cart="addToCart"
+        @toggle-cart="toggleCart"
         @toggle-favorite="toggleFavorite"
       />
     </div>
@@ -87,9 +114,8 @@
 </template>
 
 <script setup lang="ts">
-import { Heart } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import { getErrorMessage } from "~~/app/shared/lib/shopFormatters";
+import { formatCurrency, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
 import type { ProductCardItem } from "~~/app/shared/types/shop";
 import { useAuthStore } from "~~/app/stores/auth";
 import { useCartStore } from "~~/app/stores/cart";
@@ -104,23 +130,55 @@ const auth = useAuthStore();
 const cart = useCartStore();
 const favorites = useFavoritesStore();
 const loading = ref(true);
+const metrics = computed(() => [
+  {
+    icon: "i-lucide-heart",
+    label: "Сохранено",
+    value: `${favorites.count}`
+  },
+  {
+    icon: "i-lucide-badge-russian-ruble",
+    label: "На сумму",
+    value: formatCurrency(favoritesTotal.value)
+  },
+  {
+    icon: "i-lucide-package-check",
+    label: "В наличии",
+    value: `${availableFavoritesCount.value}`
+  }
+]);
+const favoritesTotal = computed(() => favorites.items.reduce((sum, item) => sum + Number(item.product.currentPrice ?? 0), 0));
+const availableFavoritesCount = computed(() => favorites.items.filter((item) => (item.product.stockQuantity ?? 0) > 0).length);
 
 onMounted(async () => {
   const user = auth.user ?? await auth.fetchMe();
 
   if (user) {
-    await favorites.fetchFavorites();
+    await Promise.all([
+      cart.fetchCart(),
+      favorites.fetchFavorites()
+    ]);
   }
 
   loading.value = false;
 });
 
-async function addToCart(product: ProductCardItem) {
+function cartItemByProductId(productId: number) {
+  return cart.items.find((item) => item.product.id === productId);
+}
+
+async function toggleCart(product: ProductCardItem) {
   try {
+    if (cartItemByProductId(product.id)) {
+      await cart.remove(product.id);
+      toast.success("Товар удален из корзины");
+      return;
+    }
+
     await cart.add(product.id);
     toast.success("Товар добавлен в корзину");
   } catch (error) {
-    toast.error(getErrorMessage(error, "Не удалось добавить товар"));
+    toast.error(getErrorMessage(error, "Не удалось обновить корзину"));
   }
 }
 

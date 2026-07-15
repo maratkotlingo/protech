@@ -3,10 +3,12 @@
     <div
       class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6 dark:bg-zinc-900/70 dark:shadow-black/25">
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium"
+        <div
+class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium"
           :class="stockStatus.shellClass">
           <span class="relative flex size-2.5">
-            <span v-if="stockQuantity > 0"
+            <span
+v-if="stockQuantity > 0"
               class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
               :class="stockStatus.pulseClass" />
             <span class="relative inline-flex size-2.5 rounded-full" :class="stockStatus.dotClass" />
@@ -14,7 +16,8 @@
           {{ stockStatus.label }}
         </div>
 
-        <UBadge color="neutral" variant="soft"
+        <UBadge
+color="neutral" variant="soft"
           class="rounded-full bg-white px-3 py-1.5 text-zinc-500 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70 dark:text-zinc-300">
           Арт. {{ product.article }}
         </UBadge>
@@ -51,7 +54,8 @@
           <div>
             <p class="text-sm font-medium text-zinc-400">Цена</p>
             <div class="mt-1 flex flex-wrap items-end gap-3">
-              <p class="text-4xl font-semibold tracking-normal"
+              <p
+class="text-4xl font-semibold tracking-normal"
                 :class="discountValue ? 'text-red-600 dark:text-red-400' : 'text-zinc-950 dark:text-white'">
                 {{ formatCurrency(product.currentPrice) }}
               </p>
@@ -86,17 +90,21 @@
         <div>
           <div class="mb-3 flex items-center justify-between gap-3">
             <p class="text-sm font-semibold text-zinc-950 dark:text-white">Количество</p>
-            <p class="text-sm text-zinc-400">до {{ maxQuantity }} шт.</p>
+            <p class="text-sm text-zinc-400">
+              {{ isInCart ? `В корзине ${quantity} шт.` : `до ${maxQuantity} шт.` }}
+            </p>
           </div>
           <div
             class="flex items-center justify-between gap-3 rounded-full bg-white p-2 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70">
-            <UButton color="neutral" variant="soft" icon="i-lucide-minus" size="lg" square
-              class="rounded-full transition hover:scale-105" :disabled="quantity <= 1 || stockQuantity <= 0"
+            <UButton
+color="neutral" variant="soft" icon="i-lucide-minus" size="lg" square
+              class="rounded-full transition hover:scale-105" :disabled="quantity <= 1 || (!isInCart && stockQuantity <= 0)"
               aria-label="Уменьшить количество" @click="decrementQuantity" />
             <div v-auto-animate class="min-w-20 text-center text-xl font-semibold">
               {{ quantity }}
             </div>
-            <UButton color="neutral" variant="soft" icon="i-lucide-plus" size="lg" square
+            <UButton
+color="neutral" variant="soft" icon="i-lucide-plus" size="lg" square
               class="rounded-full transition hover:scale-105" :disabled="quantity >= maxQuantity || stockQuantity <= 0"
               aria-label="Увеличить количество" @click="incrementQuantity" />
           </div>
@@ -105,25 +113,30 @@
 
       <div v-auto-animate class="mt-8 grid grid-cols-[auto_minmax(0,1fr)] gap-3">
         <UTooltip :text="isFavorite ? 'Убрать из избранного' : 'В избранное'">
-          <UButton color="neutral" variant="soft" size="xl" square
-            class="size-14 rounded-full bg-white shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-105 dark:bg-zinc-950/70"
+          <UButton
+color="neutral" variant="soft" size="xl" square
+            class="inline-flex size-14 items-center justify-center rounded-full bg-white p-0 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-105 dark:bg-zinc-950/70 [&>span]:mx-auto [&>span]:flex [&>span]:items-center [&>span]:justify-center"
             :class="isFavorite ? 'scale-[1.03] text-red-500' : 'text-zinc-700 dark:text-zinc-200'"
             :loading="favoriteSyncing" :aria-label="isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'"
             @click="$emit('toggleFavorite')">
-            <UIcon name="i-lucide-heart" class="size-5 transition duration-300"
+            <UIcon
+name="i-lucide-heart" class="mx-auto block size-5 transition duration-300"
               :class="isFavorite ? 'scale-110 fill-red-500 text-red-500' : ''" />
           </UButton>
         </UTooltip>
 
-        <UButton color="primary" size="xl" block :icon="cartButtonIcon"
+        <UButton
+          :color="isInCart ? 'error' : 'primary'"
+size="xl" block :icon="cartButtonIcon"
           class="min-h-14 rounded-full shadow-xl shadow-emerald-700/20 transition duration-300 hover:scale-[1.01]"
-          :class="cartAdded ? 'bg-emerald-600 text-white hover:bg-emerald-600' : ''" :disabled="stockQuantity <= 0"
+          :class="isInCart ? 'bg-red-600 text-white shadow-red-700/15 hover:bg-red-600' : ''" :disabled="!isInCart && stockQuantity <= 0"
           :loading="cartSyncing" @click="$emit('addToCart')">
           {{ cartButtonLabel }}
         </UButton>
       </div>
 
-      <UButton v-if="product.ozonLink" color="neutral" variant="ghost" icon="i-lucide-external-link" size="lg" block
+      <UButton
+v-if="product.ozonLink" color="neutral" variant="ghost" icon="i-lucide-external-link" size="lg" block
         class="mt-3 rounded-full text-zinc-500 transition duration-300 hover:scale-[1.01] hover:bg-white dark:text-zinc-300 dark:hover:bg-zinc-950/70"
         :to="product.ozonLink" target="_blank">
         Посмотреть на Ozon
@@ -142,7 +155,6 @@ const props = defineProps<{
   averageRating: number | null;
   averageRatingLabel: string;
   brandName: string;
-  cartAdded: boolean;
   cartButtonIcon: string;
   cartButtonLabel: string;
   cartSyncing: boolean;
@@ -150,6 +162,7 @@ const props = defineProps<{
   discountValue: number;
   favoriteSyncing: boolean;
   isFavorite: boolean;
+  isInCart: boolean;
   maxQuantity: number;
   product: ProductDetails;
   selectedQuantityTotal: string;
@@ -159,18 +172,27 @@ const props = defineProps<{
   stockStatus: ProductStockStatus;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   addToCart: [];
   toggleFavorite: [];
+  "update-cart-quantity": [quantity: number];
 }>();
 
 const quantity = defineModel<number>("quantity", { required: true });
 
 function decrementQuantity() {
   quantity.value = Math.max(quantity.value - 1, 1);
+
+  if (props.isInCart) {
+    emit("update-cart-quantity", quantity.value);
+  }
 }
 
 function incrementQuantity() {
   quantity.value = Math.min(quantity.value + 1, props.maxQuantity);
+
+  if (props.isInCart) {
+    emit("update-cart-quantity", quantity.value);
+  }
 }
 </script>

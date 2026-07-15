@@ -1,90 +1,22 @@
 import { Prisma } from "@prisma/client";
+import {
+  buildPublicProductWhere,
+  getPublicProductQueryValue,
+  type PublicProductFilterQuery,
+  type PublicProductQueryValue
+} from "~~/server/utils/publicProductFilters";
 
-interface AttributeFilter {
-  attributeId: number;
-  value: string;
-}
-
-interface ProductQuery {
-  page?: string,
-  search?: string,
-  minPrice?: string,
-  maxPrice?: string,
-  categoryId?: string,
-  sort?: string,
-  discountOnly?: string,
-  attributes?: string
-}
-
-function parseAttributes(attributes?: string): AttributeFilter[] {
-  if (!attributes) return [];
-
-  try {
-    const parsed = JSON.parse(attributes);
-
-    if (!Array.isArray(parsed)) return [];
-
-    return parsed
-      .map((item) => ({
-        attributeId: Number(item.attributeId),
-        value: String(item.value ?? "").trim()
-      }))
-      .filter((item) =>
-        Number.isInteger(item.attributeId) &&
-        item.attributeId > 0 &&
-        item.value.length > 0
-      );
-  } catch {
-    throw createError({
-      statusCode: 400,
-      message: "Некорректный формат attributes"
-    });
-  }
+interface ProductQuery extends PublicProductFilterQuery {
+  page?: PublicProductQueryValue;
+  sort?: PublicProductQueryValue;
 }
 
 export default defineEventHandler(async (event) => {
   const query = getQuery<ProductQuery>(event);
 
-  const currentPage = getPageQueryParam(query.page);
-
-  const search = query.search?.trim();
-
-  const parsedMinPrice = Number(query.minPrice);
-  const parsedMaxPrice = Number(query.maxPrice);
-  const parsedCategoryId = Number(query.categoryId);
-
-  const minPrice = Number.isFinite(parsedMinPrice) ? parsedMinPrice : undefined;
-  const maxPrice = Number.isFinite(parsedMaxPrice) ? parsedMaxPrice : undefined;
-  const categoryId = Number.isInteger(parsedCategoryId) && parsedCategoryId > 0 ? parsedCategoryId : undefined;
-  const sort = query.sort;
-  const discountOnly = query.discountOnly === "1" || query.discountOnly === "true";
-
+  const currentPage = getPageQueryParam(getPublicProductQueryValue(query.page));
+  const sort = getPublicProductQueryValue(query.sort);
   const limit = 20;
-
-  const attributes = parseAttributes(query.attributes);
-
-  const groupedAttributes = new Map<number, Set<string>>();
-
-  for (const attribute of attributes) {
-    if (!groupedAttributes.has(attribute.attributeId)) {
-      groupedAttributes.set(attribute.attributeId, new Set());
-    }
-
-    groupedAttributes.get(attribute.attributeId)!.add(attribute.value);
-  }
-
-  const attributeFilters: Prisma.ProductWhereInput[] = Array.from(groupedAttributes.entries()).map(
-    ([attributeId, values]) => ({
-      productAttributes: {
-        some: {
-          attributeId,
-          value: {
-            in: Array.from(values)
-          }
-        }
-      }
-    })
-  );
 
   try {
     const orderBy: Prisma.ProductOrderByWithRelationInput[] = (() => {
@@ -120,57 +52,7 @@ export default defineEventHandler(async (event) => {
       }
     })();
 
-    const where: Prisma.ProductWhereInput = {
-      isActive: true,
-
-      ...(search
-        ? {
-          OR: [
-            {
-              name: {
-                contains: search,
-                mode: "insensitive"
-              }
-            },
-            {
-              description: {
-                contains: search,
-                mode: "insensitive"
-              }
-            }
-          ]
-        }
-        : {}),
-
-      ...(minPrice !== undefined || maxPrice !== undefined
-        ? {
-          currentPrice: {
-            ...(minPrice !== undefined ? { gte: minPrice } : {}),
-            ...(maxPrice !== undefined ? { lte: maxPrice } : {})
-          }
-        }
-        : {}),
-
-      ...(categoryId !== undefined
-        ? {
-          categoryId
-        }
-        : {}),
-
-      ...(discountOnly
-        ? {
-          oldPrice: {
-            not: null
-          }
-        }
-        : {}),
-
-      ...(attributeFilters.length > 0
-        ? {
-          AND: attributeFilters
-        }
-        : {})
-    };
+    const where = buildPublicProductWhere(query);
 
     const products = await prisma.product.findMany({
       skip: (currentPage - 1) * limit,

@@ -56,13 +56,14 @@
             :color-options="colorOptions"
             :max-quantity="maxQuantity"
             :is-favorite="isFavorite"
-            :cart-added="cartAdded"
+            :is-in-cart="isInCart"
             :cart-syncing="cartSyncing"
             :favorite-syncing="favoriteSyncing"
             :cart-button-icon="cartButtonIcon"
             :cart-button-label="cartButtonLabel"
             @add-to-cart="addToCart"
             @toggle-favorite="toggleFavorite"
+            @update-cart-quantity="updateCartQuantity"
           />
         </section>
 
@@ -93,7 +94,6 @@ const {
   averageRating,
   averageRatingLabel,
   brandName,
-  cartAdded,
   cartButtonIcon,
   cartButtonLabel,
   cartSyncing,
@@ -102,6 +102,7 @@ const {
   error,
   favoriteSyncing,
   isFavorite,
+  isInCart,
   maxQuantity,
   pending,
   product,
@@ -115,6 +116,7 @@ const {
   sizeOptions,
   stockQuantity,
   stockStatus,
-  toggleFavorite
+  toggleFavorite,
+  updateCartQuantity
 } = useProductPdp();
 </script>

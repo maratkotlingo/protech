@@ -1,32 +1,63 @@
 <template>
-  <section class="rounded-[2rem] bg-white p-5 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20">
-    <div class="flex items-center justify-between gap-3">
-      <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">{{ title }}</h2>
-      <UBadge
-        color="primary"
-        variant="soft"
-        class="rounded-full"
-      >
-        {{ totalItems }} шт.
-      </UBadge>
+  <section class="rounded-[2rem] bg-white/90 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6 dark:bg-zinc-950/80 dark:shadow-black/25">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200">
+          <UIcon
+            name="i-lucide-receipt-text"
+            class="size-3.5"
+          />
+          {{ totalItems }} шт.
+        </p>
+        <h2 class="mt-4 text-2xl font-semibold tracking-normal text-zinc-950 dark:text-white">{{ title }}</h2>
+      </div>
+      <UIcon
+        name="i-lucide-shopping-bag"
+        class="size-6 text-zinc-400"
+      />
     </div>
+
+    <div class="mt-6 rounded-[1.75rem] bg-[#f9fafb] p-5 dark:bg-zinc-900/80">
+      <p class="text-xs uppercase tracking-[0.16em] text-zinc-400">К оплате</p>
+      <p class="mt-2 text-4xl font-semibold tracking-normal text-zinc-950 dark:text-white">
+        {{ formatCurrency(subtotal) }}
+      </p>
+      <p
+        v-if="savings > 0"
+        class="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-300"
+      >
+        Экономия {{ formatCurrency(savings) }}
+      </p>
+    </div>
+
+    <dl class="mt-5 space-y-3 text-sm">
+      <div
+        v-for="row in rows"
+        :key="row.label"
+        class="flex items-center justify-between gap-4 rounded-[1.25rem] bg-[#f9fafb] px-4 py-3 dark:bg-zinc-900/80"
+      >
+        <dt class="text-zinc-500 dark:text-zinc-400">{{ row.label }}</dt>
+        <dd class="font-semibold text-zinc-950 dark:text-white">{{ row.value }}</dd>
+      </div>
+    </dl>
 
     <div
       v-if="items.length"
-      class="mt-5 space-y-4"
+      v-auto-animate
+      class="mt-5 space-y-2"
     >
       <div
-        v-for="item in items"
+        v-for="item in previewItems"
         :key="item.id"
-        class="flex gap-3 rounded-3xl bg-[#f9fafb] p-3 dark:bg-zinc-800/60"
+        class="grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-3 rounded-[1.25rem] bg-[#f9fafb] p-2.5 dark:bg-zinc-900/80"
       >
         <img
           :src="item.product.mainImage || '/favicon.ico'"
           :alt="item.product.name"
-          class="size-14 rounded-2xl object-cover"
+          class="size-12 rounded-2xl object-cover"
         >
-        <div class="min-w-0 flex-1">
-          <p class="line-clamp-2 text-sm font-medium text-zinc-950 dark:text-white">
+        <div class="min-w-0">
+          <p class="line-clamp-1 text-sm font-medium text-zinc-950 dark:text-white">
             {{ item.product.name }}
           </p>
           <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
@@ -37,20 +68,12 @@
           {{ formatCurrency(toNumber(item.product.currentPrice) * item.quantity) }}
         </p>
       </div>
-    </div>
 
-    <div class="mt-6 space-y-3 rounded-3xl bg-[#f9fafb] p-4 text-sm dark:bg-zinc-800/60">
-      <div class="flex justify-between gap-4 text-zinc-500 dark:text-zinc-400">
-        <span>Товары</span>
-        <span>{{ formatCurrency(subtotal) }}</span>
-      </div>
-      <div class="flex justify-between gap-4 text-zinc-500 dark:text-zinc-400">
-        <span>Доставка</span>
-        <span>{{ deliveryLabel }}</span>
-      </div>
-      <div class="flex justify-between gap-4 pt-2 text-lg font-semibold text-zinc-950 dark:text-white">
-        <span>Итого</span>
-        <span>{{ formatCurrency(subtotal) }}</span>
+      <div
+        v-if="hiddenItemsCount > 0"
+        class="rounded-[1.25rem] bg-[#f3f4f6] px-4 py-3 text-sm font-medium text-zinc-500 dark:bg-zinc-900 dark:text-zinc-300"
+      >
+        Еще {{ hiddenItemsCount }} позиций в корзине
       </div>
     </div>
 
@@ -67,10 +90,38 @@ const props = withDefaults(defineProps<{
   items: CartItem[];
   subtotal: number;
   deliveryLabel?: string;
+  previewLimit?: number;
 }>(), {
   title: "Ваш заказ",
-  deliveryLabel: "по тарифу"
+  deliveryLabel: "по тарифу",
+  previewLimit: 3
 });
 
 const totalItems = computed(() => props.items.reduce((sum, item) => sum + item.quantity, 0));
+const savings = computed(() => props.items.reduce((sum, item) => {
+  const oldPrice = toNumber(item.product.oldPrice);
+  const currentPrice = toNumber(item.product.currentPrice);
+
+  return oldPrice > currentPrice
+    ? sum + (oldPrice - currentPrice) * item.quantity
+    : sum;
+}, 0));
+const previewItems = computed(() => props.items.slice(0, props.previewLimit));
+const hiddenItemsCount = computed(() => Math.max(props.items.length - previewItems.value.length, 0));
+const rows = computed(() => [
+  {
+    label: `Товары (${totalItems.value})`,
+    value: formatCurrency(props.subtotal)
+  },
+  ...(savings.value > 0
+    ? [{
+        label: "Скидка",
+        value: `-${formatCurrency(savings.value)}`
+      }]
+    : []),
+  {
+    label: "Доставка",
+    value: props.deliveryLabel
+  }
+]);
 </script>

@@ -37,6 +37,11 @@ export type ProductCardItem = {
   }>;
 };
 
+export type ProductPriceRange = {
+  minPrice: number;
+  maxPrice: number;
+};
+
 export type ProductDetails = {
   id: number;
   name: string;
@@ -133,6 +138,13 @@ export type PaymentMethod = "OFFLINE" | "ONLINE";
 export type OrderStatus = "NEW" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "COMPLETED" | "CANCELLED";
 export type PaymentStatus = "PENDING" | "UPON_RECEIPT" | "PAID" | "CANCELLED";
 
+export type OrderStatusHistoryItem = {
+  id: string;
+  type: "order" | "payment";
+  status: OrderStatus | PaymentStatus;
+  changedAt: string;
+};
+
 export type ShopOrder = {
   id: number;
   obtainingMethod: ObtainingMethod;
@@ -140,6 +152,7 @@ export type ShopOrder = {
   paymentMethod: PaymentMethod;
   createdAt: string;
   updatedAt: string;
+  statusHistory?: OrderStatusHistoryItem[];
   delivery: {
     address: string;
     apartment: string | null;

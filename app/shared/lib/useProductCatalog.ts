@@ -2,13 +2,11 @@ import { useIntersectionObserver, watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import {
   PRODUCT_CATALOG_PAGE_SIZE,
-  PRODUCT_CATALOG_PRICE_MAX,
-  PRODUCT_CATALOG_PRICE_MIN,
   productCatalogSortOptions
 } from "~~/app/shared/lib/catalogProductHelpers";
 import { buildQuery, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
 import { shopFetch } from "~~/app/shared/lib/shopFetch";
-import type { AttributeFilter, Category, ProductCardItem } from "~~/app/shared/types/shop";
+import type { AttributeFilter, Category, ProductCardItem, ProductPriceRange } from "~~/app/shared/types/shop";
 import { useAuthStore } from "~~/app/stores/auth";
 import { useCartStore } from "~~/app/stores/cart";
 import { useFavoritesStore } from "~~/app/stores/favorites";
@@ -69,8 +67,24 @@ export async function useProductCatalog() {
       default: () => []
     }
   );
+  const attributeSelectionKey = computed(() => JSON.stringify(ui.catalog.attributes));
+  const priceRangeQuery = computed(() => buildQuery({
+    search: debouncedSearch.value,
+    categoryId: ui.catalog.categoryId,
+    discountOnly: ui.catalog.discountOnly ? 1 : null,
+    attributes: attributeSelectionKey.value === "[]" ? null : attributeSelectionKey.value
+  }));
+  const priceRangeAsyncData = useAsyncData(
+    "shop-product-price-range",
+    () => shopFetch<ProductPriceRange>(`/api/public/product/price-range${priceRangeQuery.value}`, catalogFetchOptions),
+    {
+      watch: [priceRangeQuery],
+      default: () => ({ minPrice: 0, maxPrice: 0 })
+    }
+  );
   const { data: categoriesData } = await categoriesAsyncData;
   const { data: attributesData, pending: attributesPending } = await attributesAsyncData;
+  const { data: priceRangeData, pending: priceRangePending } = await priceRangeAsyncData;
 
   const categories = computed(() => categoriesData.value ?? []);
   const attributes = computed(() => attributesData.value ?? []);
@@ -81,17 +95,39 @@ export async function useProductCatalog() {
   const selectedCategoryName = computed(() =>
     categories.value.find((category) => category.id === ui.catalog.categoryId)?.name ?? ""
   );
+  const priceRangeMin = computed(() => Math.floor(Math.min(
+    priceRangeData.value?.minPrice ?? 0,
+    priceRangeData.value?.maxPrice ?? 0
+  )));
+  const priceRangeMax = computed(() => Math.ceil(Math.max(
+    priceRangeData.value?.minPrice ?? 0,
+    priceRangeData.value?.maxPrice ?? 0
+  )));
   const isPriceFiltered = computed(() => ui.catalog.minPrice !== null || ui.catalog.maxPrice !== null);
-  const priceMin = computed(() => ui.catalog.minPrice ?? PRODUCT_CATALOG_PRICE_MIN);
-  const priceMax = computed(() => ui.catalog.maxPrice ?? PRODUCT_CATALOG_PRICE_MAX);
+  const selectedMinPrice = computed(() =>
+    ui.catalog.minPrice === null ? null : clampPriceToAvailableRange(ui.catalog.minPrice)
+  );
+  const selectedMaxPrice = computed(() =>
+    ui.catalog.maxPrice === null ? null : clampPriceToAvailableRange(ui.catalog.maxPrice)
+  );
+  const priceMin = computed(() => Math.min(
+    selectedMinPrice.value ?? priceRangeMin.value,
+    selectedMaxPrice.value ?? priceRangeMax.value
+  ));
+  const priceMax = computed(() => Math.max(
+    selectedMinPrice.value ?? priceRangeMin.value,
+    selectedMaxPrice.value ?? priceRangeMax.value
+  ));
   const priceRange = computed({
     get: () => [priceMin.value, priceMax.value],
     set: (value: number[]) => {
-      const min = value[0] ?? PRODUCT_CATALOG_PRICE_MIN;
-      const max = value[1] ?? PRODUCT_CATALOG_PRICE_MAX;
+      const min = normalizePriceInput(value[0]) ?? priceRangeMin.value;
+      const max = normalizePriceInput(value[1]) ?? priceRangeMax.value;
+      const nextMin = Math.min(min, max);
+      const nextMax = Math.max(min, max);
 
-      ui.catalog.minPrice = min > PRODUCT_CATALOG_PRICE_MIN ? min : null;
-      ui.catalog.maxPrice = max < PRODUCT_CATALOG_PRICE_MAX ? max : null;
+      ui.catalog.minPrice = nextMin > priceRangeMin.value ? nextMin : null;
+      ui.catalog.maxPrice = nextMax < priceRangeMax.value ? nextMax : null;
     }
   });
 
@@ -121,7 +157,6 @@ export async function useProductCatalog() {
     const suffix = reachedEnd.value ? "все найденные" : "загружено";
     return `${products.value.length} товаров, ${suffix}`;
   });
-  const attributeSelectionKey = computed(() => JSON.stringify(ui.catalog.attributes));
   const filterSignature = computed(() => JSON.stringify({
     search: debouncedSearch.value,
     categoryId: ui.catalog.categoryId,
@@ -131,6 +166,16 @@ export async function useProductCatalog() {
     discountOnly: ui.catalog.discountOnly,
     attributes: ui.catalog.attributes
   }));
+
+  watch(
+    [priceRangeMin, priceRangeMax, priceRangePending],
+    ([, , pendingPriceRange]) => {
+      if (!pendingPriceRange) {
+        normalizeCatalogPriceFilters();
+      }
+    },
+    { immediate: true }
+  );
 
   watch(filterSignature, () => {
     void fetchProducts({ reset: true });
@@ -149,6 +194,14 @@ export async function useProductCatalog() {
   );
 
   await fetchProducts({ reset: true });
+
+  onMounted(async () => {
+    const user = auth.user ?? await auth.fetchMe();
+
+    if (user) {
+      await cart.fetchCart();
+    }
+  });
 
   function buildProductsQuery(pageNumber: number) {
     return buildQuery({
@@ -225,6 +278,10 @@ export async function useProductCatalog() {
     ui.toggleCatalogAttribute(attributeId, value);
   }
 
+  function clampPriceToAvailableRange(value: number) {
+    return Math.min(Math.max(Math.round(value), priceRangeMin.value), priceRangeMax.value);
+  }
+
   function normalizePriceInput(value: string | number | null | undefined) {
     const numberValue = Number(value);
 
@@ -232,21 +289,37 @@ export async function useProductCatalog() {
       return null;
     }
 
-    return Math.min(Math.max(Math.round(numberValue), PRODUCT_CATALOG_PRICE_MIN), PRODUCT_CATALOG_PRICE_MAX);
+    return clampPriceToAvailableRange(numberValue);
+  }
+
+  function normalizeCatalogPriceFilters() {
+    const minPrice = ui.catalog.minPrice === null ? null : clampPriceToAvailableRange(ui.catalog.minPrice);
+    const maxPrice = ui.catalog.maxPrice === null ? null : clampPriceToAvailableRange(ui.catalog.maxPrice);
+
+    ui.catalog.minPrice = minPrice !== null && minPrice > priceRangeMin.value ? minPrice : null;
+    ui.catalog.maxPrice = maxPrice !== null && maxPrice < priceRangeMax.value ? maxPrice : null;
+
+    if (
+      ui.catalog.minPrice !== null &&
+      ui.catalog.maxPrice !== null &&
+      ui.catalog.minPrice > ui.catalog.maxPrice
+    ) {
+      ui.catalog.minPrice = ui.catalog.maxPrice;
+    }
   }
 
   function setMinPrice(value: string | number | null | undefined) {
     const nextPrice = normalizePriceInput(value);
-    const minPrice = Math.min(nextPrice ?? PRODUCT_CATALOG_PRICE_MIN, priceMax.value);
+    const minPrice = Math.min(nextPrice ?? priceRangeMin.value, priceMax.value);
 
-    ui.catalog.minPrice = minPrice > PRODUCT_CATALOG_PRICE_MIN ? minPrice : null;
+    ui.catalog.minPrice = minPrice > priceRangeMin.value ? minPrice : null;
   }
 
   function setMaxPrice(value: string | number | null | undefined) {
     const nextPrice = normalizePriceInput(value);
-    const maxPrice = Math.max(nextPrice ?? PRODUCT_CATALOG_PRICE_MAX, priceMin.value);
+    const maxPrice = Math.max(nextPrice ?? priceRangeMax.value, priceMin.value);
 
-    ui.catalog.maxPrice = maxPrice < PRODUCT_CATALOG_PRICE_MAX ? maxPrice : null;
+    ui.catalog.maxPrice = maxPrice < priceRangeMax.value ? maxPrice : null;
   }
 
   async function requireAuth() {
@@ -259,16 +332,24 @@ export async function useProductCatalog() {
     return false;
   }
 
-  async function addToCart(product: ProductCardItem) {
+  async function toggleCart(product: ProductCardItem) {
     if (!await requireAuth()) {
       return;
     }
 
+    const productInCart = cart.items.some((item) => item.product.id === product.id);
+
     try {
+      if (productInCart) {
+        await cart.remove(product.id);
+        toast.success("Товар удален из корзины");
+        return;
+      }
+
       await cart.add(product.id);
       toast.success("Товар добавлен в корзину");
     } catch (err) {
-      toast.error(getErrorMessage(err, "Не удалось добавить товар в корзину"));
+      toast.error(getErrorMessage(err, "Не удалось обновить корзину"));
     }
   }
 
@@ -287,7 +368,6 @@ export async function useProductCatalog() {
 
   return {
     activeDrawerFilterCount,
-    addToCart,
     attributes,
     attributesPending,
     cart,
@@ -308,6 +388,9 @@ export async function useProductCatalog() {
     priceMax,
     priceMin,
     priceRange,
+    priceRangeMax,
+    priceRangeMin,
+    priceRangePending,
     products,
     productCatalogSortOptions,
     reachedEnd,
@@ -316,6 +399,7 @@ export async function useProductCatalog() {
     setMaxPrice,
     setMinPrice,
     toggleAttribute,
+    toggleCart,
     toggleFavorite,
     ui
   };

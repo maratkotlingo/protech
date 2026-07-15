@@ -14,9 +14,36 @@ export default defineEventHandler(async (event) => {
           select: {
             id: true,
             name: true,
+            article: true,
+            description: true,
             currentPrice: true,
             oldPrice: true,
             mainImage: true,
+            category: {
+              select: {
+                id: true,
+                name: true
+              }
+            },
+            productStocks: {
+              select: {
+                quantity: true
+              }
+            },
+            productAttributes: {
+              select: {
+                id: true,
+                value: true,
+                attributeId: true,
+                attribute: {
+                  select: {
+                    id: true,
+                    name: true,
+                    unit: true
+                  }
+                }
+              }
+            },
 
             _count: {
               select: {
@@ -57,11 +84,16 @@ export default defineEventHandler(async (event) => {
       product: {
         id: favorite.product.id,
         name: favorite.product.name,
+        article: favorite.product.article,
+        description: favorite.product.description,
         currentPrice: favorite.product.currentPrice,
         oldPrice: favorite.product.oldPrice,
         mainImage: favorite.product.mainImage,
+        category: favorite.product.category,
+        stockQuantity: favorite.product.productStocks[0]?.quantity ?? 0,
         reviewsCount: favorite.product._count.reviews,
-        averageRating: ratingByProductId.get(favorite.product.id) ?? null
+        averageRating: ratingByProductId.get(favorite.product.id) ?? null,
+        productAttributes: favorite.product.productAttributes
       }
     }));
   } catch (error) {

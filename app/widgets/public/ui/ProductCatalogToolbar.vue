@@ -27,7 +27,7 @@
         :ui="selectUi"
       />
 
-      <div class="flex flex-wrap items-center gap-2 lg:justify-end">
+      <div class="flex flex-wrap items-stretch gap-2 lg:justify-end">
         <USelectMenu
           v-model="sort"
           :items="sortOptions"
@@ -38,11 +38,11 @@
           variant="none"
           size="lg"
           icon="i-lucide-arrow-up-down"
-          class="min-w-44 rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900"
+          class="w-full rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 sm:w-52 sm:shrink-0 dark:bg-zinc-900"
           :ui="sortUi"
         />
 
-        <div class="flex h-11 items-center gap-3 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900">
+        <div class="flex h-[3.25rem] items-center gap-3 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900">
           <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Со скидкой</span>
           <USwitch
             v-model="discountOnly"
@@ -57,7 +57,7 @@
           variant="ghost"
           size="lg"
           icon="i-lucide-sliders-horizontal"
-          class="h-11 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          class="h-[3.25rem] rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
           @click="$emit('openFilters')"
         >
           Прочее
@@ -101,7 +101,7 @@ const selectUi = {
   viewport: "p-1"
 };
 const sortUi = {
-  base: "h-11 rounded-full bg-transparent",
+  base: "h-[3.25rem] rounded-full bg-transparent",
   content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 dark:bg-zinc-900",
   viewport: "p-1"
 };
