@@ -6,6 +6,7 @@
           :src="product.mainImage || '/favicon.ico'"
           :alt="product.name"
           class="aspect-[4/5] w-full object-cover transition duration-500 group-hover:scale-105"
+          :class="isOutOfStock(product) ? 'opacity-60 grayscale' : ''"
           loading="lazy"
         >
       </NuxtLink>
@@ -21,9 +22,9 @@
         </UBadge>
         <UBadge
           v-if="isOutOfStock(product)"
-          color="neutral"
-          variant="soft"
-          class="rounded-full bg-white/85 backdrop-blur "
+          color="error"
+          variant="solid"
+          class="rounded-full shadow-sm shadow-red-950/15"
         >
           Нет в наличии
         </UBadge>
@@ -45,12 +46,12 @@
       </UTooltip>
 
       <UButton
-        :color="inCart ? 'error' : 'neutral'"
+        :color="inCart ? 'error' : isOutOfStock(product) ? 'neutral' : 'primary'"
         :variant="inCart ? 'soft' : 'solid'"
         :icon="cartButtonIcon"
         size="lg"
         class="absolute inset-x-4 bottom-4 justify-center rounded-full opacity-100 shadow-lg shadow-zinc-950/15 transition duration-300 sm:translate-y-3 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 sm:group-focus-within:translate-y-0 sm:group-focus-within:opacity-100"
-        :class="inCart ? 'bg-red-50/95 text-red-700 hover:bg-red-100' : ''"
+        :class="cartButtonClass"
         :disabled="!inCart && isOutOfStock(product)"
         :loading="loadingCart"
         @click="onToggleCart"
@@ -154,7 +155,18 @@ const cartButtonLabel = computed(() => {
     return "Удалить из корзины";
   }
 
-  return isOutOfStock(props.product) ? "Ожидается" : "В корзину";
+  return isOutOfStock(props.product) ? "Нет в наличии" : "В корзину";
+});
+const cartButtonClass = computed(() => {
+  if (props.inCart) {
+    return "bg-red-50/95 text-red-700 hover:bg-red-100";
+  }
+
+  if (isOutOfStock(props.product)) {
+    return "bg-white/90 text-zinc-500";
+  }
+
+  return "";
 });
 
 function onToggleCart() {

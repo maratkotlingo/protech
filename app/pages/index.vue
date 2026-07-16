@@ -8,6 +8,7 @@
         v-model:category-id="ui.catalog.categoryId"
         v-model:sort="ui.catalog.sort"
         v-model:discount-only="ui.catalog.discountOnly"
+        v-model:in-stock-only="ui.catalog.inStockOnly"
         :active-filter-count="activeDrawerFilterCount"
         :category-items="categoryItems"
         :sort-options="productCatalogSortOptions"
@@ -17,6 +18,7 @@
       <ProductCatalogActiveFilters
         :discount-only="ui.catalog.discountOnly"
         :has-any-filter="hasAnyFilter"
+        :in-stock-only="ui.catalog.inStockOnly"
         :is-price-filtered="isPriceFiltered"
         :price-max="priceMax"
         :price-min="priceMin"

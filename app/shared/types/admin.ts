@@ -12,12 +12,25 @@ export type PaginatedResponse<T> = {
   pagination: Pagination;
 };
 
+export type UserRole = "USER" | "ADMIN";
+
 export type AdminUser = {
   id: string;
   email: string;
   name: string | null;
-  role: "USER" | "ADMIN";
+  role: UserRole;
   image: string | null;
+};
+
+export type AdminUserListItem = AdminUser & {
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  _count: {
+    orders: number;
+    message: number;
+    reviews: number;
+  };
 };
 
 export type AuditAction =
@@ -164,7 +177,7 @@ export type AdminMessage = {
 };
 
 export type MessageConversation = {
-  user: Pick<AdminUser, "id" | "email" | "name" | "image">;
+  user: Pick<AdminUser, "id" | "email" | "name" | "image" | "role">;
   lastMessage: AdminMessage | null;
   unreadCount: number;
   totalMessages: number;
@@ -176,7 +189,7 @@ export type MessageConversationListResponse = {
 
 export type MessageThreadResponse = {
   messages: AdminMessage[];
-  user: Pick<AdminUser, "id" | "email" | "name" | "image">;
+  user: Pick<AdminUser, "id" | "email" | "name" | "image" | "role">;
 };
 
 export type OrderListItem = {

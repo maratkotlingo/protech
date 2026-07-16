@@ -2,6 +2,7 @@ import { useIntersectionObserver, watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import {
   PRODUCT_CATALOG_PAGE_SIZE,
+  isOutOfStock,
   productCatalogSortOptions
 } from "~~/app/shared/lib/catalogProductHelpers";
 import { buildQuery, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
@@ -72,6 +73,7 @@ export async function useProductCatalog() {
     search: debouncedSearch.value,
     categoryId: ui.catalog.categoryId,
     discountOnly: ui.catalog.discountOnly ? 1 : null,
+    inStockOnly: ui.catalog.inStockOnly ? 1 : null,
     attributes: attributeSelectionKey.value === "[]" ? null : attributeSelectionKey.value
   }));
   const priceRangeAsyncData = useAsyncData(
@@ -136,6 +138,7 @@ export async function useProductCatalog() {
     ui.catalog.search ||
     ui.catalog.categoryId ||
     ui.catalog.discountOnly ||
+    ui.catalog.inStockOnly ||
     isPriceFiltered.value ||
     ui.catalog.attributes.length ||
     ui.catalog.sort !== "newest"
@@ -164,6 +167,7 @@ export async function useProductCatalog() {
     minPrice: ui.catalog.minPrice,
     maxPrice: ui.catalog.maxPrice,
     discountOnly: ui.catalog.discountOnly,
+    inStockOnly: ui.catalog.inStockOnly,
     attributes: ui.catalog.attributes
   }));
 
@@ -212,6 +216,7 @@ export async function useProductCatalog() {
       minPrice: ui.catalog.minPrice,
       maxPrice: ui.catalog.maxPrice,
       discountOnly: ui.catalog.discountOnly ? 1 : null,
+      inStockOnly: ui.catalog.inStockOnly ? 1 : null,
       attributes: attributeSelectionKey.value === "[]" ? null : attributeSelectionKey.value
     });
   }
@@ -343,6 +348,11 @@ export async function useProductCatalog() {
       if (productInCart) {
         await cart.remove(product.id);
         toast.success("Товар удален из корзины");
+        return;
+      }
+
+      if (isOutOfStock(product)) {
+        toast.info("Товара нет в наличии, но его можно добавить в избранное");
         return;
       }
 

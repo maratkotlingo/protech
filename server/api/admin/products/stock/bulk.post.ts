@@ -5,13 +5,14 @@ import { bulkStockArrivalSchema } from "~~/shared/schemas/admin/products/bulkSto
 export default defineEventHandler(async (event) => {
   const { userId } = await requireAdmin(event);
   const body = await validateBody(event, bulkStockArrivalSchema);
+  const productIds = body.arrivals.map((arrival) => arrival.productId);
 
   const existingProducts = await prisma.product.findMany({
-    where: { id: { in: body.productIds } },
+    where: { id: { in: productIds } },
     select: { id: true }
   });
   const existingIds = new Set(existingProducts.map((product) => product.id));
-  const missingIds = body.productIds.filter((productId) => !existingIds.has(productId));
+  const missingIds = productIds.filter((productId) => !existingIds.has(productId));
 
   if (missingIds.length) {
     throw createError({
@@ -24,21 +25,21 @@ export default defineEventHandler(async (event) => {
   const stocks = await prisma.$transaction(async (tx) => {
     const updated = [];
 
-    for (const productId of body.productIds) {
+    for (const arrival of body.arrivals) {
       const stock = await tx.productStock.upsert({
-        where: { productId },
+        where: { productId: arrival.productId },
         create: {
-          productId,
-          quantity: body.quantityDelta
+          productId: arrival.productId,
+          quantity: arrival.quantityDelta
         },
         update: {
-          quantity: { increment: body.quantityDelta }
+          quantity: { increment: arrival.quantityDelta }
         }
       });
 
       await recordStockAdjustment(tx, {
-        productId,
-        quantityDelta: body.quantityDelta,
+        productId: arrival.productId,
+        quantityDelta: arrival.quantityDelta,
         quantityAfter: stock.quantity,
         reason
       });
@@ -48,6 +49,7 @@ export default defineEventHandler(async (event) => {
 
     return updated;
   });
+  const quantityDeltaTotal = body.arrivals.reduce((total, arrival) => total + arrival.quantityDelta, 0);
 
   await recordAdminAudit({
     adminId: userId,
@@ -55,12 +57,12 @@ export default defineEventHandler(async (event) => {
     entityType: "product_stock",
     summary: "Bulk stock arrival",
     metadata: {
-      productIds: body.productIds,
-      quantityDelta: body.quantityDelta,
+      arrivals: body.arrivals,
+      quantityDeltaTotal,
       reason,
       affected: stocks.length
     }
   });
 
-  return { success: true, count: stocks.length, stocks };
+  return { success: true, count: stocks.length, quantityDeltaTotal, stocks };
 });

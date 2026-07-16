@@ -64,6 +64,7 @@
 
 <script setup lang="ts">
 import { toast } from "vue-sonner";
+import { isOutOfStock } from "~~/app/shared/lib/catalogProductHelpers";
 import { formatCurrency, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
 import type { ProductCardItem } from "~~/app/shared/types/shop";
 import { useAuthStore } from "~~/app/stores/auth";
@@ -121,6 +122,11 @@ async function toggleCart(product: ProductCardItem) {
     if (cartItemByProductId(product.id)) {
       await cart.remove(product.id);
       toast.success("Товар удален из корзины");
+      return;
+    }
+
+    if (isOutOfStock(product)) {
+      toast.info("Товара нет в наличии");
       return;
     }
 

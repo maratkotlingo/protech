@@ -9,6 +9,7 @@ export interface PublicProductFilterQuery {
   maxPrice?: PublicProductQueryValue;
   categoryId?: PublicProductQueryValue;
   discountOnly?: PublicProductQueryValue;
+  inStockOnly?: PublicProductQueryValue;
   attributes?: PublicProductQueryValue;
 }
 
@@ -70,6 +71,7 @@ export function buildPublicProductWhere(
   const maxPrice = toFiniteNumber(query.maxPrice);
   const categoryId = toPositiveInteger(query.categoryId);
   const discountOnly = ["1", "true"].includes(getPublicProductQueryValue(query.discountOnly) ?? "");
+  const inStockOnly = ["1", "true"].includes(getPublicProductQueryValue(query.inStockOnly) ?? "");
   const attributes = parseAttributes(query.attributes);
   const groupedAttributes = new Map<number, Set<string>>();
 
@@ -135,6 +137,18 @@ export function buildPublicProductWhere(
       ? {
         oldPrice: {
           not: null
+        }
+      }
+      : {}),
+
+    ...(inStockOnly
+      ? {
+        productStocks: {
+          some: {
+            quantity: {
+              gt: 0
+            }
+          }
         }
       }
       : {}),

@@ -36,6 +36,14 @@
         Скидка
       </UBadge>
       <UBadge
+        v-if="inStockOnly"
+        color="primary"
+        variant="soft"
+        class="rounded-full px-3 py-1"
+      >
+        В наличии
+      </UBadge>
+      <UBadge
         v-if="isPriceFiltered"
         color="neutral"
         variant="soft"
@@ -63,6 +71,7 @@ import { formatCurrency } from "~~/app/shared/lib/shopFormatters";
 defineProps<{
   discountOnly: boolean;
   hasAnyFilter: boolean;
+  inStockOnly: boolean;
   isPriceFiltered: boolean;
   priceMax: number;
   priceMin: number;

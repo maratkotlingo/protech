@@ -100,11 +100,11 @@
       :ui="modalUi"
     >
       <template #body>
-        <div class="relative bg-zinc-950">
+        <div class="relative overflow-hidden rounded-[1.5rem] bg-[#f9fafb]">
           <img
             :src="activeImage.url"
             :alt="alt"
-            class="max-h-[84dvh] w-full object-contain"
+            class="mx-auto block max-h-[78dvh] max-w-full object-contain"
           >
           <div
             v-if="imageItems.length > 1"
@@ -167,9 +167,9 @@ const imageItems = computed(() => {
 const activeImage = computed(() => imageItems.value[selectedIndex.value] ?? imageItems.value[0] ?? { url: fallbackImage });
 const imageSignature = computed(() => imageItems.value.map((image) => image.url).join("|"));
 const modalUi = {
-  overlay: "bg-zinc-950/70 backdrop-blur-sm",
-  content: "max-w-6xl overflow-hidden rounded-[2rem] bg-zinc-950 shadow-2xl shadow-black/30 ring-0",
-  body: "p-0"
+  overlay: "bg-zinc-950/35 backdrop-blur-sm",
+  content: "max-h-[calc(100dvh-2rem)] max-w-6xl overflow-hidden rounded-[2rem] bg-white shadow-2xl shadow-zinc-950/20 ring-0",
+  body: "overflow-hidden p-3 sm:p-4"
 };
 
 watch(imageSignature, () => {

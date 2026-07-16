@@ -86,19 +86,22 @@ class="text-4xl font-semibold tracking-normal"
         </div>
       </div>
 
-      <div class="mt-8 space-y-7">
+      <div
+        v-if="isInCart"
+        class="mt-8 space-y-7"
+      >
         <div>
           <div class="mb-3 flex items-center justify-between gap-3">
             <p class="text-sm font-semibold text-zinc-950 ">Количество</p>
             <p class="text-sm text-zinc-400">
-              {{ isInCart ? `В корзине ${quantity} шт.` : `до ${maxQuantity} шт.` }}
+              В корзине {{ quantity }} шт.
             </p>
           </div>
           <div
             class="flex items-center justify-between gap-3 rounded-full bg-white p-2 shadow-sm shadow-zinc-950/5 ">
             <UButton
 color="neutral" variant="soft" icon="i-lucide-minus" size="lg" square
-              class="rounded-full transition hover:scale-105" :disabled="quantity <= 1 || (!isInCart && stockQuantity <= 0)"
+              class="rounded-full transition hover:scale-105" :disabled="quantity <= 1"
               aria-label="Уменьшить количество" @click="decrementQuantity" />
             <div v-auto-animate class="min-w-20 text-center text-xl font-semibold">
               {{ quantity }}
@@ -181,18 +184,20 @@ const emit = defineEmits<{
 const quantity = defineModel<number>("quantity", { required: true });
 
 function decrementQuantity() {
-  quantity.value = Math.max(quantity.value - 1, 1);
+  const nextQuantity = Math.max(quantity.value - 1, 1);
+  quantity.value = nextQuantity;
 
   if (props.isInCart) {
-    emit("update-cart-quantity", quantity.value);
+    emit("update-cart-quantity", nextQuantity);
   }
 }
 
 function incrementQuantity() {
-  quantity.value = Math.min(quantity.value + 1, props.maxQuantity);
+  const nextQuantity = Math.min(quantity.value + 1, props.maxQuantity);
+  quantity.value = nextQuantity;
 
   if (props.isInCart) {
-    emit("update-cart-quantity", quantity.value);
+    emit("update-cart-quantity", nextQuantity);
   }
 }
 </script>

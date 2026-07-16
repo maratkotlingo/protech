@@ -1,15 +1,15 @@
 <template>
   <section class="rounded-[2rem] bg-[#f9fafb]/90 p-2 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur  ">
-    <div class="grid gap-3 lg:grid-cols-[minmax(260px,1fr)_minmax(220px,280px)_auto] lg:items-center">
+    <div class="grid gap-3 lg:grid-cols-[minmax(280px,1fr)_minmax(210px,260px)_auto] lg:items-center">
       <UInput
         v-model="search"
         icon="i-lucide-search"
         variant="none"
-        size="xl"
+        size="lg"
         placeholder="Найти товар, бренд или описание"
         class="w-full rounded-full bg-white shadow-sm shadow-zinc-950/5 "
         :ui="{
-          base: 'h-[3.25rem] rounded-full bg-transparent text-zinc-900 placeholder:text-zinc-400  ',
+          base: 'h-12 rounded-full bg-transparent text-zinc-900 placeholder:text-zinc-400  ',
         }"
       />
 
@@ -38,11 +38,11 @@
           variant="none"
           size="lg"
           icon="i-lucide-arrow-up-down"
-          class="w-full rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 sm:w-52 sm:shrink-0 "
+          class="w-full rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 sm:w-48 sm:shrink-0 "
           :ui="sortUi"
         />
 
-        <div class="flex h-[3.25rem] items-center gap-3 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 ">
+        <div class="flex h-12 items-center gap-2 rounded-full bg-white px-3 shadow-sm shadow-zinc-950/5 ">
           <span class="text-sm font-medium text-zinc-700">Со скидкой</span>
           <USwitch
             v-model="discountOnly"
@@ -52,12 +52,22 @@
           />
         </div>
 
+        <div class="flex h-12 items-center gap-2 rounded-full bg-white px-3 shadow-sm shadow-zinc-950/5 ">
+          <span class="text-sm font-medium text-zinc-700">В наличии</span>
+          <USwitch
+            v-model="inStockOnly"
+            color="primary"
+            checked-icon="i-lucide-package-check"
+            unchecked-icon="i-lucide-layers-3"
+          />
+        </div>
+
         <UButton
           color="neutral"
           variant="ghost"
           size="lg"
           icon="i-lucide-sliders-horizontal"
-          class="h-[3.25rem] rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100  "
+          class="h-12 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100  "
           @click="$emit('openFilters')"
         >
           Прочее
@@ -94,14 +104,15 @@ const search = defineModel<string>("search", { required: true });
 const categoryId = defineModel<number | null>("categoryId", { required: true });
 const sort = defineModel<ProductCatalogSort>("sort", { required: true });
 const discountOnly = defineModel<boolean>("discountOnly", { required: true });
+const inStockOnly = defineModel<boolean>("inStockOnly", { required: true });
 
 const selectUi = {
-  base: "h-[3.25rem] rounded-full bg-transparent",
+  base: "h-12 rounded-full bg-transparent",
   content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 ",
   viewport: "p-1"
 };
 const sortUi = {
-  base: "h-[3.25rem] rounded-full bg-transparent",
+  base: "h-12 rounded-full bg-transparent",
   content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 ",
   viewport: "p-1"
 };

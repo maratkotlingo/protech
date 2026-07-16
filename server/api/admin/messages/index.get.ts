@@ -1,18 +1,16 @@
-import { MessageSenderRole, Role } from "@prisma/client";
+import { MessageSenderRole } from "@prisma/client";
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event);
 
   const [users, unreadCounts] = await Promise.all([
     prisma.user.findMany({
-      where: {
-        role: Role.USER
-      },
       select: {
         id: true,
         email: true,
         name: true,
         image: true,
+        role: true,
         message: {
           orderBy: {
             createdAt: "desc"

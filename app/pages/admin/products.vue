@@ -250,6 +250,17 @@
                       <Pencil class="size-4" />
                     </UButton>
                   </UTooltip>
+                  <UTooltip text="Изображения">
+                    <UButton
+                      color="neutral"
+                      variant="ghost"
+                      square
+                      aria-label="Редактировать изображения товара"
+                      @click="openMediaEditor(product.id)"
+                    >
+                      <ImageIcon class="size-4" />
+                    </UButton>
+                  </UTooltip>
                   <UTooltip text="Удалить">
                     <UButton
                       color="error"
@@ -304,6 +315,12 @@
       @dictionaries-updated="refreshDictionaries"
     />
 
+    <ProductMediaEditorModal
+      v-model:open="mediaEditorOpen"
+      :product-id="selectedMediaProductId"
+      @saved="handleSaved"
+    />
+
     <AdminConfirmModal
       v-model:open="confirmOpen"
       v-bind="confirmOptions"
@@ -314,7 +331,7 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircle2, CircleOff, Download, PackageSearch, Pencil, Plus, RefreshCw, Search, Tags, Trash2 } from "@lucide/vue";
+import { CheckCircle2, CircleOff, Download, ImageIcon, PackageSearch, Pencil, Plus, RefreshCw, Search, Tags, Trash2 } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import {
@@ -342,6 +359,8 @@ const page = ref(1);
 const debouncedSearch = ref(filters.products.search);
 const editorOpen = ref(false);
 const selectedProductId = ref<number | null>(null);
+const mediaEditorOpen = ref(false);
+const selectedMediaProductId = ref<number | null>(null);
 const deletingId = ref<number | null>(null);
 const selectedProductIds = ref<number[]>([]);
 const bulkCategoryId = ref<number | undefined>(undefined);
@@ -440,6 +459,11 @@ function openCreate() {
 function openEdit(productId: number) {
   selectedProductId.value = productId;
   editorOpen.value = true;
+}
+
+function openMediaEditor(productId: number) {
+  selectedMediaProductId.value = productId;
+  mediaEditorOpen.value = true;
 }
 
 async function handleSaved() {

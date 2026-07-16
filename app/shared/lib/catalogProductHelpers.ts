@@ -122,7 +122,7 @@ export function stockLabel(product: ProductCardItem) {
     return "в наличии";
   }
 
-  return product.stockQuantity > 0 ? `${product.stockQuantity} шт.` : "ожидается";
+  return product.stockQuantity > 0 ? `${product.stockQuantity} шт.` : "нет в наличии";
 }
 
 export function discountPercent(product: ProductCardItem) {

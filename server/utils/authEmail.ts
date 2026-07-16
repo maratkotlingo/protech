@@ -29,7 +29,7 @@ export async function sendEmailVerification({ url, user }: VerificationEmailInpu
       text: [
         `Здравствуйте, ${displayName}!`,
         "",
-        "Подтвердите email, чтобы войти в аккаунт ProTech:",
+        "Подтвердите email, чтобы войти в аккаунт ПроТех76:",
         url,
         "",
         "Если вы не создавали аккаунт, просто проигнорируйте это письмо."

@@ -19,8 +19,8 @@
       </UButton>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-      <aside class="rounded-[2rem] bg-[#f9fafb] p-6 shadow-sm shadow-zinc-950/5  ">
+    <div class="grid items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+      <aside class="rounded-[2rem] bg-[#f9fafb] p-6 shadow-sm shadow-zinc-950/5 lg:sticky lg:top-8 lg:h-[360px] lg:self-start">
         <div class="flex items-end justify-between gap-4">
           <div>
             <p class="text-sm font-medium text-zinc-400">Средняя оценка</p>

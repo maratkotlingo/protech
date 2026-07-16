@@ -166,6 +166,40 @@
                   </dd>
                 </div>
               </dl>
+
+              <div class="mt-5 border-t border-[var(--admin-border)] pt-5">
+                <template v-if="order.user">
+                  <UFormField label="Сообщение заказчику">
+                    <UTextarea
+                      v-model="orderMessageDrafts[order.id]"
+                      :rows="3"
+                      :disabled="sendingMessageOrderId === order.id"
+                      placeholder="Напишите сообщение по этому заказу"
+                    />
+                  </UFormField>
+                  <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+                    <p class="text-xs text-[var(--admin-text-muted)]">
+                      Получатель: {{ order.user.name || order.user.email }}
+                    </p>
+                    <UButton
+                      color="primary"
+                      variant="soft"
+                      :disabled="!orderMessageDrafts[order.id]?.trim()"
+                      :loading="sendingMessageOrderId === order.id"
+                      @click="sendOrderMessage(order)"
+                    >
+                      <Send class="size-4" />
+                      Отправить
+                    </UButton>
+                  </div>
+                </template>
+                <p
+                  v-else
+                  class="rounded-lg bg-[var(--admin-surface-muted)] px-4 py-3 text-sm text-[var(--admin-text-muted)]"
+                >
+                  У заказа нет зарегистрированного аккаунта, поэтому сообщение через личный кабинет недоступно.
+                </p>
+              </div>
             </div>
           </div>
         </article>
@@ -192,7 +226,7 @@
 </template>
 
 <script setup lang="ts">
-import { ClipboardList, RefreshCw } from "@lucide/vue";
+import { ClipboardList, RefreshCw, Send } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import {
   buildQuery,
@@ -221,6 +255,8 @@ const filters = useAdminFiltersStore();
 const page = ref(1);
 const savingOrderId = ref<number | null>(null);
 const savingPaymentId = ref<number | null>(null);
+const sendingMessageOrderId = ref<number | null>(null);
+const orderMessageDrafts = reactive<Record<number, string>>({});
 
 watch(() => filters.orders.status, () => {
   page.value = 1;
@@ -304,6 +340,38 @@ async function updatePaymentStatus(order: OrderListItem, value: unknown) {
     toast.error(getErrorMessage(error, "Не удалось обновить оплату"));
   } finally {
     savingPaymentId.value = null;
+  }
+}
+
+async function sendOrderMessage(order: OrderListItem) {
+  const userId = order.user?.id;
+  const text = orderMessageDrafts[order.id]?.trim();
+
+  if (!userId) {
+    toast.error("У заказа нет зарегистрированного заказчика");
+    return;
+  }
+
+  if (!text) {
+    toast.error("Введите сообщение заказчику");
+    return;
+  }
+
+  sendingMessageOrderId.value = order.id;
+
+  try {
+    await adminFetch(`/api/admin/messages/${userId}`, {
+      method: "POST",
+      body: {
+        message: `По заказу #${order.id}\n\n${text}`
+      }
+    });
+    orderMessageDrafts[order.id] = "";
+    toast.success("Сообщение отправлено заказчику");
+  } catch (error) {
+    toast.error(getErrorMessage(error, "Не удалось отправить сообщение"));
+  } finally {
+    sendingMessageOrderId.value = null;
   }
 }
 </script>

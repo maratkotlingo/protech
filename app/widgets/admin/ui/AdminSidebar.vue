@@ -91,6 +91,7 @@ import {
   PanelLeftOpen,
   ScrollText,
   ShieldCheck,
+  Users,
   Warehouse
 } from "@lucide/vue";
 import { useAdminUiStore } from "~~/app/stores/adminUi";
@@ -115,6 +116,7 @@ const navItems = [
   { label: "Справочники", to: "/admin/catalog", icon: Layers3 },
   { label: "Заказы", to: "/admin/orders", icon: ClipboardList },
   { label: "Сообщения", to: "/admin/messages", icon: MessagesSquare },
+  { label: "Пользователи", to: "/admin/users", icon: Users },
   { label: "Отзывы", to: "/admin/reviews", icon: MessageSquareText },
   { label: "FAQ", to: "/admin/faq", icon: HelpCircle },
   { label: "Аудит", to: "/admin/audit", icon: ScrollText }

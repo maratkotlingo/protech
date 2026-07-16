@@ -31,8 +31,6 @@
 
         <ProductDetailsContent :product="product" />
 
-        <ProductSpecsGrid :attributes="product.productAttributes" />
-
         <ProductPriceChart v-if="product.productPrices.length" :prices="product.productPrices" />
 
         <ProductReviews :product-id="product.id" :reviews="product.reviews" @refresh="refresh()" />

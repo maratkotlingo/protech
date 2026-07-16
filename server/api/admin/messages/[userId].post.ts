@@ -1,4 +1,4 @@
-import { MessageSenderRole, MessageType, Role } from "@prisma/client";
+import { MessageSenderRole, MessageType } from "@prisma/client";
 import { sendMessageSchema } from "~~/shared/schemas/messages/message";
 import { broadcastMessageToAdmins, broadcastMessageToUser } from "~~/server/utils/messageRealtime";
 
@@ -14,10 +14,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await validateBody(event, sendMessageSchema);
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findUnique({
     where: {
-      id: userId,
-      role: Role.USER
+      id: userId
     },
     select: {
       id: true

@@ -12,6 +12,7 @@ export const useShopUiStore = defineStore("shop-ui", {
       minPrice: null as number | null,
       maxPrice: null as number | null,
       discountOnly: false,
+      inStockOnly: false,
       attributes: [] as ShopCatalogAttributeFilter[]
     }
   }),
@@ -23,6 +24,7 @@ export const useShopUiStore = defineStore("shop-ui", {
       this.catalog.minPrice = null;
       this.catalog.maxPrice = null;
       this.catalog.discountOnly = false;
+      this.catalog.inStockOnly = false;
       this.catalog.attributes = [];
     },
     isCatalogAttributeSelected(attributeId: number, value: string) {
