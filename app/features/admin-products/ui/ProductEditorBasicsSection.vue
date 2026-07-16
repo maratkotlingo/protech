@@ -125,7 +125,7 @@
         />
       </UFormField>
 
-      <div class="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-5">
+      <div class="rounded-md border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-5">
         <USwitch
           :model-value="form.isActive"
           label="Товар активен"

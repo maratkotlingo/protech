@@ -1,19 +1,19 @@
 <template>
-  <div class="flex flex-col gap-6 border-b border-[var(--admin-border)] pb-6 lg:flex-row lg:items-end lg:justify-between 2xl:pb-8">
-    <div class="space-y-3">
+  <section class="admin-page-header">
+    <div class="max-w-5xl">
       <p
         v-if="kicker"
-        class="text-sm font-semibold uppercase text-[var(--admin-accent)]"
+        class="text-xs font-semibold uppercase text-[var(--admin-accent-strong)]"
       >
         {{ kicker }}
       </p>
       <div>
-        <h1 class="text-4xl font-semibold text-[var(--admin-text)] sm:text-5xl">
+        <h1 class="mt-1 text-2xl font-semibold tracking-normal text-[var(--admin-text)] sm:text-3xl">
           {{ title }}
         </h1>
         <p
           v-if="description"
-          class="mt-4 max-w-5xl text-lg leading-8 text-[var(--admin-text-muted)]"
+          class="mt-2 max-w-4xl text-sm leading-6 text-[var(--admin-text-muted)]"
         >
           {{ description }}
         </p>
@@ -22,11 +22,11 @@
 
     <div
       v-if="$slots.actions"
-      class="flex flex-wrap items-center gap-3"
+      class="flex flex-wrap items-center gap-2"
     >
       <slot name="actions" />
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">

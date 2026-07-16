@@ -1,6 +1,6 @@
 <template>
   <form
-    class="space-y-3 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] p-3"
+    class="space-y-3 rounded-lg border border-[var(--admin-border)] bg-white p-3 shadow-sm shadow-zinc-950/5"
     @submit.prevent="$emit('submit')"
   >
     <UTextarea
@@ -16,6 +16,7 @@
       <UButton
         color="primary"
         type="submit"
+        class="rounded-md"
         :loading="loading"
         :disabled="!(modelValue ?? '').trim()"
       >

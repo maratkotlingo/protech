@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 2xl:space-y-10">
+  <div class="space-y-5">
     <AdminPageHeader
       title="FAQ и вопросы"
       kicker="Support"
@@ -18,9 +18,52 @@
       </template>
     </AdminPageHeader>
 
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <AdminMetricCard
+        label="Всего вопросов"
+        :value="formatNumber(totalQuestions)"
+        hint="С учетом текущего фильтра"
+        positive
+      >
+        <template #icon>
+          <HelpCircle class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Ждут ответа"
+        :value="formatNumber(pendingQuestionsCount)"
+        hint="Видимая очередь поддержки"
+        :positive="pendingQuestionsCount === 0"
+      >
+        <template #icon>
+          <CircleOff class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Отвечено"
+        :value="formatNumber(answeredQuestionsOnPage)"
+        hint="На текущей странице"
+        positive
+      >
+        <template #icon>
+          <CheckCircle2 class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="С изображениями"
+        :value="formatNumber(questionsWithImagesCount)"
+        hint="Вопросы с вложенными фото"
+        positive
+      >
+        <template #icon>
+          <ImageIcon class="size-7" />
+        </template>
+      </AdminMetricCard>
+    </div>
+
     <UCard
-      class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-      :ui="{ body: 'p-6 sm:p-7' }"
+      class="admin-filter-card"
+      :ui="{ body: 'p-4 sm:p-5' }"
     >
       <USwitch
         v-model="filters.faq.pendingOnly"
@@ -31,15 +74,15 @@
 
     <UCard
       v-if="selectedQuestionIds.length"
-      class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-      :ui="{ body: 'p-6 sm:p-7' }"
+      class="admin-card admin-action-bar"
+      :ui="{ body: 'p-4 sm:p-5' }"
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p class="text-lg font-semibold text-[var(--admin-text)]">
+          <p class="admin-section-heading">
             Выбрано вопросов: {{ selectedQuestionIds.length }}
           </p>
-          <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
+          <p class="admin-section-copy">
             Можно массово изменить статус ответа, удалить или экспортировать выбранные вопросы.
           </p>
         </div>
@@ -91,12 +134,30 @@
       :description="getErrorMessage(error)"
     />
 
+    <div class="flex flex-wrap items-center justify-between gap-3 px-1">
+      <div>
+        <p class="admin-section-heading">
+          Очередь вопросов
+        </p>
+        <p class="admin-section-copy">
+          Карточки сгруппированы так, чтобы сразу видеть автора, статус, вложения и форму ответа.
+        </p>
+      </div>
+      <UBadge
+        color="neutral"
+        variant="soft"
+        class="rounded-md"
+      >
+        {{ questions.length }} на странице
+      </UBadge>
+    </div>
+
     <div class="space-y-4">
       <UCard
         v-for="question in questions"
         :key="question.id"
-        class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-        :ui="{ body: 'p-6 sm:p-7' }"
+        class="admin-card"
+        :ui="{ body: 'p-4 sm:p-5' }"
       >
         <div class="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_440px]">
           <div class="space-y-4">
@@ -151,7 +212,7 @@
               </div>
             </div>
 
-            <p class="rounded-lg bg-[var(--admin-surface-muted)] p-4 text-sm leading-6 text-[var(--admin-text)]">
+            <p class="rounded-md bg-[#f9fafb] p-4 text-sm leading-6 text-[var(--admin-text)]">
               {{ question.comment }}
             </p>
 
@@ -164,7 +225,7 @@
                 :key="image.id ?? image.url"
                 :src="image.url"
                 alt=""
-                class="size-20 rounded-lg object-cover"
+                class="size-20 rounded-md object-cover"
               >
             </div>
 
@@ -178,7 +239,7 @@
               <div
                 v-for="answer in question.shopAnswers"
                 :key="answer.id"
-                class="rounded-lg border border-[var(--admin-border)] p-3 text-sm"
+                class="rounded-md border border-[var(--admin-border)] p-3 text-sm"
               >
                 <p class="text-[var(--admin-text)]">{{ answer.comment }}</p>
                 <p class="mt-2 text-xs text-[var(--admin-text-muted)]">
@@ -249,7 +310,7 @@
             />
           </UFormField>
 
-          <section class="space-y-3 rounded-lg border border-[var(--admin-border)] p-3">
+          <section class="space-y-3 rounded-md border border-[var(--admin-border)] p-3">
             <div class="flex items-center justify-between gap-3">
               <p class="text-lg font-semibold text-[var(--admin-text)]">
                 Изображения
@@ -266,7 +327,7 @@
             </div>
             <div
               v-if="questionErrors.shopQuestionImages"
-              class="rounded-lg bg-red-50 p-3 text-sm text-red-700  "
+              class="rounded-md bg-red-50 p-3 text-sm text-red-700  "
             >
               {{ questionErrors.shopQuestionImages }}
             </div>
@@ -325,10 +386,10 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircle2, CircleOff, Download, HelpCircle, Pencil, Plus, RefreshCw, Trash2 } from "@lucide/vue";
+import { CheckCircle2, CircleOff, Download, HelpCircle, ImageIcon, Pencil, Plus, RefreshCw, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
-import { buildQuery, formatDate, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { buildQuery, formatDate, formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { downloadCsv } from "~~/app/shared/lib/csvExport";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
 import { useAdminFiltersStore } from "~~/app/stores/adminFilters";
@@ -384,6 +445,10 @@ const { data: questionsData, pending, error, refresh } = await useAsyncData(
 );
 
 const questions = computed(() => questionsData.value?.items ?? []);
+const totalQuestions = computed(() => questionsData.value?.pagination?.total ?? questions.value.length);
+const pendingQuestionsCount = computed(() => questions.value.filter((question) => !question.isAnswered).length);
+const answeredQuestionsOnPage = computed(() => questions.value.filter((question) => question.isAnswered).length);
+const questionsWithImagesCount = computed(() => questions.value.filter((question) => question.shopQuestionImages.length > 0).length);
 const selectedQuestions = computed(() => questions.value.filter((question) => selectedQuestionIds.value.includes(question.id)));
 
 watch(questions, (items) => {

@@ -2,7 +2,7 @@
   <UBadge
     :color="color"
     variant="soft"
-    class="whitespace-nowrap"
+    class="whitespace-nowrap rounded-md font-medium"
   >
     {{ label }}
   </UBadge>

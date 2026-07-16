@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 2xl:space-y-10">
+  <div class="space-y-5">
     <AdminPageHeader
       title="Аналитика и статистика"
       kicker="Admin overview"
@@ -27,10 +27,10 @@
     </AdminPageHeader>
 
     <UCard
-      class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-      :ui="{ body: 'p-6 sm:p-7' }"
+      class="admin-filter-card"
+      :ui="{ body: 'p-4 sm:p-5' }"
     >
-      <div class="grid gap-6 xl:grid-cols-[minmax(300px,420px)_1fr] xl:items-end">
+      <div class="grid gap-6 2xl:grid-cols-[minmax(300px,420px)_1fr] 2xl:items-end">
         <div class="flex flex-wrap gap-3">
           <UButton
             v-for="period in periodOptions"
@@ -43,7 +43,7 @@
           </UButton>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
           <UFormField label="С даты">
             <UInput
               v-model="filters.analytics.startDate"
@@ -168,7 +168,7 @@
       />
 
       <UCard
-        class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+        class="admin-card"
         :ui="{ body: 'p-6' }"
       >
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
@@ -211,11 +211,11 @@
                       v-if="product.mainImage"
                       :src="product.mainImage"
                       alt=""
-                      class="size-14 rounded-lg object-cover"
+                      class="size-14 rounded-md object-cover"
                     >
                     <div
                       v-else
-                      class="grid size-14 place-items-center rounded-lg bg-[var(--admin-surface-muted)]"
+                      class="grid size-14 place-items-center rounded-md bg-[#f9fafb]"
                     >
                       <Package class="size-6 text-[var(--admin-text-muted)]" />
                     </div>
@@ -273,7 +273,7 @@
 
     <div class="grid gap-6 xl:grid-cols-2">
       <UCard
-        class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+        class="admin-card"
         :ui="{ body: 'p-6' }"
       >
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
@@ -298,13 +298,13 @@
           <div
             v-for="item in lowStockItems"
             :key="item.productId"
-            class="flex items-center justify-between gap-4 rounded-lg bg-[var(--admin-surface-muted)] p-4"
+            class="flex items-center justify-between gap-4 rounded-md bg-[#f9fafb] p-4"
           >
             <div class="flex min-w-0 items-center gap-4">
               <img
                 :src="item.mainImage"
                 alt=""
-                class="size-14 rounded-lg object-cover"
+                class="size-14 rounded-md object-cover"
               >
               <div class="min-w-0">
                 <p class="truncate text-base font-medium text-[var(--admin-text)]">
@@ -334,7 +334,7 @@
       </UCard>
 
       <UCard
-        class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+        class="admin-card"
         :ui="{ body: 'p-6' }"
       >
         <div class="mb-6">
@@ -350,7 +350,7 @@
           <div
             v-for="order in recentOrders"
             :key="order.id"
-            class="grid gap-4 rounded-lg bg-[var(--admin-surface-muted)] p-4 sm:grid-cols-[1fr_auto] sm:items-center"
+            class="grid gap-4 rounded-md bg-[#f9fafb] p-4 sm:grid-cols-[1fr_auto] sm:items-center"
           >
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">

@@ -1,21 +1,21 @@
 <template>
-  <div class="grid min-h-80 place-items-center rounded-lg border border-dashed border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-10 text-center">
+  <div class="grid min-h-64 place-items-center rounded-lg border border-dashed border-[var(--admin-border)] bg-[var(--admin-surface-muted)]/70 p-6 text-center sm:p-8">
     <div class="max-w-lg">
-      <div class="mx-auto grid size-16 place-items-center rounded-lg bg-[var(--admin-accent-soft)] text-[var(--admin-accent)]">
+      <div class="admin-icon-tile-soft mx-auto size-12">
         <slot name="icon" />
       </div>
-      <h3 class="mt-6 text-2xl font-semibold text-[var(--admin-text)]">
+      <h3 class="mt-4 text-lg font-semibold text-[var(--admin-text)]">
         {{ title }}
       </h3>
       <p
         v-if="description"
-        class="mt-3 text-base leading-7 text-[var(--admin-text-muted)]"
+        class="mt-2 text-sm leading-6 text-[var(--admin-text-muted)]"
       >
         {{ description }}
       </p>
       <div
         v-if="$slots.actions"
-        class="mt-7 flex justify-center gap-3"
+        class="mt-5 flex justify-center gap-3"
       >
         <slot name="actions" />
       </div>

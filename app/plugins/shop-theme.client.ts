@@ -3,9 +3,22 @@ import { SHOP_THEME_COLORS } from "~~/app/shared/config/colors";
 export default defineNuxtPlugin(() => {
   const root = document.documentElement;
 
-  root.classList.remove("dark");
-  root.style.colorScheme = "light";
-  localStorage.setItem("nuxt-color-mode", "light");
+  const forceLightMode = () => {
+    root.classList.remove("dark");
+    root.classList.add("light");
+    root.style.colorScheme = "light";
+    localStorage.setItem("nuxt-color-mode", "light");
+    document.cookie = "nuxt-color-mode=light; path=/; max-age=31536000";
+  };
+
+  forceLightMode();
+  requestAnimationFrame(forceLightMode);
+
+  new MutationObserver(() => {
+    if (root.classList.contains("dark")) {
+      forceLightMode();
+    }
+  }).observe(root, { attributeFilter: ["class"], attributes: true });
 
   root.style.setProperty("--shop-accent", SHOP_THEME_COLORS.accent);
   root.style.setProperty("--shop-accent-soft", SHOP_THEME_COLORS.accentSoft);

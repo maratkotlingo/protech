@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-5 rounded-lg border border-[var(--admin-border)] p-5 sm:p-6">
+  <section class="space-y-5 rounded-md border border-[var(--admin-border)] p-5 sm:p-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div>
         <h3 class="text-lg font-semibold text-[var(--admin-text)]">
@@ -32,7 +32,7 @@
       <div
         v-for="(attribute, index) in attributes"
         :key="index"
-        class="grid gap-3 rounded-lg bg-[var(--admin-surface-muted)] p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end"
+        class="grid gap-3 rounded-md bg-[#f9fafb] p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end"
       >
         <UFormField label="Характеристика">
           <USelect
@@ -67,7 +67,7 @@
 
       <div
         v-if="!attributes.length"
-        class="grid min-h-24 place-items-center rounded-lg bg-[var(--admin-surface-muted)] px-4 text-center text-sm text-[var(--admin-text-muted)]"
+        class="grid min-h-24 place-items-center rounded-md bg-[#f9fafb] px-4 text-center text-sm text-[var(--admin-text-muted)]"
       >
         Добавьте характеристику или создайте новую через селектор.
       </div>

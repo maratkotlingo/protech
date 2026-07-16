@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 2xl:space-y-10">
+  <div class="space-y-5">
     <AdminPageHeader
       title="Остатки"
       kicker="Inventory"
@@ -18,7 +18,7 @@
       </template>
     </AdminPageHeader>
 
-    <div class="grid gap-6 sm:grid-cols-3">
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <AdminMetricCard
         label="Всего позиций"
         :value="formatNumber(stocks.length)"
@@ -27,6 +27,16 @@
       >
         <template #icon>
           <Warehouse class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Единиц на складе"
+        :value="formatNumber(totalStockQuantity)"
+        hint="Суммарный доступный остаток"
+        positive
+      >
+        <template #icon>
+          <PackagePlus class="size-7" />
         </template>
       </AdminMetricCard>
       <AdminMetricCard
@@ -52,10 +62,28 @@
     </div>
 
     <UCard
-      class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-      :ui="{ body: 'p-6 sm:p-7' }"
+      class="admin-list-card"
+      :ui="{ body: 'p-0' }"
     >
-      <div class="space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+        <div>
+          <p class="admin-section-heading">
+            Приход на склад
+          </p>
+          <p class="admin-section-copy">
+            Быстро соберите поставку из нескольких товаров и примените остатки одной операцией.
+          </p>
+        </div>
+        <UBadge
+          color="neutral"
+          variant="soft"
+          class="rounded-md"
+        >
+          {{ arrivalItems.length }} в приходе
+        </UBadge>
+      </div>
+
+      <div class="space-y-5 p-4 sm:p-5">
         <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px_auto] xl:items-end">
           <UFormField label="Добавить товар в приход">
             <UInput
@@ -91,13 +119,13 @@
 
         <div
           v-if="arrivalSearch.trim()"
-          class="overflow-hidden rounded-lg border border-[var(--admin-border)]"
+          class="overflow-hidden rounded-md border border-[var(--admin-border)]"
         >
           <button
             v-for="stock in arrivalSearchResults"
             :key="stock.product.id"
             type="button"
-            class="flex w-full items-center justify-between gap-4 border-b border-[var(--admin-border)] px-4 py-3 text-left last:border-b-0 transition hover:bg-[var(--admin-surface-muted)]"
+            class="flex w-full items-center justify-between gap-4 border-b border-[var(--admin-border)] px-4 py-3 text-left last:border-b-0 transition hover:bg-[#f9fafb]"
             @click="addArrivalItem(stock)"
           >
             <span class="min-w-0">
@@ -124,10 +152,10 @@
 
         <div
           v-if="arrivalItems.length"
-          class="overflow-x-auto rounded-lg border border-[var(--admin-border)]"
+          class="overflow-x-auto rounded-md border border-[var(--admin-border)]"
         >
           <table class="w-full min-w-[760px] divide-y divide-[var(--admin-border)] text-sm">
-            <thead class="bg-[var(--admin-surface-muted)]">
+            <thead class="bg-[#f9fafb]">
               <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
                 <th class="px-4 py-3 font-medium">Товар</th>
                 <th class="px-4 py-3 font-medium">Сейчас</th>
@@ -140,7 +168,7 @@
               <tr
                 v-for="item in arrivalItems"
                 :key="item.productId"
-                class="transition hover:bg-[var(--admin-surface-muted)]"
+                class="transition hover:bg-[#f9fafb]"
               >
                 <td class="px-4 py-4">
                   <p class="font-medium text-[var(--admin-text)]">
@@ -191,8 +219,8 @@
     </UCard>
 
     <UCard
-      class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-      :ui="{ body: 'p-6 sm:p-7' }"
+      class="admin-filter-card"
+      :ui="{ body: 'p-4 sm:p-5' }"
     >
       <UFormField label="Поиск по остаткам">
         <UInput
@@ -217,15 +245,33 @@
     />
 
     <UCard
-      class="overflow-hidden border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+      class="admin-list-card"
       :ui="{ body: 'p-0' }"
     >
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+        <div>
+          <p class="admin-section-heading">
+            Остатки товаров
+          </p>
+          <p class="admin-section-copy">
+            Редактирование текущего количества без перехода в карточку товара.
+          </p>
+        </div>
+        <UBadge
+          color="neutral"
+          variant="soft"
+          class="rounded-md"
+        >
+          {{ filteredStocks.length }} позиций
+        </UBadge>
+      </div>
+
       <div
         v-if="filteredStocks.length"
         class="overflow-x-auto"
       >
         <table class="w-full min-w-[720px] divide-y divide-[var(--admin-border)] text-sm">
-          <thead class="bg-[var(--admin-surface-muted)]">
+          <thead class="bg-[#f9fafb]">
             <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
               <th class="px-4 py-3 font-medium">Товар</th>
               <th class="px-4 py-3 font-medium">Текущий остаток</th>
@@ -238,7 +284,7 @@
             <tr
               v-for="stock in filteredStocks"
               :key="stock.product.id"
-              class="transition hover:bg-[var(--admin-surface-muted)]"
+              class="transition hover:bg-[#f9fafb]"
             >
               <td class="px-4 py-4">
                 <p class="font-medium text-[var(--admin-text)]">
@@ -334,6 +380,7 @@ const draftQuantities = reactive<Record<number, number>>({});
 const { data, pending, error, refresh } = await useAsyncData("admin-product-stocks", () => adminFetch<ProductStock[]>("/api/admin/products/stock"));
 
 const stocks = computed(() => data.value ?? []);
+const totalStockQuantity = computed(() => stocks.value.reduce((total, stock) => total + stock.quantity, 0));
 const lowStockCount = computed(() => stocks.value.filter((stock) => stock.quantity > 0 && stock.quantity <= 5).length);
 const outOfStockCount = computed(() => stocks.value.filter((stock) => stock.quantity <= 0).length);
 const filteredStocks = computed(() => {

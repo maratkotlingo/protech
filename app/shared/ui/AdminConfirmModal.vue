@@ -8,7 +8,7 @@
       <div class="flex gap-4">
         <div
           :class="[
-            'grid size-14 shrink-0 place-items-center rounded-lg',
+            'grid size-12 shrink-0 place-items-center rounded-lg',
             color === 'error'
               ? 'bg-red-100 text-red-600  '
               : 'bg-[var(--admin-accent-soft)] text-[var(--admin-accent)]'
@@ -16,11 +16,11 @@
         >
           <AlertTriangle
             v-if="color === 'error'"
-            class="size-7"
+            class="size-6"
           />
           <CheckCircle2
             v-else
-            class="size-7"
+            class="size-6"
           />
         </div>
         <div class="min-w-0 space-y-2">

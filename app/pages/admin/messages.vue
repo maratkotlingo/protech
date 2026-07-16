@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 2xl:space-y-10">
+  <div class="space-y-5">
     <AdminPageHeader
       title="Сообщения"
       kicker="Support"
@@ -18,6 +18,49 @@
       </template>
     </AdminPageHeader>
 
+    <div class="grid gap-4 md:grid-cols-4">
+      <AdminMetricCard
+        label="Диалогов"
+        :value="formatNumber(conversations.length)"
+        hint="Всего доступных тредов"
+        positive
+      >
+        <template #icon>
+          <Inbox class="size-6" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="С непрочитанными"
+        :value="formatNumber(unreadConversationsCount)"
+        hint="Диалоги, где нужен ответ"
+        :positive="unreadConversationsCount === 0"
+      >
+        <template #icon>
+          <BellDot class="size-6" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Непрочитанных"
+        :value="formatNumber(unreadMessagesCount)"
+        hint="Сумма по всем диалогам"
+        :positive="unreadMessagesCount === 0"
+      >
+        <template #icon>
+          <MessageSquare class="size-6" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="В выбранном треде"
+        :value="formatNumber(messages.length)"
+        hint="Сообщений в открытом диалоге"
+        positive
+      >
+        <template #icon>
+          <MessagesSquare class="size-6" />
+        </template>
+      </AdminMetricCard>
+    </div>
+
     <UAlert
       v-if="conversationsError"
       color="error"
@@ -26,12 +69,29 @@
       :description="getErrorMessage(conversationsError)"
     />
 
-    <div class="grid min-h-[720px] gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
+    <div class="grid min-h-[680px] gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
       <UCard
-        class="overflow-hidden border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+        class="admin-list-card"
         :ui="{ body: 'p-0' }"
       >
         <div class="border-b border-[var(--admin-border)] p-4">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <p class="admin-section-heading">
+                Входящие
+              </p>
+              <p class="admin-section-copy">
+                {{ filteredConversations.length }} из {{ conversations.length }} диалогов
+              </p>
+            </div>
+            <UBadge
+              :color="socketConnected ? 'success' : 'neutral'"
+              variant="soft"
+              class="rounded-md"
+            >
+              {{ socketConnected ? "онлайн" : "история" }}
+            </UBadge>
+          </div>
           <UInput
             v-model="search"
             icon="i-lucide-search"
@@ -40,16 +100,25 @@
           />
         </div>
 
-        <div class="max-h-[650px] overflow-y-auto">
+        <div class="admin-muted-scroll max-h-[620px] overflow-y-auto">
           <button
             v-for="conversation in filteredConversations"
             :key="conversation.user.id"
             type="button"
-            class="flex w-full gap-3 border-b border-[var(--admin-border)] p-4 text-left transition hover:bg-[var(--admin-surface-muted)]"
-            :class="selectedUserId === conversation.user.id ? 'bg-[var(--admin-accent-soft)]' : ''"
+            class="flex w-full gap-3 border-b border-[var(--admin-border)] p-3 text-left transition hover:bg-[var(--admin-surface-muted)]/80"
+            :class="selectedUserId === conversation.user.id ? 'bg-[var(--admin-accent-soft)]/80 shadow-[inset_3px_0_0_var(--admin-accent)]' : ''"
             @click="selectConversation(conversation.user.id)"
           >
-            <div class="grid size-11 shrink-0 place-items-center rounded-lg bg-[var(--admin-surface-muted)] text-sm font-semibold text-[var(--admin-text)]">
+            <img
+              v-if="conversation.user.image"
+              :src="conversation.user.image"
+              alt=""
+              class="size-10 shrink-0 rounded-lg object-cover ring-1 ring-[var(--admin-border)]"
+            >
+            <div
+              v-else
+              class="admin-avatar size-10 shrink-0 text-xs"
+            >
               {{ getInitials(conversation.user.name || conversation.user.email) }}
             </div>
 
@@ -65,7 +134,7 @@
                 </div>
                 <span
                   v-if="conversation.unreadCount"
-                  class="grid min-w-6 place-items-center rounded-full bg-[var(--admin-accent)] px-2 py-0.5 text-xs font-semibold text-white"
+                  class="grid min-w-6 place-items-center rounded-md bg-[var(--admin-accent)] px-2 py-0.5 text-xs font-semibold text-white"
                 >
                   {{ conversation.unreadCount }}
                 </span>
@@ -76,9 +145,10 @@
               </p>
               <time
                 v-if="conversation.lastMessage"
-                class="mt-2 block text-xs text-[var(--admin-text-muted)]"
+                class="mt-2 flex items-center justify-between gap-2 text-xs text-[var(--admin-text-muted)]"
               >
-                {{ formatDate(conversation.lastMessage.createdAt) }}
+                <span>{{ formatDate(conversation.lastMessage.createdAt) }}</span>
+                <span>{{ conversation.totalMessages }} сообщ.</span>
               </time>
             </div>
           </button>
@@ -96,19 +166,24 @@
       </UCard>
 
       <UCard
-        class="overflow-hidden border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-        :ui="{ body: 'flex h-full min-h-[720px] flex-col p-0' }"
+        class="admin-list-card"
+        :ui="{ body: 'flex h-full min-h-[680px] flex-col p-0' }"
       >
         <template v-if="selectedUser">
-          <header class="border-b border-[var(--admin-border)] p-5">
+          <header class="border-b border-[var(--admin-border)] bg-white p-4">
             <div class="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p class="text-xl font-semibold text-[var(--admin-text)]">
-                  {{ selectedUser.name || selectedUser.email }}
-                </p>
-                <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
-                  {{ selectedUser.email }} · {{ socketConnected ? "онлайн" : "история" }}
-                </p>
+              <div class="flex min-w-0 items-center gap-3">
+                <div class="admin-avatar size-11 shrink-0 text-sm">
+                  {{ getInitials(selectedUser.name || selectedUser.email) }}
+                </div>
+                <div class="min-w-0">
+                  <p class="truncate text-lg font-semibold text-[var(--admin-text)]">
+                    {{ selectedUser.name || selectedUser.email }}
+                  </p>
+                  <p class="truncate text-sm text-[var(--admin-text-muted)]">
+                    {{ selectedUser.email }} · {{ messages.length }} сообщений
+                  </p>
+                </div>
               </div>
 
               <UButton
@@ -125,7 +200,7 @@
 
           <div
             ref="messagesContainer"
-            class="min-h-0 flex-1 overflow-y-auto bg-[var(--admin-surface-muted)] p-5"
+            class="admin-muted-scroll min-h-0 flex-1 overflow-y-auto bg-[var(--admin-surface-muted)] p-4"
           >
             <div
               v-if="threadPending"
@@ -150,7 +225,7 @@
                 :class="message.senderRole === 'ADMIN' ? 'justify-end' : 'justify-start'"
               >
                 <div
-                  class="max-w-[min(44rem,82%)] rounded-lg px-4 py-3 shadow-sm"
+                  class="max-w-[min(44rem,84%)] rounded-lg px-4 py-3 shadow-sm"
                   :class="message.senderRole === 'ADMIN'
                     ? 'bg-[var(--admin-accent)] text-white shadow-green-950/10'
                     : 'bg-[var(--admin-surface)] text-[var(--admin-text)] ring-1 ring-[var(--admin-border)]'"
@@ -186,7 +261,7 @@
           </div>
 
           <form
-            class="border-t border-[var(--admin-border)] bg-[var(--admin-surface)] p-5"
+            class="border-t border-[var(--admin-border)] bg-white p-4"
             @submit.prevent="sendMessage"
           >
             <UFormField :error="messageError">
@@ -215,7 +290,7 @@
 
         <div
           v-else
-          class="grid min-h-[720px] place-items-center p-6"
+          class="grid min-h-[680px] place-items-center p-6"
         >
           <AdminEmptyState
             title="Выберите диалог"
@@ -232,9 +307,9 @@
 </template>
 
 <script setup lang="ts">
-import { MessageSquare, RefreshCw } from "@lucide/vue";
+import { BellDot, Inbox, MessageSquare, MessagesSquare, RefreshCw } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import { formatDate, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { formatDate, formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import type {
   AdminMessage,
@@ -283,6 +358,10 @@ const {
 );
 
 const conversations = computed(() => conversationsData.value?.conversations ?? []);
+const unreadConversationsCount = computed(() => conversations.value.filter((conversation) => conversation.unreadCount > 0).length);
+const unreadMessagesCount = computed(() =>
+  conversations.value.reduce((total, conversation) => total + conversation.unreadCount, 0)
+);
 const filteredConversations = computed(() => {
   const query = search.value.trim().toLowerCase();
 

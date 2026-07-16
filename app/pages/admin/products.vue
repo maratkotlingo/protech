@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 2xl:space-y-10">
+  <div class="space-y-5">
     <AdminPageHeader
       title="Товары"
       kicker="Catalog"
@@ -25,9 +25,52 @@
       </template>
     </AdminPageHeader>
 
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <AdminMetricCard
+        label="Всего товаров"
+        :value="formatNumber(totalProducts)"
+        hint="С учетом текущих фильтров каталога"
+        positive
+      >
+        <template #icon>
+          <PackageSearch class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Активны на странице"
+        :value="formatNumber(activeProductsOnPage)"
+        hint="Видны покупателям в магазине"
+        positive
+      >
+        <template #icon>
+          <CheckCircle2 class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Низкий остаток"
+        :value="formatNumber(lowStockProductsOnPage)"
+        hint="5 штук или меньше в текущей выдаче"
+        :positive="lowStockProductsOnPage === 0"
+      >
+        <template #icon>
+          <PackageX class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Средняя цена"
+        :value="formatCurrency(averageVisiblePrice)"
+        hint="По товарам на текущей странице"
+        positive
+      >
+        <template #icon>
+          <Tags class="size-7" />
+        </template>
+      </AdminMetricCard>
+    </div>
+
     <UCard
-      class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-      :ui="{ body: 'p-6 sm:p-7' }"
+      class="admin-filter-card"
+      :ui="{ body: 'p-4 sm:p-5' }"
     >
       <div class="grid gap-4 lg:grid-cols-[1fr_280px_220px]">
         <UFormField label="Поиск">
@@ -71,18 +114,36 @@
     />
 
     <UCard
-      class="overflow-hidden border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+      class="admin-list-card"
       :ui="{ body: 'p-0' }"
     >
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+        <div>
+          <p class="admin-section-heading">
+            Список товаров
+          </p>
+          <p class="admin-section-copy">
+            Быстрое редактирование, медиа и массовые операции.
+          </p>
+        </div>
+        <UBadge
+          color="neutral"
+          variant="soft"
+          class="rounded-md"
+        >
+          {{ productsData?.pagination?.total ?? products.length }} товаров
+        </UBadge>
+      </div>
+
       <div
         v-if="selectedProductIds.length"
-        class="flex flex-wrap items-end justify-between gap-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface-muted)] px-4 py-3"
+        class="admin-action-bar flex flex-wrap items-end justify-between gap-3 px-4 py-3"
       >
         <div>
-          <p class="text-lg font-semibold text-[var(--admin-text)]">
+          <p class="admin-section-heading">
             Выбрано товаров: {{ selectedProductIds.length }}
           </p>
-          <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
+          <p class="admin-section-copy">
             Массовые операции применяются к выбранным строкам текущей выдачи.
           </p>
         </div>
@@ -147,7 +208,7 @@
         class="overflow-x-auto"
       >
         <table class="w-full min-w-[980px] divide-y divide-[var(--admin-border)] text-sm">
-          <thead class="bg-[var(--admin-surface-muted)]">
+          <thead class="bg-[#f9fafb]">
             <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
               <th class="w-12 px-4 py-3">
                 <input
@@ -170,7 +231,7 @@
             <tr
               v-for="product in products"
               :key="product.id"
-              class="align-top transition hover:bg-[var(--admin-surface-muted)]"
+              class="align-top transition hover:bg-[#f9fafb]"
             >
               <td class="px-4 py-4">
                 <input
@@ -186,7 +247,7 @@
                   <img
                     :src="product.mainImage"
                     alt=""
-                    class="size-14 rounded-lg object-cover"
+                  class="size-14 rounded-md object-cover"
                   >
                   <div class="min-w-0">
                     <p class="truncate font-medium text-[var(--admin-text)]">
@@ -331,13 +392,14 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircle2, CircleOff, Download, ImageIcon, PackageSearch, Pencil, Plus, RefreshCw, Search, Tags, Trash2 } from "@lucide/vue";
+import { CheckCircle2, CircleOff, Download, ImageIcon, PackageSearch, PackageX, Pencil, Plus, RefreshCw, Search, Tags, Trash2 } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import {
   buildQuery,
   formatCurrency,
   formatDate,
+  formatNumber,
   getErrorMessage
 } from "~~/app/shared/lib/adminFormatters";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
@@ -418,6 +480,16 @@ const { data: productsData, pending, error, refresh } = await useAsyncData(
 const products = computed(() => productsData.value?.items ?? []);
 const categories = computed(() => dictionaries.value?.categories ?? []);
 const attributes = computed(() => dictionaries.value?.attributes ?? []);
+const totalProducts = computed(() => productsData.value?.pagination?.total ?? products.value.length);
+const activeProductsOnPage = computed(() => products.value.filter((product) => product.isActive).length);
+const lowStockProductsOnPage = computed(() => products.value.filter((product) => stockQuantity(product) <= 5).length);
+const averageVisiblePrice = computed(() => {
+  if (!products.value.length) {
+    return 0;
+  }
+
+  return products.value.reduce((total, product) => total + Number(product.currentPrice ?? 0), 0) / products.value.length;
+});
 const categoryFilterItems = computed(() => [
   { label: "Все категории", value: null },
   ...categories.value.map((category) => ({ label: category.name, value: category.id }))

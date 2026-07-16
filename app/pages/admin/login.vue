@@ -1,18 +1,21 @@
 <template>
-  <main class="grid min-h-screen place-items-center bg-[var(--admin-surface-muted)] px-5 py-12">
+  <main
+    class="admin-shell grid min-h-screen place-items-center px-5 py-12"
+    data-admin-theme
+  >
     <UCard
-      class="w-full max-w-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] shadow-2xl shadow-green-950/10 "
-      :ui="{ body: 'p-8 sm:p-10' }"
+      class="admin-card w-full max-w-xl"
+      :ui="{ body: 'p-6 sm:p-8' }"
     >
-      <div class="mb-9 space-y-6 text-center">
-        <div class="mx-auto grid size-16 place-items-center rounded-lg bg-[var(--admin-accent)] text-white">
-          <ShieldCheck class="size-8" />
+      <div class="mb-7 space-y-5 text-center">
+        <div class="admin-icon-tile mx-auto size-14">
+          <Zap class="size-7" />
         </div>
         <div>
-          <h1 class="text-3xl font-semibold text-[var(--admin-text)]">
+          <h1 class="text-2xl font-semibold text-[var(--admin-text)]">
             Вход в ProTech Admin
           </h1>
-          <p class="mt-3 text-base leading-7 text-[var(--admin-text-muted)]">
+          <p class="mt-2 text-sm leading-6 text-[var(--admin-text-muted)]">
             Используйте учетную запись с ролью ADMIN.
           </p>
         </div>
@@ -91,17 +94,30 @@
           block
           type="submit"
           :loading="loading"
+          class="rounded-md shadow-lg shadow-emerald-800/15"
         >
           <LogIn class="size-5" />
           Войти
         </UButton>
       </form>
+
+      <div class="mt-7 flex justify-center">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-store"
+          to="/"
+          class="rounded-md"
+        >
+          Вернуться в магазин
+        </UButton>
+      </div>
     </UCard>
   </main>
 </template>
 
 <script setup lang="ts">
-import { Eye, EyeOff, LockKeyhole, LogIn, Mail, ShieldCheck } from "@lucide/vue";
+import { Eye, EyeOff, LockKeyhole, LogIn, Mail, Zap } from "@lucide/vue";
 import { z } from "zod";
 import { toast } from "vue-sonner";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";

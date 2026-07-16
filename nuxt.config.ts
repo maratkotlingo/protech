@@ -64,6 +64,9 @@ export default defineNuxtConfig({
     description: "Интернет-магазин техники, аксессуаров и комплектующих ProTech",
     defaultLocale: "ru"
   },
+  schemaOrg: {
+    defaults: false
+  },
   nitro: {
     compressPublicAssets: true,
     experimental: {

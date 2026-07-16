@@ -1,5 +1,5 @@
-<template>
-  <div class="space-y-8 2xl:space-y-10">
+﻿<template>
+  <div class="space-y-5">
     <AdminPageHeader
       title="Справочники"
       kicker="Catalog dictionaries"
@@ -18,6 +18,49 @@
       </template>
     </AdminPageHeader>
 
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <AdminMetricCard
+        label="Категории"
+        :value="formatNumber(categories.length)"
+        hint="Основная навигация каталога"
+        positive
+      >
+        <template #icon>
+          <FolderTree class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Характеристики"
+        :value="formatNumber(attributes.length)"
+        hint="Поля, доступные в карточках товаров"
+        positive
+      >
+        <template #icon>
+          <ListChecks class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Используются"
+        :value="formatNumber(usedAttributesCount)"
+        hint="Уже привязаны хотя бы к одному товару"
+        positive
+      >
+        <template #icon>
+          <Pencil class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Без единиц"
+        :value="formatNumber(attributesWithoutUnitCount)"
+        hint="Можно уточнить для лучшего сравнения"
+        :positive="attributesWithoutUnitCount === 0"
+      >
+        <template #icon>
+          <Tags class="size-7" />
+        </template>
+      </AdminMetricCard>
+    </div>
+
     <UAlert
       v-if="error"
       color="error"
@@ -28,16 +71,16 @@
 
     <div class="grid gap-6 xl:grid-cols-2">
       <UCard
-        class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+        class="admin-list-card"
         :ui="{ body: 'p-0' }"
       >
         <template #header>
           <div class="flex items-center justify-between gap-4">
             <div>
-              <p class="text-xl font-semibold text-[var(--admin-text)]">
+              <p class="admin-section-heading">
                 Категории
               </p>
-              <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
+              <p class="admin-section-copy">
                 Основная группировка товаров.
               </p>
             </div>
@@ -51,11 +94,14 @@
           </div>
         </template>
 
-        <div class="divide-y divide-[var(--admin-border)]">
+        <div
+          v-if="categories.length"
+          class="divide-y divide-[var(--admin-border)]"
+        >
           <div
             v-for="category in categories"
             :key="category.id"
-            class="flex items-center justify-between gap-4 px-6 py-5"
+            class="flex items-center justify-between gap-4 px-4 py-4 transition hover:bg-[#f9fafb]"
           >
             <div class="min-w-0">
               <p class="truncate font-medium text-[var(--admin-text)]">
@@ -92,19 +138,36 @@
             </div>
           </div>
         </div>
+        <AdminEmptyState
+          v-else-if="!pending"
+          title="Категорий пока нет"
+          description="Создайте первую категорию, чтобы сгруппировать товары каталога."
+        >
+          <template #icon>
+            <FolderTree class="size-6" />
+          </template>
+          <template #actions>
+            <UButton
+              color="primary"
+              @click="openCategoryForm()"
+            >
+              Добавить категорию
+            </UButton>
+          </template>
+        </AdminEmptyState>
       </UCard>
 
       <UCard
-        class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+        class="admin-list-card"
         :ui="{ body: 'p-0' }"
       >
         <template #header>
           <div class="flex items-center justify-between gap-4">
             <div>
-              <p class="text-xl font-semibold text-[var(--admin-text)]">
+              <p class="admin-section-heading">
                 Характеристики
               </p>
-              <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
+              <p class="admin-section-copy">
                 Параметры, которые привязываются к товарам.
               </p>
             </div>
@@ -118,11 +181,14 @@
           </div>
         </template>
 
-        <div class="divide-y divide-[var(--admin-border)]">
+        <div
+          v-if="attributes.length"
+          class="divide-y divide-[var(--admin-border)]"
+        >
           <div
             v-for="attribute in attributes"
             :key="attribute.id"
-            class="flex items-center justify-between gap-4 px-6 py-5"
+            class="flex items-center justify-between gap-4 px-4 py-4 transition hover:bg-[#f9fafb]"
           >
             <div class="min-w-0">
               <p class="truncate font-medium text-[var(--admin-text)]">
@@ -165,6 +231,23 @@
             </div>
           </div>
         </div>
+        <AdminEmptyState
+          v-else-if="!pending"
+          title="Характеристик пока нет"
+          description="Добавьте параметры, которые помогут сравнивать товары внутри категорий."
+        >
+          <template #icon>
+            <ListChecks class="size-6" />
+          </template>
+          <template #actions>
+            <UButton
+              color="primary"
+              @click="openAttributeForm()"
+            >
+              Добавить характеристику
+            </UButton>
+          </template>
+        </AdminEmptyState>
       </UCard>
     </div>
 
@@ -267,10 +350,10 @@
 </template>
 
 <script setup lang="ts">
-import { Pencil, Plus, RefreshCw, Trash2 } from "@lucide/vue";
+import { FolderTree, ListChecks, Pencil, Plus, RefreshCw, Tags, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
-import { getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
 import type { Attribute, Category } from "~~/app/shared/types/admin";
 import { categorySchema } from "~~/shared/schemas/admin/products/category";
@@ -319,6 +402,8 @@ const { data, pending, error, refresh } = await useAsyncData("admin-catalog-dict
 
 const categories = computed(() => data.value?.categories ?? []);
 const attributes = computed(() => data.value?.attributes ?? []);
+const usedAttributesCount = computed(() => attributes.value.filter((attribute) => (attribute._count?.productAttributes ?? 0) > 0).length);
+const attributesWithoutUnitCount = computed(() => attributes.value.filter((attribute) => !attribute.unit).length);
 
 function openCategoryForm(category?: Category) {
   editingCategory.value = category ?? null;

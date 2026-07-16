@@ -22,7 +22,7 @@
         class="space-y-7"
         @submit.prevent="save"
       >
-        <section class="space-y-4 rounded-lg border border-[var(--admin-border)] p-5">
+        <section class="space-y-4 rounded-md border border-[var(--admin-border)] p-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 class="text-lg font-semibold text-[var(--admin-text)]">
@@ -52,7 +52,7 @@
             </label>
           </div>
 
-          <div class="overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)]">
+          <div class="overflow-hidden rounded-md border border-[var(--admin-border)] bg-[var(--admin-surface-muted)]">
             <img
               v-if="mainImage"
               :src="mainImage"
@@ -81,7 +81,7 @@
           </UFormField>
         </section>
 
-        <section class="space-y-4 rounded-lg border border-[var(--admin-border)] p-5">
+        <section class="space-y-4 rounded-md border border-[var(--admin-border)] p-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 class="text-lg font-semibold text-[var(--admin-text)]">
@@ -136,9 +136,9 @@
             <div
               v-for="(image, index) in productImages"
               :key="index"
-              class="space-y-3 rounded-lg bg-[var(--admin-surface-muted)] p-3"
+              class="space-y-3 rounded-md bg-[#f9fafb] p-3"
             >
-              <div class="overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)]">
+              <div class="overflow-hidden rounded-md border border-[var(--admin-border)] bg-white">
                 <img
                   v-if="image.url"
                   :src="image.url"
@@ -176,7 +176,7 @@
 
           <div
             v-else
-            class="grid min-h-32 place-items-center rounded-lg bg-[var(--admin-surface-muted)] px-4 text-center text-sm text-[var(--admin-text-muted)]"
+            class="grid min-h-32 place-items-center rounded-md bg-[#f9fafb] px-4 text-center text-sm text-[var(--admin-text-muted)]"
           >
             Добавьте URL или загрузите изображение в галерею.
           </div>

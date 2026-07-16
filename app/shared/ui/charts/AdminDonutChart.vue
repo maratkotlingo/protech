@@ -1,21 +1,21 @@
 <template>
-  <div class="min-h-[24rem] rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] p-6">
-    <div class="mb-6">
-      <p class="text-xl font-semibold text-[var(--admin-text)]">
+  <div class="admin-card min-h-[20rem] p-5">
+    <div class="mb-5">
+      <p class="admin-section-heading">
         {{ title }}
       </p>
       <p
         v-if="description"
-        class="mt-1 text-base leading-6 text-[var(--admin-text-muted)]"
+        class="admin-section-copy"
       >
         {{ description }}
       </p>
     </div>
 
-    <div class="grid gap-7 sm:grid-cols-[240px_1fr] sm:items-center">
+    <div class="grid gap-5 sm:grid-cols-[200px_1fr] sm:items-center">
       <svg
         viewBox="0 0 180 180"
-        class="mx-auto size-60"
+        class="mx-auto size-48"
         role="img"
         :aria-label="title"
       >
@@ -24,7 +24,7 @@
           cy="90"
           r="62"
           fill="none"
-          stroke="var(--admin-surface-muted)"
+          stroke="#f3f4f6"
           stroke-width="22"
         />
         <circle
@@ -59,7 +59,7 @@
         </text>
       </svg>
 
-      <div class="space-y-4">
+      <div class="space-y-3">
         <div
           v-for="slice in slices"
           :key="slice.label"
@@ -70,11 +70,11 @@
               class="size-3.5 shrink-0 rounded-full"
               :style="{ backgroundColor: slice.color }"
             />
-            <p class="truncate text-base text-[var(--admin-text)]">
+            <p class="truncate text-sm text-[var(--admin-text)]">
               {{ slice.label }}
             </p>
           </div>
-          <p class="whitespace-nowrap text-base font-medium text-[var(--admin-text)]">
+          <p class="whitespace-nowrap text-sm font-semibold text-[var(--admin-text)]">
             {{ slice.value }}
           </p>
         </div>

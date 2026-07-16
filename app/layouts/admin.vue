@@ -1,12 +1,18 @@
 <template>
-  <div class="min-h-screen bg-[var(--admin-surface-muted)]">
+  <div
+    class="admin-shell min-h-screen"
+    data-admin-theme
+  >
     <div
       v-if="pending"
       class="grid min-h-screen place-items-center p-6"
     >
-      <UCard class="w-full max-w-md border border-[var(--admin-border)] bg-[var(--admin-surface)]">
+      <UCard
+        class="admin-card w-full max-w-md"
+        :ui="{ body: 'p-6' }"
+      >
         <div class="flex items-center gap-4">
-          <div class="grid size-12 place-items-center rounded-lg bg-[var(--admin-accent-soft)] text-[var(--admin-accent)]">
+          <div class="admin-icon-tile-soft size-12">
             <LoaderCircle class="size-6 animate-spin" />
           </div>
           <div>
@@ -25,9 +31,12 @@
       v-else-if="error"
       class="grid min-h-screen place-items-center p-6"
     >
-      <UCard class="w-full max-w-lg border border-[var(--admin-border)] bg-[var(--admin-surface)]">
+      <UCard
+        class="admin-card w-full max-w-lg"
+        :ui="{ body: 'p-7 sm:p-8' }"
+      >
         <div class="space-y-5 text-center">
-          <div class="mx-auto grid size-14 place-items-center rounded-lg bg-red-100 text-red-600">
+          <div class="mx-auto grid size-14 place-items-center rounded-[1.35rem] bg-red-100 text-red-600">
             <LockKeyhole class="size-7" />
           </div>
           <div>
@@ -51,7 +60,7 @@
 
     <div
       v-else
-      class="flex min-h-screen"
+      class="admin-layout"
     >
       <div class="hidden shrink-0 lg:block">
         <AdminSidebar :collapsed="ui.sidebarCollapsed" />
@@ -62,11 +71,11 @@
         class="fixed inset-0 z-40 lg:hidden"
       >
         <button
-          class="absolute inset-0 bg-black/40"
-          aria-label="Закрыть меню"
+          class="absolute inset-0 bg-zinc-950/40 backdrop-blur-sm"
+          aria-label="Закрыть навигацию"
           @click="mobileMenuOpen = false"
         />
-        <div class="relative h-full w-full max-w-[21rem] shadow-2xl">
+        <div class="relative h-full w-full max-w-[19rem]">
           <AdminSidebar
             fluid
             :show-collapse="false"
@@ -75,13 +84,13 @@
         </div>
       </div>
 
-      <div class="flex min-w-0 flex-1 flex-col">
+      <div class="admin-content">
         <AdminTopbar
           :user="data?.user"
           @open-menu="mobileMenuOpen = true"
         />
-        <main class="flex-1 overflow-x-hidden bg-[var(--admin-surface-muted)] px-5 py-8 sm:px-8 lg:px-10 xl:px-12 2xl:px-14">
-          <div class="mx-auto w-full max-w-[1840px]">
+        <main class="admin-main">
+          <div class="admin-container">
             <slot />
           </div>
         </main>

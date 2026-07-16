@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 2xl:space-y-10">
+  <div class="space-y-5">
     <AdminPageHeader
       title="Пользователи"
       kicker="Access"
@@ -18,9 +18,52 @@
       </template>
     </AdminPageHeader>
 
+    <div class="grid gap-4 md:grid-cols-4">
+      <AdminMetricCard
+        label="Пользователей"
+        :value="formatNumber(usersData?.pagination.total ?? users.length)"
+        hint="С учётом текущего фильтра"
+        positive
+      >
+        <template #icon>
+          <Users class="size-6" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Администраторы"
+        :value="formatNumber(adminsOnPage)"
+        hint="На текущей странице"
+        positive
+      >
+        <template #icon>
+          <ShieldCheck class="size-6" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Подтверждены"
+        :value="formatNumber(verifiedOnPage)"
+        hint="Email подтверждён"
+        positive
+      >
+        <template #icon>
+          <MailCheck class="size-6" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Активность"
+        :value="formatNumber(activityOnPage)"
+        hint="Заказы, сообщения и отзывы"
+        positive
+      >
+        <template #icon>
+          <Activity class="size-6" />
+        </template>
+      </AdminMetricCard>
+    </div>
+
     <UCard
-      class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-      :ui="{ body: 'p-6 sm:p-7' }"
+      class="admin-filter-card"
+      :ui="{ body: 'p-4 sm:p-5' }"
     >
       <div class="grid gap-4 lg:grid-cols-[1fr_260px]">
         <UFormField label="Поиск">
@@ -55,15 +98,33 @@
     />
 
     <UCard
-      class="overflow-hidden border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+      class="admin-list-card"
       :ui="{ body: 'p-0' }"
     >
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+        <div>
+          <p class="admin-section-heading">
+            Аккаунты и роли
+          </p>
+          <p class="admin-section-copy">
+            Управляйте правами доступа и быстро оценивайте активность покупателей.
+          </p>
+        </div>
+        <UBadge
+          color="neutral"
+          variant="soft"
+          class="rounded-md"
+        >
+          {{ users.length }} на странице
+        </UBadge>
+      </div>
+
       <div
         v-if="users.length"
         class="overflow-x-auto"
       >
         <table class="w-full min-w-[980px] divide-y divide-[var(--admin-border)] text-sm">
-          <thead class="bg-[var(--admin-surface-muted)]">
+          <thead class="bg-[#f9fafb]">
             <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
               <th class="px-4 py-3 font-medium">Пользователь</th>
               <th class="px-4 py-3 font-medium">Роль</th>
@@ -77,7 +138,7 @@
             <tr
               v-for="user in users"
               :key="user.id"
-              class="align-top transition hover:bg-[var(--admin-surface-muted)]"
+              class="align-top transition hover:bg-[#f9fafb]"
             >
               <td class="px-4 py-4">
                 <div class="flex items-center gap-3">
@@ -89,7 +150,7 @@
                   >
                   <div
                     v-else
-                    class="grid size-11 shrink-0 place-items-center rounded-lg bg-[var(--admin-surface-muted)] text-sm font-semibold text-[var(--admin-text)]"
+                    class="admin-avatar size-11 shrink-0 text-sm"
                   >
                     {{ getInitials(user.name || user.email) }}
                   </div>
@@ -108,6 +169,7 @@
                   <UBadge
                     :color="roleColor(user.role)"
                     variant="soft"
+                    class="rounded-md"
                   >
                     {{ roleLabels[user.role] }}
                   </UBadge>
@@ -129,10 +191,18 @@
                   false-label="Не подтвержден"
                 />
               </td>
-              <td class="px-4 py-4 text-[var(--admin-text-muted)]">
-                <p>{{ user._count.orders }} заказов</p>
-                <p>{{ user._count.message }} сообщений</p>
-                <p>{{ user._count.reviews }} отзывов</p>
+              <td class="px-4 py-4">
+                <div class="flex flex-wrap gap-2">
+                  <span class="rounded-md bg-[var(--admin-surface-muted)] px-2 py-1 text-xs font-medium text-[var(--admin-text-muted)]">
+                    {{ user._count.orders }} заказов
+                  </span>
+                  <span class="rounded-md bg-[var(--admin-surface-muted)] px-2 py-1 text-xs font-medium text-[var(--admin-text-muted)]">
+                    {{ user._count.message }} сообщений
+                  </span>
+                  <span class="rounded-md bg-[var(--admin-surface-muted)] px-2 py-1 text-xs font-medium text-[var(--admin-text-muted)]">
+                    {{ user._count.reviews }} отзывов
+                  </span>
+                </div>
               </td>
               <td class="whitespace-nowrap px-4 py-4 text-[var(--admin-text-muted)]">
                 {{ formatDate(user.createdAt) }}
@@ -166,11 +236,11 @@
 </template>
 
 <script setup lang="ts">
-import { RefreshCw, Search, Users } from "@lucide/vue";
+import { Activity, MailCheck, RefreshCw, Search, ShieldCheck, Users } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
-import { buildQuery, formatDate, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { buildQuery, formatDate, formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { getZodFieldErrors } from "~~/app/shared/lib/zodValidation";
 import type { AdminUserListItem, PaginatedResponse, UserRole } from "~~/app/shared/types/admin";
 import { updateUserRoleSchema } from "~~/shared/schemas/admin/users/updateUserRole";
@@ -214,6 +284,11 @@ const { data: usersData, pending, error, refresh } = await useAsyncData(
 );
 
 const users = computed(() => usersData.value?.items ?? []);
+const adminsOnPage = computed(() => users.value.filter((user) => user.role === "ADMIN").length);
+const verifiedOnPage = computed(() => users.value.filter((user) => user.emailVerified).length);
+const activityOnPage = computed(() =>
+  users.value.reduce((total, user) => total + user._count.orders + user._count.message + user._count.reviews, 0)
+);
 const roleItems = Object.entries(roleLabels).map(([value, label]) => ({ value, label }));
 const roleFilterItems = [
   { value: "all", label: "Все" },

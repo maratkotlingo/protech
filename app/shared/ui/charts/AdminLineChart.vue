@@ -1,13 +1,13 @@
 <template>
-  <div class="h-full min-h-[30rem] rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] p-6">
-    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+  <div class="admin-card h-full min-h-[24rem] p-5">
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
       <div>
-        <p class="text-xl font-semibold text-[var(--admin-text)]">
+        <p class="admin-section-heading">
           {{ title }}
         </p>
         <p
           v-if="description"
-          class="mt-1 text-base leading-6 text-[var(--admin-text-muted)]"
+          class="admin-section-copy"
         >
           {{ description }}
         </p>
@@ -29,7 +29,7 @@
 
     <svg
       :viewBox="`0 0 ${width} ${height}`"
-      class="h-96 w-full overflow-visible"
+      class="h-80 w-full overflow-visible"
       role="img"
       :aria-label="title"
     >
@@ -59,7 +59,7 @@
         stroke="var(--admin-chart-green)"
         stroke-linecap="round"
         stroke-linejoin="round"
-          stroke-width="4"
+        stroke-width="3"
       />
       <path
         v-if="secondaryPath"
@@ -69,7 +69,7 @@
         stroke-dasharray="6 6"
         stroke-linecap="round"
         stroke-linejoin="round"
-        stroke-width="4"
+        stroke-width="3"
       />
 
       <g>

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 2xl:space-y-10">
+  <div class="space-y-5">
     <AdminPageHeader
       title="Заказы"
       kicker="Operations"
@@ -18,11 +18,54 @@
       </template>
     </AdminPageHeader>
 
+    <div class="grid gap-4 md:grid-cols-4">
+      <AdminMetricCard
+        label="Заказов в выдаче"
+        :value="formatNumber(ordersData?.pagination.total ?? orders.length)"
+        hint="С учётом выбранного статуса"
+        positive
+      >
+        <template #icon>
+          <ClipboardList class="size-6" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Новые"
+        :value="formatNumber(newOrdersCount)"
+        hint="Требуют подтверждения"
+        :positive="newOrdersCount === 0"
+      >
+        <template #icon>
+          <Clock3 class="size-6" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="В работе"
+        :value="formatNumber(activeOrdersCount)"
+        hint="Не завершены и не отменены"
+        positive
+      >
+        <template #icon>
+          <Truck class="size-6" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Оплачено на странице"
+        :value="formatCurrency(paidVisibleRevenue)"
+        hint="Только заказы со статусом оплаты PAID"
+        positive
+      >
+        <template #icon>
+          <Banknote class="size-6" />
+        </template>
+      </AdminMetricCard>
+    </div>
+
     <UCard
-      class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-      :ui="{ body: 'p-6 sm:p-7' }"
+      class="admin-filter-card"
+      :ui="{ body: 'p-4 sm:p-5' }"
     >
-      <div class="max-w-lg">
+      <div class="grid gap-4 lg:grid-cols-[360px_1fr] lg:items-end">
         <UFormField label="Статус заказа">
           <USelect
             v-model="filters.orders.status"
@@ -31,6 +74,17 @@
             :items="orderStatusFilterItems"
           />
         </UFormField>
+        <div class="flex flex-wrap gap-2">
+          <UButton
+            v-for="quickStatus in quickStatusItems"
+            :key="quickStatus.value"
+            :color="filters.orders.status === quickStatus.value ? 'primary' : 'neutral'"
+            :variant="filters.orders.status === quickStatus.value ? 'solid' : 'outline'"
+            @click="setOrderStatusFilter(quickStatus.value)"
+          >
+            {{ quickStatus.label }}
+          </UButton>
+        </div>
       </div>
     </UCard>
 
@@ -43,17 +97,35 @@
     />
 
     <UCard
-      class="overflow-hidden border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+      class="admin-list-card"
       :ui="{ body: 'p-0' }"
     >
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+        <div>
+          <p class="admin-section-heading">
+            Лента заказов
+          </p>
+          <p class="admin-section-copy">
+            Обновляйте статусы, оплату и связывайтесь с покупателем из одной карточки.
+          </p>
+        </div>
+        <UBadge
+          color="neutral"
+          variant="soft"
+          class="rounded-md"
+        >
+          {{ ordersData?.pagination?.total ?? orders.length }} заказов
+        </UBadge>
+      </div>
+
       <div class="divide-y divide-[var(--admin-border)]">
         <article
           v-for="order in orders"
           :key="order.id"
-          class="p-6 transition hover:bg-[var(--admin-surface-muted)]"
+          class="p-4 transition hover:bg-[var(--admin-surface-muted)]/70 sm:p-5"
         >
-          <div class="grid gap-6 xl:grid-cols-[1fr_auto]">
-            <div class="min-w-0">
+          <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_520px]">
+            <div class="min-w-0 rounded-lg border border-[var(--admin-border)] bg-white p-4">
               <div class="flex flex-wrap items-center gap-2">
                 <h2 class="text-base font-semibold text-[var(--admin-text)]">
                   Заказ #{{ order.id }}
@@ -71,16 +143,35 @@
               <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
                 {{ order.user?.name || order.user?.email || "Гость" }} · {{ formatDate(order.createdAt) }}
               </p>
-              <p class="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[var(--admin-text)]">
-                <UIcon
-                  name="i-lucide-phone"
-                  class="size-4 text-[var(--admin-text-muted)]"
-                />
-                {{ order.customerPhone || "Телефон не указан" }}
-              </p>
+              <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                <div class="rounded-lg bg-[var(--admin-surface-muted)]/80 p-3">
+                  <p class="text-xs font-semibold uppercase text-[var(--admin-text-subtle)]">
+                    Телефон
+                  </p>
+                  <p class="mt-1 truncate text-sm font-medium text-[var(--admin-text)]">
+                    {{ order.customerPhone || "Не указан" }}
+                  </p>
+                </div>
+                <div class="rounded-lg bg-[var(--admin-surface-muted)]/80 p-3">
+                  <p class="text-xs font-semibold uppercase text-[var(--admin-text-subtle)]">
+                    Получение
+                  </p>
+                  <p class="mt-1 truncate text-sm font-medium text-[var(--admin-text)]">
+                    {{ obtainingMethodLabels[order.obtainingMethod] }}
+                  </p>
+                </div>
+                <div class="rounded-lg bg-[var(--admin-surface-muted)]/80 p-3">
+                  <p class="text-xs font-semibold uppercase text-[var(--admin-text-subtle)]">
+                    Сумма
+                  </p>
+                  <p class="mt-1 truncate text-sm font-semibold text-[var(--admin-text)]">
+                    {{ formatCurrency(order.payment?.amount) }}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div class="grid gap-4 sm:grid-cols-2 xl:w-[560px]">
+            <div class="grid gap-3 rounded-lg border border-[var(--admin-border)] bg-white p-4 sm:grid-cols-2">
               <UFormField label="Статус">
                 <USelect
                   :model-value="order.orderStatus"
@@ -104,21 +195,29 @@
             </div>
           </div>
 
-          <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
-            <div class="space-y-2">
+          <div class="mt-5 grid gap-5 lg:grid-cols-[1fr_320px]">
+            <div class="space-y-2 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)]/55 p-3">
+              <div class="mb-2 flex items-center justify-between gap-3">
+                <p class="text-sm font-semibold text-[var(--admin-text)]">
+                  Состав заказа
+                </p>
+                <span class="text-xs text-[var(--admin-text-muted)]">
+                  {{ order.orderItems.length }} поз.
+                </span>
+              </div>
               <div
                 v-for="item in order.orderItems"
                 :key="item.product.id"
-                class="flex items-center justify-between gap-4 rounded-lg bg-[var(--admin-surface)] p-4 ring-1 ring-[var(--admin-border)]"
+                class="flex items-center justify-between gap-4 rounded-lg bg-white p-3 ring-1 ring-[var(--admin-border)]"
               >
                 <div class="flex min-w-0 items-center gap-3">
                   <img
                     :src="item.product.mainImage"
                     alt=""
-                    class="size-14 rounded-lg object-cover"
+                    class="size-12 rounded-lg object-cover"
                   >
                   <div class="min-w-0">
-                    <p class="truncate text-base font-medium text-[var(--admin-text)]">
+                    <p class="truncate text-sm font-medium text-[var(--admin-text)]">
                       {{ item.product.name }}
                     </p>
                     <p class="text-xs text-[var(--admin-text-muted)]">
@@ -126,13 +225,16 @@
                     </p>
                   </div>
                 </div>
-                <p class="whitespace-nowrap text-base font-semibold text-[var(--admin-text)]">
+                <p class="whitespace-nowrap text-sm font-semibold text-[var(--admin-text)]">
                   {{ formatCurrency(Number(item.price) * item.quantity) }}
                 </p>
               </div>
             </div>
 
-            <div class="rounded-lg bg-[var(--admin-surface)] p-5 ring-1 ring-[var(--admin-border)]">
+            <div class="rounded-lg bg-white p-4 ring-1 ring-[var(--admin-border)]">
+              <p class="mb-3 text-sm font-semibold text-[var(--admin-text)]">
+                Детали и связь
+              </p>
               <dl class="space-y-3 text-sm">
                 <div class="flex justify-between gap-4">
                   <dt class="text-[var(--admin-text-muted)]">Сумма</dt>
@@ -226,12 +328,13 @@
 </template>
 
 <script setup lang="ts">
-import { ClipboardList, RefreshCw, Send } from "@lucide/vue";
+import { Banknote, ClipboardList, Clock3, RefreshCw, Send, Truck } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import {
   buildQuery,
   formatCurrency,
   formatDate,
+  formatNumber,
   getErrorMessage,
   obtainingMethodLabels,
   orderStatusLabels,
@@ -280,6 +383,27 @@ const orderStatusFilterItems = [
   { value: "all", label: "Все" },
   ...orderStatusItems
 ];
+const quickStatusItems = [
+  { value: "all" as const, label: "Все" },
+  { value: "NEW" as const, label: "Новые" },
+  { value: "PROCESSING" as const, label: "В работе" },
+  { value: "COMPLETED" as const, label: "Завершённые" }
+];
+const newOrdersCount = computed(() => orders.value.filter((order) => order.orderStatus === "NEW").length);
+const activeOrdersCount = computed(() =>
+  orders.value.filter((order) => !["COMPLETED", "CANCELLED"].includes(order.orderStatus)).length
+);
+const paidVisibleRevenue = computed(() =>
+  orders.value.reduce((sum, order) => (
+    order.payment?.paymentStatus === "PAID"
+      ? sum + Number(order.payment.amount ?? 0)
+      : sum
+  ), 0)
+);
+
+function setOrderStatusFilter(status: "all" | OrderStatus) {
+  filters.orders.status = status;
+}
 
 function deliveryDetails(order: OrderListItem) {
   if (!order.delivery) {

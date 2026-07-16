@@ -1,5 +1,5 @@
-<template>
-  <div class="space-y-8 2xl:space-y-10">
+﻿<template>
+  <div class="space-y-5">
     <AdminPageHeader
       title="Аудит"
       kicker="Security"
@@ -18,9 +18,52 @@
       </template>
     </AdminPageHeader>
 
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <AdminMetricCard
+        label="Событий"
+        :value="formatNumber(totalLogs)"
+        hint="С учетом текущих фильтров"
+        positive
+      >
+        <template #icon>
+          <ScrollText class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Входы и выходы"
+        :value="formatNumber(authLogsOnPage)"
+        hint="На текущей странице журнала"
+        positive
+      >
+        <template #icon>
+          <ShieldCheck class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Изменения"
+        :value="formatNumber(changeLogsOnPage)"
+        hint="Контент, заказы, склад и ответы"
+        positive
+      >
+        <template #icon>
+          <Activity class="size-7" />
+        </template>
+      </AdminMetricCard>
+      <AdminMetricCard
+        label="Удаления"
+        :value="formatNumber(deleteLogsOnPage)"
+        hint="Операции, требующие внимания"
+        :positive="deleteLogsOnPage === 0"
+      >
+        <template #icon>
+          <Trash2 class="size-7" />
+        </template>
+      </AdminMetricCard>
+    </div>
+
     <UCard
-      class="border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-      :ui="{ body: 'p-6 sm:p-7' }"
+      class="admin-filter-card"
+      :ui="{ body: 'p-4 sm:p-5' }"
     >
       <div class="grid gap-4 lg:grid-cols-[1fr_280px_260px]">
         <UFormField label="Поиск">
@@ -63,15 +106,33 @@
     />
 
     <UCard
-      class="overflow-hidden border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+      class="admin-list-card"
       :ui="{ body: 'p-0' }"
     >
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+        <div>
+          <p class="admin-section-heading">
+            Журнал событий
+          </p>
+          <p class="admin-section-copy">
+            Последовательная история действий администраторов и системных операций.
+          </p>
+        </div>
+        <UBadge
+          color="neutral"
+          variant="soft"
+          class="rounded-md"
+        >
+          {{ logs.length }} на странице
+        </UBadge>
+      </div>
+
       <div
         v-if="logs.length"
         class="overflow-x-auto"
       >
         <table class="w-full min-w-[920px] divide-y divide-[var(--admin-border)] text-sm">
-          <thead class="bg-[var(--admin-surface-muted)]">
+          <thead class="bg-[#f9fafb]">
             <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
               <th class="px-4 py-3 font-medium">Время</th>
               <th class="px-4 py-3 font-medium">Админ</th>
@@ -84,7 +145,7 @@
             <tr
               v-for="log in logs"
               :key="log.id"
-              class="align-top transition hover:bg-[var(--admin-surface-muted)]"
+              class="align-top transition hover:bg-[#f9fafb]"
             >
               <td class="whitespace-nowrap px-4 py-4 text-[var(--admin-text-muted)]">
                 {{ formatDate(log.createdAt) }}
@@ -101,6 +162,7 @@
                 <UBadge
                   :color="actionColor(log.action)"
                   variant="soft"
+                  class="rounded-md"
                 >
                   {{ actionLabels[log.action] ?? log.action }}
                 </UBadge>
@@ -119,7 +181,7 @@
                 </p>
                 <pre
                   v-if="log.metadata"
-                  class="mt-3 max-w-4xl overflow-x-auto rounded-lg bg-[var(--admin-surface-muted)] p-4 text-sm text-[var(--admin-text-muted)]"
+                  class="mt-3 max-w-4xl overflow-x-auto rounded-md bg-[#f9fafb] p-4 text-sm text-[var(--admin-text-muted)]"
                 >{{ formatMetadata(log.metadata) }}</pre>
               </td>
             </tr>
@@ -148,10 +210,10 @@
 </template>
 
 <script setup lang="ts">
-import { RefreshCw, ScrollText, Search } from "@lucide/vue";
+import { Activity, RefreshCw, ScrollText, Search, ShieldCheck, Trash2 } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
-import { buildQuery, formatDate, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { buildQuery, formatDate, formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import type { AuditAction, AuditLogItem, PaginatedResponse } from "~~/app/shared/types/admin";
 
 definePageMeta({
@@ -208,6 +270,12 @@ const { data: auditData, pending, error, refresh } = await useAsyncData(
 );
 
 const logs = computed(() => auditData.value?.items ?? []);
+const totalLogs = computed(() => auditData.value?.pagination?.total ?? logs.value.length);
+const authLogsOnPage = computed(() => logs.value.filter((log) => log.action === "LOGIN" || log.action === "LOGOUT").length);
+const deleteLogsOnPage = computed(() => logs.value.filter((log) => log.action === "DELETE" || log.action === "BULK_DELETE").length);
+const changeLogsOnPage = computed(() =>
+  logs.value.filter((log) => !["LOGIN", "LOGOUT", "DELETE", "BULK_DELETE"].includes(log.action)).length
+);
 const actionItems = computed(() => [
   { label: "Все", value: "all" },
   ...((auditData.value?.filters.actions ?? []) as AuditAction[]).map((item) => ({

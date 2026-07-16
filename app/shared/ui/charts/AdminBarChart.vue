@@ -1,33 +1,33 @@
 <template>
-  <div class="min-h-[24rem] rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] p-6">
-    <div class="mb-6">
-      <p class="text-xl font-semibold text-[var(--admin-text)]">
+  <div class="admin-card min-h-[20rem] p-5">
+    <div class="mb-5">
+      <p class="admin-section-heading">
         {{ title }}
       </p>
       <p
         v-if="description"
-        class="mt-1 text-base leading-6 text-[var(--admin-text-muted)]"
+        class="admin-section-copy"
       >
         {{ description }}
       </p>
     </div>
 
-    <div class="space-y-5">
+    <div class="space-y-4">
       <div
         v-for="item in normalizedItems"
         :key="item.label"
-        class="grid grid-cols-[minmax(140px,240px)_1fr_auto] items-center gap-5"
+        class="grid grid-cols-[minmax(120px,220px)_1fr_auto] items-center gap-4"
       >
-        <p class="truncate text-base text-[var(--admin-text)]">
+        <p class="truncate text-sm text-[var(--admin-text)]">
           {{ item.label }}
         </p>
-        <div class="h-4 overflow-hidden rounded-full bg-[var(--admin-surface-muted)]">
+        <div class="h-2.5 overflow-hidden rounded-md bg-[#f3f4f6]">
           <div
-            class="h-full rounded-full bg-[var(--admin-accent)]"
+            class="h-full rounded-md bg-[var(--admin-accent)]"
             :style="{ width: `${item.percent}%` }"
           />
         </div>
-        <p class="text-base font-medium text-[var(--admin-text)]">
+        <p class="text-sm font-semibold text-[var(--admin-text)]">
           {{ item.formatted }}
         </p>
       </div>
