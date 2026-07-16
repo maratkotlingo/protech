@@ -194,6 +194,12 @@ const form = reactive({
   rememberMe: true
 });
 
+const loginPayload = computed(() => ({
+  email: form.email,
+  password: form.password,
+  rememberMe: form.rememberMe
+}));
+
 const benefits = [
   {
     title: "Корзина синхронизируется",
@@ -228,13 +234,42 @@ const redirectTo = computed(() => {
   return redirect?.startsWith("/") && !redirect.startsWith("/admin") ? redirect : "/";
 });
 
+const verificationCallbackUrl = computed(() => {
+  const params = new URLSearchParams({ verified: "1" });
+
+  if (redirectTo.value !== "/") {
+    params.set("redirect", redirectTo.value);
+  }
+
+  return `/auth?${params.toString()}`;
+});
+
+onMounted(async () => {
+  const verified = Array.isArray(route.query.verified) ? route.query.verified[0] : route.query.verified;
+
+  if (verified !== "1") {
+    return;
+  }
+
+  const user = auth.user ?? await auth.fetchMe();
+
+  if (user) {
+    toast.success("Почта подтверждена");
+    await navigateTo(redirectTo.value, { replace: true });
+    return;
+  }
+
+  mode.value = "login";
+  toast.success("Почта подтверждена. Теперь войдите в аккаунт");
+});
+
 async function submit() {
   const parsed = mode.value === "login"
-    ? loginSchema.safeParse(form)
-    : registerSchema.safeParse(form);
+    ? { mode: "login" as const, result: loginSchema.safeParse(loginPayload.value) }
+    : { mode: "register" as const, result: registerSchema.safeParse(form) };
 
-  if (!parsed.success) {
-    replaceFieldErrors(fieldErrors, getZodFieldErrors(parsed.error));
+  if (!parsed.result.success) {
+    replaceFieldErrors(fieldErrors, getZodFieldErrors(parsed.result.error));
     toast.error("Проверьте поля формы");
     return;
   }
@@ -242,14 +277,21 @@ async function submit() {
   clearFieldErrors(fieldErrors);
 
   try {
-    if (mode.value === "login") {
-      const loginData = loginSchema.parse(form);
-      await auth.login(loginData);
+    if (parsed.mode === "login") {
+      await auth.login({
+        ...parsed.result.data,
+        callbackURL: verificationCallbackUrl.value
+      });
       toast.success("Вы вошли в аккаунт");
     } else {
-      const registerData = registerSchema.parse(form);
-      await auth.register(registerData);
-      toast.success("Аккаунт создан");
+      await auth.register({
+        ...parsed.result.data,
+        callbackURL: verificationCallbackUrl.value
+      });
+      mode.value = "login";
+      form.password = "";
+      toast.success("Аккаунт создан. Проверьте почту и подтвердите email");
+      return;
     }
 
     await Promise.all([
@@ -258,8 +300,18 @@ async function submit() {
     ]);
     await navigateTo(redirectTo.value, { replace: true });
   } catch (error) {
-    toast.error(getErrorMessage(error, mode.value === "login" ? "Не удалось войти" : "Не удалось создать аккаунт"));
+    toast.error(getAuthErrorMessage(error, mode.value === "login" ? "Не удалось войти" : "Не удалось создать аккаунт"));
   }
+}
+
+function getAuthErrorMessage(error: unknown, fallback: string) {
+  const message = getErrorMessage(error, fallback);
+
+  if (message === "Email not verified" || message === "EMAIL_NOT_VERIFIED") {
+    return "Подтвердите почту: мы отправили письмо со ссылкой";
+  }
+
+  return message;
 }
 
 function togglePasswordVisibility() {

@@ -2,6 +2,7 @@ import { shopFetch } from "~~/app/shared/lib/shopFetch";
 import type { ShopUser } from "~~/app/shared/types/shop";
 
 type LoginPayload = {
+  callbackURL?: string;
   email: string;
   password: string;
   rememberMe: boolean;
@@ -65,6 +66,7 @@ export const useAuthStore = defineStore("shop-auth", {
           method: "POST",
           credentials: "include",
           body: {
+            callbackURL: payload.callbackURL,
             email: payload.email,
             password: payload.password,
             name: payload.name
@@ -72,11 +74,6 @@ export const useAuthStore = defineStore("shop-auth", {
         });
 
         this.lastEmail = payload.email;
-        await this.login({
-          email: payload.email,
-          password: payload.password,
-          rememberMe: payload.rememberMe
-        });
       } finally {
         this.pending = false;
       }
@@ -87,7 +84,8 @@ export const useAuthStore = defineStore("shop-auth", {
       try {
         await $fetch("/api/auth/sign-out", {
           method: "POST",
-          credentials: "include"
+          credentials: "include",
+          body: {}
         });
       } finally {
         this.user = null;

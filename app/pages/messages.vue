@@ -21,8 +21,7 @@
               </div>
             </div>
 
-            <UButton
-color="neutral" variant="soft" icon="i-lucide-refresh-cw" square
+            <UButton color="neutral" variant="soft" icon="i-lucide-refresh-cw" square
               class="rounded-full bg-[#f3f4f6] transition duration-300 hover:scale-105" :loading="loading"
               aria-label="Обновить сообщения" @click="loadMessages" />
           </div>
@@ -33,28 +32,23 @@ color="neutral" variant="soft" icon="i-lucide-refresh-cw" square
             <USkeleton v-for="item in 5" :key="item" class="h-18 rounded-lg" />
           </div>
 
-          <OrderEmptyState
-v-else-if="!messages.length" icon="i-lucide-message-circle" title="Сообщений пока нет"
+          <OrderEmptyState v-else-if="!messages.length" icon="i-lucide-message-circle" title="Сообщений пока нет"
             description="Напишите нам по заказу, оплате, доставке или товару." class="mx-auto max-w-xl bg-white" />
 
           <div v-else v-auto-animate class="space-y-4">
-            <article
-v-for="message in messages" :key="message.id" class="flex"
+            <article v-for="message in messages" :key="message.id" class="flex"
               :class="message.senderRole === 'USER' ? 'justify-end' : 'justify-start'">
-              <div
-class="max-w-[min(42rem,86%)] rounded-[1.15rem] px-4 py-3 shadow-sm" :class="message.senderRole === 'USER'
+              <div class="max-w-[min(42rem,86%)] rounded-[1.15rem] px-4 py-3 shadow-sm" :class="message.senderRole === 'USER'
                 ? 'rounded-br-sm bg-emerald-600 text-white shadow-emerald-950/10'
                 : 'rounded-bl-sm bg-white text-zinc-950 shadow-zinc-950/5 ring-1 ring-zinc-100'">
-                <p
-class="text-xs font-semibold"
+                <p class="text-xs font-semibold"
                   :class="message.senderRole === 'USER' ? 'text-emerald-50/80' : 'text-zinc-400'">
                   {{ getSenderLabel(message.senderRole) }}
                 </p>
                 <p class="mt-1 whitespace-pre-line wrap-break-words text-sm leading-6">
                   {{ message.message }}
                 </p>
-                <time
-class="mt-2 block text-xs"
+                <time class="mt-2 block text-xs"
                   :class="message.senderRole === 'USER' ? 'text-emerald-50/70' : 'text-zinc-400'">
                   {{ formatDateTime(message.createdAt) }}
                 </time>
@@ -67,17 +61,14 @@ class="mt-2 block text-xs"
           <UFormField :error="messageError">
             <div
               class="flex items-end gap-2 rounded-[1.55rem] bg-[#f3f4f6] p-2 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45">
-              <textarea
-ref="messageInput" v-model="draftMessage"
-                class="h-14 min-h-14 max-h-[10.5rem] flex-1 resize-none overflow-y-hidden rounded-[1.2rem] bg-transparent px-4 py-4 text-sm leading-6 text-zinc-950 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-60"
+              <textarea ref="messageInput" v-model="draftMessage"
+                class="h-14 min-h-14 max-h-42 flex-1 resize-none overflow-y-hidden rounded-[1.2rem] bg-transparent px-4 py-4 text-sm leading-6 text-zinc-950 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-60"
                 :disabled="submitting" placeholder="Сообщение" rows="1" @input="resizeMessageInput"
                 @keydown.enter.exact.prevent="sendMessage" />
-              <button
-type="submit"
+              <button type="submit"
                 class="mb-1 grid size-12 shrink-0 place-items-center rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-950/15 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
                 :disabled="!draftMessage.trim()" aria-label="Отправить сообщение">
-                <UIcon
-:name="submitting ? 'i-lucide-loader-circle' : 'i-lucide-send'" class="size-4"
+                <UIcon :name="submitting ? 'i-lucide-loader-circle' : 'i-lucide-send'" class="size-4"
                   :class="submitting ? 'animate-spin' : ''" />
               </button>
             </div>

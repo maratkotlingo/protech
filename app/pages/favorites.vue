@@ -1,13 +1,11 @@
 <template>
   <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-    <section class="overflow-hidden rounded-[2rem] bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8  ">
+    <section class="overflow-hidden rounded-4xl bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8  ">
       <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div class="max-w-3xl">
-          <p class="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1.5 text-sm font-semibold text-rose-700  ">
-            <UIcon
-              name="i-lucide-heart"
-              class="size-4 fill-current"
-            />
+          <p
+            class="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1.5 text-sm font-semibold text-rose-700  ">
+            <UIcon name="i-lucide-heart" class="size-4 fill-current" />
             Подборка
           </p>
           <h1 class="mt-4 text-4xl font-semibold tracking-normal text-zinc-950 sm:text-5xl ">
@@ -19,96 +17,47 @@
         </div>
 
         <div class="flex flex-col gap-3 sm:flex-row lg:justify-end">
-          <UButton
-            color="primary"
-            icon="i-lucide-layout-grid"
-            to="/"
-            size="lg"
-            class="rounded-full px-5 transition duration-300 hover:scale-[1.02]"
-          >
+          <UButton color="primary" icon="i-lucide-layout-grid" to="/" size="lg"
+            class="rounded-full px-5 transition duration-300 hover:scale-[1.02]">
             В каталог
           </UButton>
-          <UButton
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-shopping-bag"
-            to="/cart"
-            size="lg"
-            class="rounded-full bg-[#f3f4f6] px-5 transition duration-300 hover:scale-[1.02] "
-          >
+          <UButton color="neutral" variant="soft" icon="i-lucide-shopping-bag" to="/cart" size="lg"
+            class="rounded-full bg-[#f3f4f6] px-5 transition duration-300 hover:scale-[1.02] ">
             Корзина
           </UButton>
         </div>
       </div>
 
       <div class="mt-8 grid gap-3 sm:grid-cols-3">
-        <div
-          v-for="metric in metrics"
-          :key="metric.label"
-          class="rounded-[1.5rem] bg-[#f9fafb] p-4 "
-        >
+        <div v-for="metric in metrics" :key="metric.label" class="rounded-[1.5rem] bg-[#f9fafb] p-4 ">
           <div class="flex items-center justify-between gap-4">
             <p class="text-sm text-zinc-500">{{ metric.label }}</p>
-            <UIcon
-              :name="metric.icon"
-              class="size-5 text-zinc-400"
-            />
+            <UIcon :name="metric.icon" class="size-5 text-zinc-400" />
           </div>
           <p class="mt-2 text-2xl font-semibold text-zinc-950">{{ metric.value }}</p>
         </div>
       </div>
     </section>
 
-    <div
-      v-if="loading"
-      class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
-    >
-      <USkeleton
-        v-for="item in 8"
-        :key="item"
-        class="h-[520px] rounded-3xl"
-      />
+    <div v-if="loading" class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4">
+      <USkeleton v-for="item in 8" :key="item" class="h-130 rounded-3xl" />
     </div>
 
-    <OrderEmptyState
-      v-else-if="!auth.user"
-      class="mt-8"
-      icon="i-lucide-heart"
-      title="Войдите, чтобы открыть избранное"
-      description="Мы сохраним подборку в аккаунте и синхронизируем ее между устройствами."
-      action-label="Войти"
-      action-icon="i-lucide-user-round"
-      action-to="/auth?redirect=/favorites"
-    />
+    <OrderEmptyState v-else-if="!auth.user" class="mt-8" icon="i-lucide-heart" title="Войдите, чтобы открыть избранное"
+      description="Мы сохраним подборку в аккаунте и синхронизируем ее между устройствами." action-label="Войти"
+      action-icon="i-lucide-user-round" action-to="/auth?redirect=/favorites" />
 
-    <OrderEmptyState
-      v-else-if="!favorites.items.length"
-      class="mt-8"
-      icon="i-lucide-heart-plus"
-      title="Пока ничего нет"
+    <OrderEmptyState v-else-if="!favorites.items.length" class="mt-8" icon="i-lucide-heart-plus" title="Пока ничего нет"
       description="Добавляйте товары сердечком в каталоге или карточке товара — они появятся здесь."
-      action-label="Перейти в каталог"
-      action-icon="i-lucide-layout-grid"
-      action-to="/"
-    />
+      action-label="Перейти в каталог" action-icon="i-lucide-layout-grid" action-to="/" />
 
-    <div
-      v-else
-      v-auto-animate
-      class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
-    >
-      <ProductCard
-        v-for="favorite in favorites.items"
-        :key="favorite.id"
-        :product="favorite.product"
-        favorite
+    <div v-else v-auto-animate class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4">
+      <ProductCard v-for="favorite in favorites.items" :key="favorite.id" :product="favorite.product" favorite
         :in-cart="Boolean(cartItemByProductId(favorite.product.id))"
         :cart-quantity="cartItemByProductId(favorite.product.id)?.quantity ?? 0"
         :loading-favorite="favorites.syncingProductId === favorite.product.id"
-        :loading-cart="cart.syncingProductId === favorite.product.id"
-        @toggle-cart="toggleCart"
-        @toggle-favorite="toggleFavorite"
-      />
+        :loading-cart="cart.syncingProductId === favorite.product.id" @toggle-cart="toggleCart"
+        @toggle-favorite="toggleFavorite" />
     </div>
   </div>
 </template>

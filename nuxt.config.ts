@@ -77,9 +77,11 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: [
         '@formkit/auto-animate/vue',
+        '@lucide/vue',
         '@unhead/schema-org/vue',
         '@vue/devtools-core',
         '@vue/devtools-kit',
+        'zod',
       ]
     }
   }

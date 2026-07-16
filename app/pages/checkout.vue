@@ -1,95 +1,47 @@
 <template>
   <div class="min-h-screen bg-[#f9fafb] text-zinc-950  ">
-    <div
-      v-if="loading"
-      class="mx-auto grid w-full max-w-370 gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,0.82fr)_minmax(460px,1.18fr)] lg:px-8 lg:py-10"
-    >
-      <USkeleton class="h-[620px] rounded-[2rem]" />
-      <USkeleton class="h-[calc(100vh-8rem)] min-h-[620px] rounded-[2rem]" />
+    <div v-if="loading"
+      class="mx-auto grid w-full max-w-370 gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,0.82fr)_minmax(460px,1.18fr)] lg:px-8 lg:py-10">
+      <USkeleton class="h-144 rounded-4xl" />
+      <USkeleton class="h-[calc(100vh-8rem)] min-h-155 rounded-4xl" />
     </div>
 
-    <div
-      v-else-if="!auth.user"
-      class="mx-auto grid min-h-[calc(100vh-8rem)] w-full max-w-370 place-items-center px-4 py-8 sm:px-6 lg:px-8"
-    >
-      <CheckoutStateCard
-        button-icon="i-lucide-log-in"
-        button-label="Войти"
-        description="Авторизуйтесь, чтобы оформить заказ и сохранить его в истории."
-        icon="i-lucide-lock-keyhole"
-        title="Нужен вход в аккаунт"
-        to="/auth?redirect=/checkout"
-      />
+    <div v-else-if="!auth.user"
+      class="mx-auto grid min-h-[calc(100vh-8rem)] w-full max-w-370 place-items-center px-4 py-8 sm:px-6 lg:px-8">
+      <CheckoutStateCard button-icon="i-lucide-log-in" button-label="Войти"
+        description="Авторизуйтесь, чтобы оформить заказ и сохранить его в истории." icon="i-lucide-lock-keyhole"
+        title="Нужен вход в аккаунт" to="/auth?redirect=/checkout" />
     </div>
 
-    <div
-      v-else-if="!cart.items.length"
-      class="mx-auto grid min-h-[calc(100vh-8rem)] w-full max-w-370 place-items-center px-4 py-8 sm:px-6 lg:px-8"
-    >
-      <CheckoutStateCard
-        button-icon="i-lucide-layout-grid"
-        button-label="В каталог"
-        description="Добавьте товары из каталога, а затем вернитесь к оформлению."
-        icon="i-lucide-shopping-cart"
-        title="Корзина пуста"
-        to="/"
-      />
+    <div v-else-if="!cart.items.length"
+      class="mx-auto grid min-h-[calc(100vh-8rem)] w-full max-w-370 place-items-center px-4 py-8 sm:px-6 lg:px-8">
+      <CheckoutStateCard button-icon="i-lucide-layout-grid" button-label="В каталог"
+        description="Добавьте товары из каталога, а затем вернитесь к оформлению." icon="i-lucide-shopping-cart"
+        title="Корзина пуста" to="/" />
     </div>
 
-    <div
-      v-else
-      class="mx-auto grid w-full max-w-370 gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,0.82fr)_minmax(460px,1.18fr)] lg:px-8 lg:py-8 xl:gap-6"
-    >
-      <main
-        v-auto-animate
-        class="space-y-4 lg:pb-8"
-      >
-        <CheckoutOverviewCard
-          :facts="checkoutFacts"
-          :subtotal="cart.subtotal"
-        />
+    <div v-else
+      class="mx-auto grid w-full max-w-370 gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,0.82fr)_minmax(460px,1.18fr)] lg:px-8 lg:py-8 xl:gap-6">
+      <main v-auto-animate class="space-y-4 lg:pb-8">
+        <CheckoutOverviewCard :facts="checkoutFacts" :subtotal="cart.subtotal" />
 
-        <CheckoutContactSection
-          :error="fieldErrors.customerPhone"
-          :phone="draft.customerPhone"
-          @update-phone="updateCheckoutField('customerPhone', $event)"
-        />
+        <CheckoutContactSection :error="fieldErrors.customerPhone" :phone="draft.customerPhone"
+          @update-phone="updateCheckoutField('customerPhone', $event)" />
 
-        <CheckoutChoiceGroupsSection
-          :obtaining-method="draft.obtainingMethod"
-          :obtaining-options="obtainingOptions"
-          :payment-method="draft.paymentMethod"
-          :payment-options="paymentOptions"
-          @select-obtaining="setObtainingMethod"
-          @select-payment="setPaymentMethod"
-        />
-        <CheckoutDeliveryDetailsSection
-          :draft="draft"
-          :field-errors="fieldErrors"
-          :is-delivery="isDelivery"
-          @update-field="updateCheckoutField"
-        />
+        <CheckoutChoiceGroupsSection :obtaining-method="draft.obtainingMethod" :obtaining-options="obtainingOptions"
+          :payment-method="draft.paymentMethod" :payment-options="paymentOptions" @select-obtaining="setObtainingMethod"
+          @select-payment="setPaymentMethod" />
+        <CheckoutDeliveryDetailsSection :draft="draft" :field-errors="fieldErrors" :is-delivery="isDelivery"
+          @update-field="updateCheckoutField" />
 
-        <CheckoutSubmitPanel
-          :delivery-label="deliveryLabel"
-          :hidden-items-count="hiddenCheckoutItemsCount"
-          :preview-items="checkoutPreviewItems"
-          :submit-error="submitError"
-          :submitting="submitting"
-          :subtotal="cart.subtotal"
-          :total-items="cart.totalItems"
-          @submit="submitOrder"
-        />
+        <CheckoutSubmitPanel :delivery-label="deliveryLabel" :hidden-items-count="hiddenCheckoutItemsCount"
+          :preview-items="checkoutPreviewItems" :submit-error="submitError" :submitting="submitting"
+          :subtotal="cart.subtotal" :total-items="cart.totalItems" @submit="submitOrder" />
       </main>
 
-      <aside class="min-h-[520px] lg:sticky lg:top-28 lg:h-[calc(100vh-8rem)] lg:self-start">
-        <CheckoutDeliveryMap
-          :city="draft.city"
-          :house="draft.house"
-          :obtaining-method="draft.obtainingMethod"
-          :street="draft.street"
-          class="h-full"
-        />
+      <aside class="min-h-130 lg:sticky lg:top-28 lg:h-[calc(100vh-8rem)] lg:self-start">
+        <CheckoutDeliveryMap :city="draft.city" :house="draft.house" :obtaining-method="draft.obtainingMethod"
+          :street="draft.street" class="h-full" />
       </aside>
     </div>
   </div>

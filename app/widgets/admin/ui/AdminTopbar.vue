@@ -107,7 +107,8 @@ async function logout() {
     await adminFetch("/api/admin/auth/logout-audit", { method: "POST" }).catch(() => undefined);
     await $fetch("/api/auth/sign-out", {
       method: "POST",
-      credentials: "include"
+      credentials: "include",
+      body: {}
     });
     clearNuxtData("admin-me");
     toast.success("Вы вышли из админ-панели");

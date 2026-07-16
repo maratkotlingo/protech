@@ -286,7 +286,15 @@ const navItems = computed<NavItem[]>(() => [
     label: "Корзина",
     match: (path) => path.startsWith("/cart") || path.startsWith("/checkout"),
     to: "/cart"
-  }
+  },
+  ...(auth.user?.role === "ADMIN"
+    ? [{
+        icon: "i-lucide-shield-check",
+        label: "Админка",
+        match: (path: string) => path.startsWith("/admin"),
+        to: "/admin"
+      }]
+    : [])
 ]);
 watch(
   () => route.fullPath,
