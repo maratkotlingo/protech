@@ -225,6 +225,7 @@ export default defineEventHandler(async (event) => {
       orderStatus: true,
       paymentMethod: true,
       obtainingMethod: true,
+      customerPhone: true,
       createdAt: true,
       updatedAt: true,
       payment: { select: { amount: true, paymentStatus: true, paidAt: true } },

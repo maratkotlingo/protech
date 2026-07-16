@@ -82,9 +82,9 @@ export async function useProductCatalog() {
       default: () => ({ minPrice: 0, maxPrice: 0 })
     }
   );
-  const { data: categoriesData } = await categoriesAsyncData;
-  const { data: attributesData, pending: attributesPending } = await attributesAsyncData;
-  const { data: priceRangeData, pending: priceRangePending } = await priceRangeAsyncData;
+  const { data: categoriesData } = categoriesAsyncData;
+  const { data: attributesData, pending: attributesPending } = attributesAsyncData;
+  const { data: priceRangeData, pending: priceRangePending } = priceRangeAsyncData;
 
   const categories = computed(() => categoriesData.value ?? []);
   const attributes = computed(() => attributesData.value ?? []);
@@ -181,6 +181,14 @@ export async function useProductCatalog() {
     void fetchProducts({ reset: true });
   });
 
+  onMounted(async () => {
+    const user = auth.user ?? await auth.fetchMe();
+
+    if (user) {
+      await cart.fetchCart();
+    }
+  });
+
   useIntersectionObserver(
     loadMoreTarget,
     ([entry]) => {
@@ -194,14 +202,6 @@ export async function useProductCatalog() {
   );
 
   await fetchProducts({ reset: true });
-
-  onMounted(async () => {
-    const user = auth.user ?? await auth.fetchMe();
-
-    if (user) {
-      await cart.fetchCart();
-    }
-  });
 
   function buildProductsQuery(pageNumber: number) {
     return buildQuery({

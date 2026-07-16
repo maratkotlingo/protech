@@ -14,24 +14,27 @@
 import { useAuthStore } from "~~/app/stores/auth";
 import { useCartStore } from "~~/app/stores/cart";
 import { useFavoritesStore } from "~~/app/stores/favorites";
-import { useShopUiStore } from "~~/app/stores/shopUi";
+import { useMessageNotificationsStore } from "~~/app/stores/messageNotifications";
 
 const auth = useAuthStore();
 const cart = useCartStore();
 const favorites = useFavoritesStore();
-const ui = useShopUiStore();
+const messageNotifications = useMessageNotificationsStore();
 
 onMounted(async () => {
-  ui.hydrateColorMode();
-
   const user = await auth.fetchMe();
 
   if (user) {
     await Promise.all([
       cart.fetchCart(),
-      favorites.fetchFavorites()
+      favorites.fetchFavorites(),
+      messageNotifications.initialize(user.id)
     ]);
   }
+});
+
+onBeforeUnmount(() => {
+  messageNotifications.disconnect();
 });
 
 watch(
@@ -40,13 +43,15 @@ watch(
     if (userId) {
       await Promise.all([
         cart.fetchCart(),
-        favorites.fetchFavorites()
+        favorites.fetchFavorites(),
+        messageNotifications.initialize(userId)
       ]);
       return;
     }
 
     cart.items = [];
     favorites.clearLocal();
+    messageNotifications.reset();
   }
 );
 </script>

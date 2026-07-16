@@ -1,6 +1,6 @@
 <template>
   <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <p class="text-sm text-zinc-500 dark:text-zinc-400">
+    <p class="text-sm text-zinc-500 ">
       {{ statusText }}
     </p>
 
@@ -14,7 +14,7 @@
         variant="ghost"
         size="sm"
         icon="i-lucide-rotate-ccw"
-        class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100   "
         @click="$emit('clear')"
       >
         Сбросить

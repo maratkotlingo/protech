@@ -9,37 +9,37 @@ export type StatusMeta = {
 
 export const orderStatusMeta: Record<OrderStatus, StatusMeta> = {
   NEW: {
-    class: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-200",
+    class: "bg-sky-50 text-sky-700  ",
     dotClass: "bg-sky-500",
     icon: "i-lucide-sparkles",
     label: "Новый"
   },
   CONFIRMED: {
-    class: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200",
+    class: "bg-emerald-50 text-emerald-700  ",
     dotClass: "bg-emerald-500",
     icon: "i-lucide-check-check",
     label: "Подтвержден"
   },
   PROCESSING: {
-    class: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-200",
+    class: "bg-amber-50 text-amber-700  ",
     dotClass: "bg-amber-500",
     icon: "i-lucide-loader-circle",
     label: "В работе"
   },
   SHIPPED: {
-    class: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-200",
+    class: "bg-indigo-50 text-indigo-700  ",
     dotClass: "bg-indigo-500",
     icon: "i-lucide-truck",
     label: "Доставляется"
   },
   COMPLETED: {
-    class: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200",
+    class: "bg-emerald-50 text-emerald-700  ",
     dotClass: "bg-emerald-500",
     icon: "i-lucide-circle-check",
     label: "Завершен"
   },
   CANCELLED: {
-    class: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-200",
+    class: "bg-red-50 text-red-700  ",
     dotClass: "bg-red-500",
     icon: "i-lucide-circle-x",
     label: "Отменен"
@@ -48,25 +48,25 @@ export const orderStatusMeta: Record<OrderStatus, StatusMeta> = {
 
 export const paymentStatusMeta: Record<PaymentStatus, StatusMeta> = {
   PENDING: {
-    class: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-200",
+    class: "bg-amber-50 text-amber-700  ",
     dotClass: "bg-amber-500",
     icon: "i-lucide-clock-3",
     label: "Ожидает оплаты"
   },
   UPON_RECEIPT: {
-    class: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-200",
+    class: "bg-zinc-100 text-zinc-600  ",
     dotClass: "bg-zinc-400",
     icon: "i-lucide-wallet",
     label: "При получении"
   },
   PAID: {
-    class: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200",
+    class: "bg-emerald-50 text-emerald-700  ",
     dotClass: "bg-emerald-500",
     icon: "i-lucide-badge-check",
     label: "Оплачен"
   },
   CANCELLED: {
-    class: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-200",
+    class: "bg-red-50 text-red-700  ",
     dotClass: "bg-red-500",
     icon: "i-lucide-circle-x",
     label: "Оплата отменена"
@@ -90,4 +90,3 @@ export function getStatusMeta(type: "order" | "payment", value: OrderStatus | Pa
     ? orderStatusMeta[value as OrderStatus]
     : paymentStatusMeta[value as PaymentStatus];
 }
-

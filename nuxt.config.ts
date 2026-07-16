@@ -17,7 +17,6 @@ export default defineNuxtConfig({
     "pinia-plugin-persistedstate/nuxt",
     "@vueuse/nuxt",
     "vue-sonner/nuxt",
-    '@formkit/auto-animate/nuxt',
     "@nuxtjs/seo"
   ],
   css: ["./app/assets/css/main.css"],
@@ -40,7 +39,7 @@ export default defineNuxtConfig({
     enabled: true
   },
   colorMode: {
-    preference: "system",
+    preference: "light",
     fallback: "light",
     classSuffix: ""
   },
@@ -67,8 +66,21 @@ export default defineNuxtConfig({
   },
   nitro: {
     compressPublicAssets: true,
+    experimental: {
+      websocket: true
+    },
     rollupConfig: {
       plugins: [vue() as unknown as InputPluginOption],
     },
+  },
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@formkit/auto-animate/vue',
+        '@unhead/schema-org/vue',
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+      ]
+    }
   }
 })

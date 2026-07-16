@@ -1,30 +1,26 @@
 import { SHOP_THEME_COLORS } from "~~/app/shared/config/colors";
-import { watch } from "vue";
 
 export default defineNuxtPlugin(() => {
   const root = document.documentElement;
-  const colorMode = useColorMode();
 
-  const applyColors = () => {
-    const palette = colorMode.value === "dark" ? SHOP_THEME_COLORS.dark : SHOP_THEME_COLORS;
+  root.classList.remove("dark");
+  root.style.colorScheme = "light";
+  localStorage.setItem("nuxt-color-mode", "light");
 
-    root.style.setProperty("--shop-accent", palette.accent);
-    root.style.setProperty("--shop-accent-soft", palette.accentSoft);
-    root.style.setProperty("--shop-accent-muted", palette.accentMuted);
-    root.style.setProperty("--shop-accent-strong", palette.accentStrong);
-    root.style.setProperty("--shop-surface", palette.surface);
-    root.style.setProperty("--shop-surface-muted", palette.surfaceMuted);
-    root.style.setProperty("--shop-surface-elevated", palette.surfaceElevated);
-    root.style.setProperty("--shop-border", palette.border);
-    root.style.setProperty("--shop-text", palette.text);
-    root.style.setProperty("--shop-text-muted", palette.textMuted);
-    root.style.setProperty("--shop-text-subtle", palette.textSubtle);
-    root.style.setProperty("--shop-danger", palette.danger);
-    root.style.setProperty("--shop-warning", palette.warning);
-    root.style.setProperty("--shop-info", palette.info);
-    root.style.setProperty("--shop-success", palette.success);
-    root.style.setProperty("--shop-ring", palette.ring);
-  };
-
-  watch(() => colorMode.value, applyColors, { immediate: true });
+  root.style.setProperty("--shop-accent", SHOP_THEME_COLORS.accent);
+  root.style.setProperty("--shop-accent-soft", SHOP_THEME_COLORS.accentSoft);
+  root.style.setProperty("--shop-accent-muted", SHOP_THEME_COLORS.accentMuted);
+  root.style.setProperty("--shop-accent-strong", SHOP_THEME_COLORS.accentStrong);
+  root.style.setProperty("--shop-surface", SHOP_THEME_COLORS.surface);
+  root.style.setProperty("--shop-surface-muted", SHOP_THEME_COLORS.surfaceMuted);
+  root.style.setProperty("--shop-surface-elevated", SHOP_THEME_COLORS.surfaceElevated);
+  root.style.setProperty("--shop-border", SHOP_THEME_COLORS.border);
+  root.style.setProperty("--shop-text", SHOP_THEME_COLORS.text);
+  root.style.setProperty("--shop-text-muted", SHOP_THEME_COLORS.textMuted);
+  root.style.setProperty("--shop-text-subtle", SHOP_THEME_COLORS.textSubtle);
+  root.style.setProperty("--shop-danger", SHOP_THEME_COLORS.danger);
+  root.style.setProperty("--shop-warning", SHOP_THEME_COLORS.warning);
+  root.style.setProperty("--shop-info", SHOP_THEME_COLORS.info);
+  root.style.setProperty("--shop-success", SHOP_THEME_COLORS.success);
+  root.style.setProperty("--shop-ring", SHOP_THEME_COLORS.ring);
 });

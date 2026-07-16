@@ -31,17 +31,17 @@
 
   <div
     v-else
-    class="mt-8 grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900"
+    class="mt-8 grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 "
   >
     <div>
-      <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
+      <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500  ">
         <UIcon
           name="i-lucide-search-x"
           class="size-7"
         />
       </div>
       <h2 class="mt-4 text-xl font-semibold tracking-normal">Товары не найдены</h2>
-      <p class="mt-2 max-w-sm text-sm leading-6 text-zinc-500 dark:text-zinc-400">
+      <p class="mt-2 max-w-sm text-sm leading-6 text-zinc-500 ">
         Попробуйте расширить диапазон цены, убрать характеристику или изменить поисковый запрос.
       </p>
     </div>

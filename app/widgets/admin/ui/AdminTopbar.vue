@@ -22,47 +22,6 @@
     </div>
 
     <div class="flex items-center gap-4">
-      <div class="hidden items-center rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-1.5 sm:flex">
-        <UTooltip text="Светлая тема">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            class="size-11 justify-center"
-            aria-label="Светлая тема"
-            @click="ui.setThemePreference('light')"
-          >
-            <Sun class="size-5" />
-          </UButton>
-        </UTooltip>
-        <UTooltip text="Системная тема">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            class="size-11 justify-center"
-            aria-label="Системная тема"
-            @click="ui.setThemePreference('system')"
-          >
-            <Monitor class="size-5" />
-          </UButton>
-        </UTooltip>
-        <UTooltip text="Тёмная тема">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            class="size-11 justify-center"
-            aria-label="Тёмная тема"
-            @click="ui.setThemePreference('dark')"
-          >
-            <Moon class="size-5" />
-          </UButton>
-        </UTooltip>
-      </div>
-
-      <div class="hidden h-12 w-px bg-[var(--admin-border)] sm:block" />
-
       <div class="flex items-center gap-5">
         <img
           v-if="user?.image"
@@ -103,10 +62,9 @@
 </template>
 
 <script setup lang="ts">
-import { LogOut, Menu, Monitor, Moon, Sun } from "@lucide/vue";
+import { LogOut, Menu } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
-import { useAdminUiStore } from "~~/app/stores/adminUi";
 import type { AdminUser } from "~~/app/shared/types/admin";
 
 const props = defineProps<{
@@ -118,7 +76,6 @@ defineEmits<{
 }>();
 
 const route = useRoute();
-const ui = useAdminUiStore();
 const loggingOut = ref(false);
 
 const pageTitles: Record<string, string> = {

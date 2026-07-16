@@ -5,6 +5,7 @@ import type { CartItem, ObtainingMethod, PaymentMethod } from "~~/app/shared/typ
 export type CheckoutDraft = {
   obtainingMethod: ObtainingMethod;
   paymentMethod: PaymentMethod;
+  customerPhone: string;
   city: string;
   street: string;
   house: string;
@@ -19,6 +20,7 @@ function createCheckoutDraft(): CheckoutDraft {
   return {
     obtainingMethod: "DELIVERY",
     paymentMethod: "ONLINE",
+    customerPhone: "",
     city: "",
     street: "",
     house: "",

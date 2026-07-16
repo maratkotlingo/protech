@@ -1,30 +1,26 @@
 import { ADMIN_THEME_COLORS } from "~~/app/shared/config/colors";
-import { watch } from "vue";
 
 export default defineNuxtPlugin(() => {
   const root = document.documentElement;
-  const colorMode = useColorMode();
 
-  const applyColors = () => {
-    const palette = colorMode.value === "dark" ? ADMIN_THEME_COLORS.dark : ADMIN_THEME_COLORS;
+  root.classList.remove("dark");
+  root.style.colorScheme = "light";
+  localStorage.setItem("nuxt-color-mode", "light");
 
-    root.style.setProperty("--admin-accent", palette.accent);
-    root.style.setProperty("--admin-accent-soft", palette.accentSoft);
-    root.style.setProperty("--admin-accent-strong", palette.accentStrong);
-    root.style.setProperty("--admin-surface", palette.surface);
-    root.style.setProperty("--admin-surface-muted", palette.surfaceMuted);
-    root.style.setProperty("--admin-border", palette.border);
-    root.style.setProperty("--admin-text", palette.text);
-    root.style.setProperty("--admin-text-muted", palette.textMuted);
-    root.style.setProperty("--admin-danger", palette.danger);
-    root.style.setProperty("--admin-warning", palette.warning);
-    root.style.setProperty("--admin-info", palette.info);
-    root.style.setProperty("--admin-chart-green", palette.chart.green);
-    root.style.setProperty("--admin-chart-blue", palette.chart.blue);
-    root.style.setProperty("--admin-chart-amber", palette.chart.amber);
-    root.style.setProperty("--admin-chart-red", palette.chart.red);
-    root.style.setProperty("--admin-chart-violet", palette.chart.violet);
-  };
-
-  watch(() => colorMode.value, applyColors, { immediate: true });
+  root.style.setProperty("--admin-accent", ADMIN_THEME_COLORS.accent);
+  root.style.setProperty("--admin-accent-soft", ADMIN_THEME_COLORS.accentSoft);
+  root.style.setProperty("--admin-accent-strong", ADMIN_THEME_COLORS.accentStrong);
+  root.style.setProperty("--admin-surface", ADMIN_THEME_COLORS.surface);
+  root.style.setProperty("--admin-surface-muted", ADMIN_THEME_COLORS.surfaceMuted);
+  root.style.setProperty("--admin-border", ADMIN_THEME_COLORS.border);
+  root.style.setProperty("--admin-text", ADMIN_THEME_COLORS.text);
+  root.style.setProperty("--admin-text-muted", ADMIN_THEME_COLORS.textMuted);
+  root.style.setProperty("--admin-danger", ADMIN_THEME_COLORS.danger);
+  root.style.setProperty("--admin-warning", ADMIN_THEME_COLORS.warning);
+  root.style.setProperty("--admin-info", ADMIN_THEME_COLORS.info);
+  root.style.setProperty("--admin-chart-green", ADMIN_THEME_COLORS.chart.green);
+  root.style.setProperty("--admin-chart-blue", ADMIN_THEME_COLORS.chart.blue);
+  root.style.setProperty("--admin-chart-amber", ADMIN_THEME_COLORS.chart.amber);
+  root.style.setProperty("--admin-chart-red", ADMIN_THEME_COLORS.chart.red);
+  root.style.setProperty("--admin-chart-violet", ADMIN_THEME_COLORS.chart.violet);
 });

@@ -1,7 +1,7 @@
 <template>
   <aside class="lg:sticky lg:top-8">
     <div
-      class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6 dark:bg-zinc-900/70 dark:shadow-black/25">
+      class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6  ">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div
 class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium"
@@ -18,45 +18,45 @@ v-if="stockQuantity > 0"
 
         <UBadge
 color="neutral" variant="soft"
-          class="rounded-full bg-white px-3 py-1.5 text-zinc-500 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70 dark:text-zinc-300">
+          class="rounded-full bg-white px-3 py-1.5 text-zinc-500 shadow-sm shadow-zinc-950/5  ">
           Арт. {{ product.article }}
         </UBadge>
       </div>
 
       <div class="mt-8">
         <div class="flex flex-wrap items-center gap-2">
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-600 dark:text-emerald-300">
+          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-600 ">
             {{ brandName }}
           </p>
-          <span class="size-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+          <span class="size-1 rounded-full bg-zinc-300 " />
           <p class="text-sm text-zinc-400">
             {{ product.category.name }}
           </p>
         </div>
 
-        <h1 class="mt-3 text-4xl font-semibold leading-tight tracking-normal text-zinc-950 sm:text-5xl dark:text-white">
+        <h1 class="mt-3 text-4xl font-semibold leading-tight tracking-normal text-zinc-950 sm:text-5xl ">
           {{ product.name }}
         </h1>
 
-        <div class="mt-5 flex flex-wrap items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
+        <div class="mt-5 flex flex-wrap items-center gap-4 text-sm text-zinc-500 ">
           <span
-            class="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70">
+            class="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 shadow-sm shadow-zinc-950/5 ">
             <UIcon name="i-lucide-star" class="size-4 text-amber-400" :class="averageRating ? 'fill-amber-400' : ''" />
-            <span class="font-semibold text-zinc-950 dark:text-white">{{ averageRatingLabel }}</span>
+            <span class="font-semibold text-zinc-950 ">{{ averageRatingLabel }}</span>
           </span>
           <span>{{ product.reviews.length }} отзывов</span>
           <span>Обновлено {{ formatDate(product.updatedAt) }}</span>
         </div>
       </div>
 
-      <div class="mt-8 rounded-[1.75rem] bg-white p-5 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70">
+      <div class="mt-8 rounded-[1.75rem] bg-white p-5 shadow-sm shadow-zinc-950/5 ">
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p class="text-sm font-medium text-zinc-400">Цена</p>
             <div class="mt-1 flex flex-wrap items-end gap-3">
               <p
 class="text-4xl font-semibold tracking-normal"
-                :class="discountValue ? 'text-red-600 dark:text-red-400' : 'text-zinc-950 dark:text-white'">
+                :class="discountValue ? 'text-red-600 ' : 'text-zinc-950 '">
                 {{ formatCurrency(product.currentPrice) }}
               </p>
               <p v-if="product.oldPrice" class="pb-1 text-lg text-zinc-400 line-through">
@@ -70,17 +70,17 @@ class="text-4xl font-semibold tracking-normal"
           </UBadge>
         </div>
 
-        <div class="mt-5 grid gap-3 text-sm text-zinc-500 sm:grid-cols-3 dark:text-zinc-400">
-          <div class="rounded-2xl bg-[#f9fafb] p-4 dark:bg-zinc-900/80">
-            <p class="font-medium text-zinc-950 dark:text-white">{{ stockQuantity }} шт.</p>
+        <div class="mt-5 grid gap-3 text-sm text-zinc-500 sm:grid-cols-3 ">
+          <div class="rounded-2xl bg-[#f9fafb] p-4 ">
+            <p class="font-medium text-zinc-950 ">{{ stockQuantity }} шт.</p>
             <p class="mt-1">На складе</p>
           </div>
-          <div class="rounded-2xl bg-[#f9fafb] p-4 dark:bg-zinc-900/80">
-            <p class="font-medium text-zinc-950 dark:text-white">Самовывоз</p>
+          <div class="rounded-2xl bg-[#f9fafb] p-4 ">
+            <p class="font-medium text-zinc-950 ">Самовывоз</p>
             <p class="mt-1">или доставка</p>
           </div>
-          <div class="rounded-2xl bg-[#f9fafb] p-4 dark:bg-zinc-900/80">
-            <p class="font-medium text-zinc-950 dark:text-white">{{ selectedQuantityTotal }}</p>
+          <div class="rounded-2xl bg-[#f9fafb] p-4 ">
+            <p class="font-medium text-zinc-950 ">{{ selectedQuantityTotal }}</p>
             <p class="mt-1">Итого</p>
           </div>
         </div>
@@ -89,13 +89,13 @@ class="text-4xl font-semibold tracking-normal"
       <div class="mt-8 space-y-7">
         <div>
           <div class="mb-3 flex items-center justify-between gap-3">
-            <p class="text-sm font-semibold text-zinc-950 dark:text-white">Количество</p>
+            <p class="text-sm font-semibold text-zinc-950 ">Количество</p>
             <p class="text-sm text-zinc-400">
               {{ isInCart ? `В корзине ${quantity} шт.` : `до ${maxQuantity} шт.` }}
             </p>
           </div>
           <div
-            class="flex items-center justify-between gap-3 rounded-full bg-white p-2 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70">
+            class="flex items-center justify-between gap-3 rounded-full bg-white p-2 shadow-sm shadow-zinc-950/5 ">
             <UButton
 color="neutral" variant="soft" icon="i-lucide-minus" size="lg" square
               class="rounded-full transition hover:scale-105" :disabled="quantity <= 1 || (!isInCart && stockQuantity <= 0)"
@@ -115,8 +115,8 @@ color="neutral" variant="soft" icon="i-lucide-plus" size="lg" square
         <UTooltip :text="isFavorite ? 'Убрать из избранного' : 'В избранное'">
           <UButton
 color="neutral" variant="soft" size="xl" square
-            class="inline-flex size-14 items-center justify-center rounded-full bg-white p-0 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-105 dark:bg-zinc-950/70 [&>span]:mx-auto [&>span]:flex [&>span]:items-center [&>span]:justify-center"
-            :class="isFavorite ? 'scale-[1.03] text-red-500' : 'text-zinc-700 dark:text-zinc-200'"
+            class="inline-flex size-14 items-center justify-center rounded-full bg-white p-0 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-105  [&>span]:mx-auto [&>span]:flex [&>span]:items-center [&>span]:justify-center"
+            :class="isFavorite ? 'scale-[1.03] text-red-500' : 'text-zinc-700 '"
             :loading="favoriteSyncing" :aria-label="isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'"
             @click="$emit('toggleFavorite')">
             <UIcon
@@ -137,7 +137,7 @@ size="xl" block :icon="cartButtonIcon"
 
       <UButton
 v-if="product.ozonLink" color="neutral" variant="ghost" icon="i-lucide-external-link" size="lg" block
-        class="mt-3 rounded-full text-zinc-500 transition duration-300 hover:scale-[1.01] hover:bg-white dark:text-zinc-300 dark:hover:bg-zinc-950/70"
+        class="mt-3 rounded-full text-zinc-500 transition duration-300 hover:scale-[1.01] hover:bg-white  "
         :to="product.ozonLink" target="_blank">
         Посмотреть на Ozon
       </UButton>

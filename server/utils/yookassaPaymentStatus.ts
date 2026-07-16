@@ -1,10 +1,15 @@
 import {
   OrderStatus,
   PaymentStatus,
-  Prisma
+  Prisma,
+  type Message
 } from "@prisma/client";
 import { createError, type H3Event } from "h3";
 import { reserveOrderStock, restoreOrderStock } from "./orderStock";
+import {
+  broadcastOrderStatusChangeMessage,
+  createOrderStatusChangeMessage
+} from "./orderStatusNotification";
 import { prisma } from "./prisma";
 import { getYooKassaPayment, type YooKassaPayment } from "./yookassa";
 
@@ -91,6 +96,7 @@ export async function applyYooKassaPaymentStatus(
     }
 
     let processed = false;
+    let statusMessage: Message | null = null;
 
     await prisma.$transaction(async (tx) => {
       const updatedPayment = await tx.payment.updateMany({
@@ -119,6 +125,7 @@ export async function applyYooKassaPaymentStatus(
         where: { id: existingPayment.orderId },
         select: {
           orderStatus: true,
+          userId: true,
           stockReserved: true
         }
       });
@@ -142,12 +149,20 @@ export async function applyYooKassaPaymentStatus(
         }
       });
 
+      statusMessage = await createOrderStatusChangeMessage(tx, {
+        orderId: existingPayment.orderId,
+        userId: order.userId,
+        previousStatus: order.orderStatus,
+        nextStatus: OrderStatus.CONFIRMED
+      });
       processed = true;
     });
 
     if (!processed) {
       return ignored("Payment is not pending or order is cancelled");
     }
+
+    broadcastOrderStatusChangeMessage(statusMessage);
 
     return { ok: true, processed: true };
   }
@@ -158,6 +173,7 @@ export async function applyYooKassaPaymentStatus(
     }
 
     let processed = false;
+    let statusMessage: Message | null = null;
 
     await prisma.$transaction(async (tx) => {
       const updatedPayment = await tx.payment.updateMany({
@@ -180,6 +196,7 @@ export async function applyYooKassaPaymentStatus(
         where: { id: existingPayment.orderId },
         select: {
           orderStatus: true,
+          userId: true,
           stockReserved: true
         }
       });
@@ -196,12 +213,22 @@ export async function applyYooKassaPaymentStatus(
         }
       });
 
+      statusMessage = order
+        ? await createOrderStatusChangeMessage(tx, {
+            orderId: existingPayment.orderId,
+            userId: order.userId,
+            previousStatus: order.orderStatus,
+            nextStatus: OrderStatus.CANCELLED
+          })
+        : null;
       processed = true;
     });
 
     if (!processed) {
       return ignored("Payment is not pending");
     }
+
+    broadcastOrderStatusChangeMessage(statusMessage);
 
     return { ok: true, processed: true };
   }

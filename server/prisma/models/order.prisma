@@ -24,6 +24,7 @@ model Order {
     obtainingMethod ObtainingMethod @map("obtaining_method")
     orderStatus     OrderStatus     @default(NEW) @map("order_status")
     paymentMethod   PaymentMethod   @map("payment_method")
+    customerPhone   String?         @map("customer_phone")
     stockReserved   Boolean         @default(false) @map("stock_reserved")
 
     createdAt DateTime @default(now()) @map("created_at")

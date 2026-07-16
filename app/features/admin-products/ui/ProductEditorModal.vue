@@ -22,370 +22,37 @@
         class="space-y-7"
         @submit.prevent="save"
       >
-        <UFormField
-          label="Название"
-          required
-          :error="fieldErrors.name"
-        >
-          <UInput
-            v-model="form.name"
-            class="w-full"
-            size="xl"
-            placeholder="Например, Аккумулятор ProTech X"
-          />
-        </UFormField>
+        <ProductEditorBasicsSection
+          :category-items="categoryItems"
+          :field-errors="fieldErrors"
+          :form="form"
+          @select-category="handleCategorySelect"
+          @update-field="updateFormField"
+        />
 
-        <div class="grid gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-          <UFormField
-            label="Артикул"
-            required
-            :error="fieldErrors.article"
-          >
-            <UInput
-              v-model="form.article"
-              class="w-full"
-              size="xl"
-              placeholder="PT-X-001"
-            />
-          </UFormField>
+        <ProductEditorAttributesSection
+          :attribute-items="attributeItems"
+          :attributes="form.productAttributes"
+          :error="fieldErrors.productAttributes"
+          @add="addAttribute"
+          @remove="removeAttribute"
+          @select="handleAttributeSelect"
+          @update-value="updateAttributeValue"
+        />
 
-          <UFormField
-            label="Категория"
-            required
-            :error="fieldErrors.categoryId"
-          >
-            <USelect
-              :model-value="form.categoryId"
-              class="w-full"
-              size="xl"
-              :items="categoryItems"
-              placeholder="Выберите категорию"
-              @update:model-value="handleCategorySelect"
-            />
-          </UFormField>
-        </div>
-
-        <UFormField
-          label="Описание"
-          required
-          :error="fieldErrors.description"
-        >
-          <UTextarea
-            v-model="form.description"
-            class="w-full"
-            size="xl"
-            autoresize
-            :rows="8"
-            :maxrows="18"
-            :ui="{ base: 'min-h-48 text-base leading-7' }"
-            placeholder="Коротко опишите свойства, комплектацию и назначение товара"
-          />
-        </UFormField>
-
-        <div class="grid gap-5 lg:grid-cols-3">
-          <UFormField
-            label="Цена"
-            required
-            :error="fieldErrors.currentPrice"
-          >
-            <UInput
-              v-model.number="form.currentPrice"
-              class="w-full"
-              size="xl"
-              type="number"
-              min="0"
-              step="0.01"
-            />
-          </UFormField>
-
-          <UFormField
-            label="Себестоимость"
-            :error="fieldErrors.costPrice"
-          >
-            <UInput
-              v-model.number="form.costPrice"
-              class="w-full"
-              size="xl"
-              type="number"
-              min="0"
-              step="0.01"
-            />
-          </UFormField>
-
-          <UFormField
-            label="Старая цена"
-            :error="fieldErrors.oldPrice"
-          >
-            <UInput
-              v-model.number="form.oldPrice"
-              class="w-full"
-              size="xl"
-              type="number"
-              min="0"
-              step="0.01"
-            />
-          </UFormField>
-        </div>
-
-        <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
-          <UFormField
-            label="Ссылка OZON"
-            :error="fieldErrors.ozonLink"
-          >
-            <UInput
-              v-model="form.ozonLink"
-              class="w-full"
-              size="xl"
-              placeholder="https://www.ozon.ru/..."
-            />
-          </UFormField>
-
-          <div class="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-5">
-            <USwitch
-              v-model="form.isActive"
-              label="Товар активен"
-              description="Показывать товар в публичном каталоге"
-            />
-          </div>
-        </div>
-
-        <section class="space-y-5 rounded-lg border border-[var(--admin-border)] p-5 sm:p-6">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h3 class="text-lg font-semibold text-[var(--admin-text)]">
-                Характеристики
-              </h3>
-              <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
-                Значения будут заменены при сохранении товара.
-              </p>
-            </div>
-            <UButton
-              color="primary"
-              variant="soft"
-              type="button"
-              size="lg"
-              @click="addAttribute"
-            >
-              <Plus class="size-4" />
-              Добавить
-            </UButton>
-          </div>
-
-          <UAlert
-            v-if="fieldErrors.productAttributes"
-            color="error"
-            variant="soft"
-            :description="fieldErrors.productAttributes"
-          />
-
-          <div class="space-y-4">
-            <div
-              v-for="(attribute, index) in form.productAttributes"
-              :key="index"
-              class="grid gap-3 rounded-lg bg-[var(--admin-surface-muted)] p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end"
-            >
-              <UFormField label="Характеристика">
-                <USelect
-                  :model-value="attribute.attributeId"
-                  class="w-full"
-                  size="xl"
-                  :items="attributeItems"
-                  placeholder="Выберите характеристику"
-                  @update:model-value="handleAttributeSelect(index, $event)"
-                />
-              </UFormField>
-              <UFormField label="Значение">
-                <UInput
-                  v-model="attribute.value"
-                  class="w-full"
-                  size="xl"
-                  placeholder="Значение"
-                />
-              </UFormField>
-              <UButton
-                color="error"
-                variant="ghost"
-                type="button"
-                size="lg"
-                aria-label="Удалить характеристику"
-                @click="removeAttribute(index)"
-              >
-                <Trash2 class="size-4" />
-              </UButton>
-            </div>
-
-            <div
-              v-if="!form.productAttributes.length"
-              class="grid min-h-24 place-items-center rounded-lg bg-[var(--admin-surface-muted)] px-4 text-center text-sm text-[var(--admin-text-muted)]"
-            >
-              Добавьте характеристику или создайте новую через селектор.
-            </div>
-          </div>
-        </section>
-
-        <section class="space-y-5 rounded-lg border border-[var(--admin-border)] p-5 sm:p-6">
-          <div>
-            <h3 class="text-lg font-semibold text-[var(--admin-text)]">
-              Основное изображение
-            </h3>
-            <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
-              Можно вставить URL или загрузить файл.
-            </p>
-          </div>
-
-          <div class="overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)]">
-            <img
-              v-if="form.mainImage"
-              :src="form.mainImage"
-              alt=""
-              class="aspect-[16/7] w-full object-cover"
-            >
-            <div
-              v-else
-              class="grid aspect-[16/7] place-items-center text-[var(--admin-text-muted)]"
-            >
-              <ImageIcon class="size-12" />
-            </div>
-          </div>
-
-          <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
-            <UFormField
-              label="URL изображения"
-              :error="fieldErrors.mainImage"
-            >
-              <UInput
-                v-model="form.mainImage"
-                class="w-full"
-                size="xl"
-                placeholder="/uploads/file.webp или https://..."
-              />
-            </UFormField>
-
-            <label class="block">
-              <input
-                class="sr-only"
-                type="file"
-                accept="image/png,image/jpeg,image/webp,image/gif"
-                @change="uploadMainImage"
-              >
-              <UButton
-                color="neutral"
-                variant="outline"
-                type="button"
-                size="lg"
-                :loading="uploadingMain"
-                class="w-full justify-center"
-                as="span"
-              >
-                <Upload class="size-4" />
-                Загрузить
-              </UButton>
-            </label>
-          </div>
-        </section>
-
-        <section class="space-y-5 rounded-lg border border-[var(--admin-border)] p-5 sm:p-6">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h3 class="text-lg font-semibold text-[var(--admin-text)]">
-                Галерея
-              </h3>
-              <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
-                Дополнительные изображения товара.
-              </p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <label class="block">
-                <input
-                  class="sr-only"
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
-                  @change="uploadGalleryImage"
-                >
-                <UButton
-                  color="neutral"
-                  variant="outline"
-                  type="button"
-                  size="lg"
-                  :loading="uploadingGallery"
-                  class="w-full justify-center sm:w-auto"
-                  as="span"
-                >
-                  <Upload class="size-4" />
-                  Загрузить
-                </UButton>
-              </label>
-              <UButton
-                color="primary"
-                variant="soft"
-                type="button"
-                size="lg"
-                @click="addGalleryUrl"
-              >
-                <Plus class="size-4" />
-                URL
-              </UButton>
-            </div>
-          </div>
-
-          <UAlert
-            v-if="fieldErrors.productImages"
-            color="error"
-            variant="soft"
-            :description="fieldErrors.productImages"
-          />
-
-          <div
-            v-if="form.productImages.length"
-            class="grid gap-4 md:grid-cols-2"
-          >
-            <div
-              v-for="(image, index) in form.productImages"
-              :key="index"
-              class="space-y-3 rounded-lg bg-[var(--admin-surface-muted)] p-3"
-            >
-              <div class="overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)]">
-                <img
-                  v-if="image.url"
-                  :src="image.url"
-                  alt=""
-                  class="aspect-[4/3] w-full object-cover"
-                >
-                <div
-                  v-else
-                  class="grid aspect-[4/3] place-items-center text-[var(--admin-text-muted)]"
-                >
-                  <ImageIcon class="size-8" />
-                </div>
-              </div>
-              <div class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-                <UInput
-                  v-model="image.url"
-                  class="w-full"
-                  size="xl"
-                  placeholder="URL изображения"
-                />
-                <UButton
-                  color="error"
-                  variant="ghost"
-                  type="button"
-                  size="lg"
-                  aria-label="Удалить изображение"
-                  @click="removeGalleryImage(index)"
-                >
-                  <Trash2 class="size-4" />
-                </UButton>
-              </div>
-            </div>
-          </div>
-
-          <div
-            v-else
-            class="grid min-h-32 place-items-center rounded-lg bg-[var(--admin-surface-muted)] px-4 text-center text-sm text-[var(--admin-text-muted)]"
-          >
-            Добавьте URL или загрузите изображение в галерею.
-          </div>
-        </section>
+        <ProductEditorMediaSection
+          :field-errors="fieldErrors"
+          :main-image="form.mainImage"
+          :product-images="form.productImages"
+          :uploading-gallery="uploadingGallery"
+          :uploading-main="uploadingMain"
+          @add-gallery-url="addGalleryUrl"
+          @remove-gallery-image="removeGalleryImage"
+          @update-gallery-image="updateGalleryImage"
+          @update-main-image="updateMainImage"
+          @upload-gallery-image="uploadGalleryImage"
+          @upload-main-image="uploadMainImage"
+        />
       </form>
     </template>
 
@@ -523,7 +190,7 @@
 </template>
 
 <script setup lang="ts">
-import { ImageIcon, LoaderCircle, Plus, Save, Trash2, Upload } from "@lucide/vue";
+import { LoaderCircle, Plus, Save } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { getErrorMessage, toNumber } from "~~/app/shared/lib/adminFormatters";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
@@ -537,6 +204,16 @@ const CREATE_CATEGORY_VALUE = "__create_category__";
 const CREATE_ATTRIBUTE_VALUE = "__create_attribute__";
 
 type SelectValue = number | string | null | undefined;
+type ProductEditorField =
+  | "name"
+  | "article"
+  | "description"
+  | "currentPrice"
+  | "costPrice"
+  | "oldPrice"
+  | "ozonLink"
+  | "isActive";
+type ProductEditorFieldValue = ProductFormState[ProductEditorField];
 
 const open = defineModel<boolean>("open", { default: false });
 
@@ -675,6 +352,19 @@ function handleAttributeSelect(index: number, value: SelectValue) {
 
   if (target) {
     target.attributeId = toPositiveInt(value);
+  }
+}
+
+function updateFormField(field: ProductEditorField, value: ProductEditorFieldValue) {
+  (form as unknown as Record<ProductEditorField, ProductEditorFieldValue>)[field] = value;
+  fieldErrors[field] = undefined;
+}
+
+function updateAttributeValue(index: number, value: string) {
+  const target = form.productAttributes[index];
+
+  if (target) {
+    target.value = value;
   }
 }
 
@@ -849,6 +539,20 @@ function addGalleryUrl() {
 
 function removeGalleryImage(index: number) {
   form.productImages.splice(index, 1);
+}
+
+function updateMainImage(value: string) {
+  form.mainImage = value;
+  fieldErrors.mainImage = undefined;
+}
+
+function updateGalleryImage(index: number, value: string) {
+  const target = form.productImages[index];
+
+  if (target) {
+    target.url = value;
+    fieldErrors.productImages = undefined;
+  }
 }
 
 function closeEditor() {

@@ -6,7 +6,7 @@
         variant="soft"
         icon="i-lucide-arrow-left"
         to="/orders"
-        class="rounded-full bg-white/90 px-4 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-[1.02] dark:bg-zinc-950/80"
+        class="rounded-full bg-white/90 px-4 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-[1.02] "
       >
         К заказам
       </UButton>
@@ -45,20 +45,20 @@
       class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]"
     >
       <div class="space-y-6">
-        <section class="rounded-[2rem] bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8 dark:bg-zinc-950/80 dark:shadow-black/25">
+        <section class="rounded-[2rem] bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8  ">
           <div class="flex flex-wrap items-start justify-between gap-5">
             <div>
-              <p class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200">
+              <p class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700  ">
                 <UIcon
                   name="i-lucide-receipt-text"
                   class="size-4"
                 />
                 Заказ №{{ order.id }}
               </p>
-              <h1 class="mt-4 text-4xl font-semibold tracking-normal text-zinc-950 sm:text-5xl dark:text-white">
+              <h1 class="mt-4 text-4xl font-semibold tracking-normal text-zinc-950 sm:text-5xl ">
                 Детали заказа
               </h1>
-              <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+              <p class="mt-3 text-sm text-zinc-500 ">
                 Создан {{ formatDateTime(order.createdAt) }}
               </p>
             </div>
@@ -76,29 +76,29 @@
             </div>
           </div>
 
-          <div class="mt-8 grid gap-3 md:grid-cols-3">
+          <div class="mt-8 grid gap-3 md:grid-cols-4">
             <div
               v-for="metric in detailMetrics"
               :key="metric.label"
-              class="rounded-[1.5rem] bg-[#f9fafb] p-4 dark:bg-zinc-900/80"
+              class="rounded-[1.5rem] bg-[#f9fafb] p-4 "
             >
               <div class="flex items-center justify-between gap-4">
-                <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ metric.label }}</p>
+                <p class="text-sm text-zinc-500">{{ metric.label }}</p>
                 <UIcon
                   :name="metric.icon"
                   class="size-5 text-zinc-400"
                 />
               </div>
-              <p class="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">{{ metric.value }}</p>
+              <p class="mt-2 text-xl font-semibold text-zinc-950">{{ metric.value }}</p>
             </div>
           </div>
         </section>
 
-        <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6 dark:bg-zinc-950/80 dark:shadow-black/20">
+        <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 class="text-2xl font-semibold tracking-normal text-zinc-950 dark:text-white">Маршрут заказа</h2>
-              <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Ключевые этапы обработки и получения.</p>
+              <h2 class="text-2xl font-semibold tracking-normal text-zinc-950">Маршрут заказа</h2>
+              <p class="mt-1 text-sm text-zinc-500">Ключевые этапы обработки и получения.</p>
             </div>
             <UIcon
               name="i-lucide-route"
@@ -114,7 +114,7 @@
               v-for="step in timelineSteps"
               :key="step.label"
               class="rounded-[1.5rem] p-4"
-              :class="step.active ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100' : 'bg-[#f9fafb] text-zinc-500 dark:bg-zinc-900/80 dark:text-zinc-400'"
+              :class="step.active ? 'bg-emerald-50 text-emerald-800' : 'bg-[#f9fafb] text-zinc-500  '"
             >
               <UIcon
                 :name="step.icon"
@@ -126,16 +126,16 @@
           </div>
         </section>
 
-        <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6 dark:bg-zinc-950/80 dark:shadow-black/20">
+        <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 class="text-2xl font-semibold tracking-normal text-zinc-950 dark:text-white">Состав заказа</h2>
-              <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ order.orderItems.length }} позиций в заказе.</p>
+              <h2 class="text-2xl font-semibold tracking-normal text-zinc-950">Состав заказа</h2>
+              <p class="mt-1 text-sm text-zinc-500">{{ order.orderItems.length }} позиций в заказе.</p>
             </div>
             <UBadge
               color="neutral"
               variant="soft"
-              class="rounded-full bg-[#f3f4f6] px-3 py-1.5 dark:bg-zinc-900"
+              class="rounded-full bg-[#f3f4f6] px-3 py-1.5 "
             >
               {{ formatCurrency(order.payment?.amount) }}
             </UBadge>
@@ -195,6 +195,11 @@ const detailMetrics = computed(() => {
       icon: "i-lucide-truck",
       label: "Получение",
       value: order.value.obtainingMethod === "DELIVERY" ? "Доставка" : "Самовывоз"
+    },
+    {
+      icon: "i-lucide-phone",
+      label: "Телефон",
+      value: order.value.customerPhone || "Не указан"
     },
     {
       icon: "i-lucide-badge-russian-ruble",

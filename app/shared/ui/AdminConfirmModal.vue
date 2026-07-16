@@ -10,7 +10,7 @@
           :class="[
             'grid size-14 shrink-0 place-items-center rounded-lg',
             color === 'error'
-              ? 'bg-red-100 text-red-600 dark:bg-red-950 dark:text-red-300'
+              ? 'bg-red-100 text-red-600  '
               : 'bg-[var(--admin-accent-soft)] text-[var(--admin-accent)]'
           ]"
         >

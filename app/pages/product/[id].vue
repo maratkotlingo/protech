@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white">
+  <div class="bg-white text-zinc-950  ">
     <div class="mx-auto w-full max-w-[1480px] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
       <UButton
         color="neutral"
         variant="ghost"
         icon="i-lucide-arrow-left"
         to="/"
-        class="mb-8 rounded-full bg-[#f9fafb] px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-[1.02] hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        class="mb-8 rounded-full bg-[#f9fafb] px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-[1.02] hover:bg-zinc-100   "
       >
         В каталог
       </UButton>

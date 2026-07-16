@@ -370,6 +370,9 @@
               <p class="mt-1 truncate text-sm text-[var(--admin-text-muted)]">
                 {{ order.user?.email || "Гость" }} · {{ formatDate(order.createdAt) }}
               </p>
+              <p class="mt-1 truncate text-sm font-medium text-[var(--admin-text)]">
+                {{ order.customerPhone || "Телефон не указан" }}
+              </p>
             </div>
             <p class="font-semibold text-[var(--admin-text)]">
               {{ formatCurrency(order.payment?.amount) }}

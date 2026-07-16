@@ -101,7 +101,7 @@ export function useProductPdp() {
         dotClass: "bg-zinc-400",
         label: "Нет в наличии",
         pulseClass: "bg-zinc-300",
-        shellClass: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+        shellClass: "bg-zinc-100 text-zinc-600  ",
       };
     }
 
@@ -110,7 +110,7 @@ export function useProductPdp() {
         dotClass: "bg-orange-500",
         label: `Осталось ${stockQuantity.value} шт.`,
         pulseClass: "bg-orange-400",
-        shellClass: "bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-200"
+        shellClass: "bg-orange-50 text-orange-700  ",
       };
     }
 
@@ -118,7 +118,7 @@ export function useProductPdp() {
       dotClass: "bg-emerald-500",
       label: "В наличии",
       pulseClass: "bg-emerald-400",
-      shellClass: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200"
+      shellClass: "bg-emerald-50 text-emerald-700  ",
     };
   });
 

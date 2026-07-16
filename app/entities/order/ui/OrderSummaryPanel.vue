@@ -1,8 +1,8 @@
 <template>
   <aside class="space-y-4 lg:sticky lg:top-28 lg:self-start">
-    <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6 dark:bg-zinc-950/80 dark:shadow-black/20">
+    <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
       <div class="flex items-center justify-between gap-4">
-        <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Итого</h2>
+        <h2 class="text-xl font-semibold text-zinc-950">Итого</h2>
         <UIcon
           name="i-lucide-receipt-text"
           class="size-5 text-zinc-400"
@@ -13,12 +13,12 @@
         <div
           v-for="row in rows"
           :key="row.label"
-          class="flex justify-between gap-4 text-zinc-500 dark:text-zinc-400"
+          class="flex justify-between gap-4 text-zinc-500 "
         >
           <span>{{ row.label }}</span>
-          <span class="font-medium text-zinc-950 dark:text-white">{{ row.value }}</span>
+          <span class="font-medium text-zinc-950">{{ row.value }}</span>
         </div>
-        <div class="flex justify-between gap-4 rounded-[1.5rem] bg-[#f9fafb] p-4 text-lg font-semibold text-zinc-950 dark:bg-zinc-900/80 dark:text-white">
+        <div class="flex justify-between gap-4 rounded-[1.5rem] bg-[#f9fafb] p-4 text-lg font-semibold text-zinc-950  ">
           <span>Сумма</span>
           <span>{{ formatCurrency(order.payment?.amount) }}</span>
         </div>
@@ -27,18 +27,18 @@
 
     <section
       v-if="order.delivery"
-      class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6 dark:bg-zinc-950/80 dark:shadow-black/20"
+      class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  "
     >
       <div class="flex items-center justify-between gap-4">
-        <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Доставка</h2>
+        <h2 class="text-xl font-semibold text-zinc-950">Доставка</h2>
         <UIcon
           name="i-lucide-map-pin"
           class="size-5 text-zinc-400"
         />
       </div>
 
-      <div class="mt-4 space-y-3 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
-        <p class="font-semibold text-zinc-950 dark:text-white">{{ order.delivery.address }}</p>
+      <div class="mt-4 space-y-3 text-sm leading-6 text-zinc-500 ">
+        <p class="font-semibold text-zinc-950">{{ order.delivery.address }}</p>
         <p v-if="order.delivery.apartment">Квартира: {{ order.delivery.apartment }}</p>
         <p v-if="order.delivery.entrance">Подъезд: {{ order.delivery.entrance }}</p>
         <p v-if="order.delivery.floor">Этаж: {{ order.delivery.floor }}</p>
@@ -54,7 +54,7 @@
       to="/"
       block
       size="lg"
-      class="rounded-full bg-white/90 dark:bg-zinc-950/80"
+      class="rounded-full bg-white/90 "
     >
       Вернуться в каталог
     </UButton>
@@ -73,6 +73,10 @@ const rows = computed(() => [
   {
     label: "Получение",
     value: props.order.obtainingMethod === "DELIVERY" ? "Доставка" : "Самовывоз"
+  },
+  {
+    label: "Телефон",
+    value: props.order.customerPhone || "Не указан"
   },
   {
     label: "Оплата",

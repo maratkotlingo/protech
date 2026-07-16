@@ -1,18 +1,18 @@
 <template>
-  <div class="grid min-h-96 place-items-center rounded-[2rem] bg-white/90 px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/80 dark:shadow-black/20">
+  <div class="grid min-h-96 place-items-center rounded-[2rem] bg-white/90 px-6 text-center shadow-sm shadow-zinc-950/5  ">
     <div class="max-w-sm">
-      <div class="mx-auto grid size-16 place-items-center rounded-[1.5rem] bg-[#f3f4f6] text-zinc-500 shadow-inner shadow-zinc-950/5 dark:bg-zinc-900 dark:text-zinc-300">
+      <div class="mx-auto grid size-16 place-items-center rounded-[1.5rem] bg-[#f3f4f6] text-zinc-500 shadow-inner shadow-zinc-950/5  ">
         <UIcon
           :name="icon"
           class="size-8"
         />
       </div>
-      <h2 class="mt-5 text-2xl font-semibold tracking-normal text-zinc-950 dark:text-white">
+      <h2 class="mt-5 text-2xl font-semibold tracking-normal text-zinc-950 ">
         {{ title }}
       </h2>
       <p
         v-if="description"
-        class="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400"
+        class="mt-2 text-sm leading-6 text-zinc-500 "
       >
         {{ description }}
       </p>

@@ -149,12 +149,42 @@ export type OrderStatus =
 export type PaymentStatus = "PENDING" | "UPON_RECEIPT" | "PAID" | "CANCELLED";
 export type PaymentMethod = "OFFLINE" | "ONLINE";
 export type ObtainingMethod = "DELIVERY" | "PICKUP";
+export type MessageType = "DELIVERY" | "STOCK" | "PRICE" | "FAQ_ANSWER" | "REVIEW_ANSWER" | "SUPPORT";
+export type MessageSenderRole = "USER" | "ADMIN" | "SYSTEM";
+
+export type AdminMessage = {
+  id: number;
+  userId: string;
+  messageType: MessageType;
+  senderRole: MessageSenderRole;
+  message: string;
+  readAt: string | null;
+  createdAt: string;
+  user?: Pick<AdminUser, "id" | "email" | "name" | "image">;
+};
+
+export type MessageConversation = {
+  user: Pick<AdminUser, "id" | "email" | "name" | "image">;
+  lastMessage: AdminMessage | null;
+  unreadCount: number;
+  totalMessages: number;
+};
+
+export type MessageConversationListResponse = {
+  conversations: MessageConversation[];
+};
+
+export type MessageThreadResponse = {
+  messages: AdminMessage[];
+  user: Pick<AdminUser, "id" | "email" | "name" | "image">;
+};
 
 export type OrderListItem = {
   id: number;
   orderStatus: OrderStatus;
   paymentMethod: PaymentMethod;
   obtainingMethod: ObtainingMethod;
+  customerPhone: string | null;
   createdAt: string;
   updatedAt: string;
   user: Pick<AdminUser, "id" | "email" | "name"> | null;

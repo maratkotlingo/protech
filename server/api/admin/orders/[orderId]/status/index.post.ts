@@ -1,5 +1,9 @@
 import { AuditAction, OrderStatus, PaymentStatus } from "@prisma/client";
 import { reserveProductStock, restoreProductStock } from "~~/server/utils/orderStock";
+import {
+  broadcastOrderStatusChangeMessage,
+  createOrderStatusChangeMessage
+} from "~~/server/utils/orderStatusNotification";
 import { updateOrderStatusSchema } from "~~/shared/schemas/admin/orders/updateOrderStatus";
 
 export default defineEventHandler(async (event) => {
@@ -8,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const orderId = getPositiveIntRouterParam(event, "orderId", "Некорректный ID заказа");
   const body = await validateBody(event, updateOrderStatusSchema);
 
-  const order = await prisma.$transaction(async (tx) => {
+  const { order, statusMessage } = await prisma.$transaction(async (tx) => {
     const existingOrder = await tx.order.findUnique({
       where: { id: orderId },
       include: {
@@ -84,7 +88,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    return await tx.order.update({
+    const updatedOrder = await tx.order.update({
       where: { id: orderId },
       data: orderData,
       include: {
@@ -93,6 +97,15 @@ export default defineEventHandler(async (event) => {
         payment: true
       }
     });
+
+    const statusMessage = await createOrderStatusChangeMessage(tx, {
+      orderId: updatedOrder.id,
+      userId: updatedOrder.userId,
+      previousStatus: existingOrder.orderStatus,
+      nextStatus: updatedOrder.orderStatus
+    });
+
+    return { order: updatedOrder, statusMessage };
   }).catch((error) => {
     const prismaError = toPrismaHttpError(error, {
       P2025: "Заказ не найден"
@@ -116,6 +129,8 @@ export default defineEventHandler(async (event) => {
       stockReserved: order.stockReserved
     }
   });
+
+  broadcastOrderStatusChangeMessage(statusMessage);
 
   return { success: true, order };
 });

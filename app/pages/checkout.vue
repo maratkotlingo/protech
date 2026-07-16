@@ -1,281 +1,107 @@
 <template>
-  <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-    <section class="mb-7 max-w-3xl">
-      <UBadge
-        color="primary"
-        variant="soft"
-        class="rounded-full"
-      >
-        Оформление
-      </UBadge>
-      <h1 class="mt-2 text-3xl font-semibold tracking-normal text-zinc-950 sm:text-4xl dark:text-white">Оформление заказа</h1>
-      <p class="mt-3 max-w-2xl text-zinc-500 dark:text-zinc-400">
-        Выберите способ получения, оплату и уточните адрес доставки.
-      </p>
-    </section>
-
+  <div class="min-h-screen bg-[#f9fafb] text-zinc-950  ">
     <div
       v-if="loading"
-      class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]"
+      class="mx-auto grid w-full max-w-370 gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,0.82fr)_minmax(460px,1.18fr)] lg:px-8 lg:py-10"
     >
-      <USkeleton class="h-[640px] rounded-[2rem]" />
-      <USkeleton class="h-96 rounded-[2rem]" />
+      <USkeleton class="h-[620px] rounded-[2rem]" />
+      <USkeleton class="h-[calc(100vh-8rem)] min-h-[620px] rounded-[2rem]" />
     </div>
 
     <div
       v-else-if="!auth.user"
-      class="grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
+      class="mx-auto grid min-h-[calc(100vh-8rem)] w-full max-w-370 place-items-center px-4 py-8 sm:px-6 lg:px-8"
     >
-      <div>
-        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
-          <LockKeyhole class="size-7" />
-        </div>
-        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Нужен вход в аккаунт</h2>
-        <UButton
-          class="mt-5 rounded-full"
-          color="primary"
-          to="/auth?redirect=/checkout"
-        >
-          Войти
-        </UButton>
-      </div>
+      <CheckoutStateCard
+        button-icon="i-lucide-log-in"
+        button-label="Войти"
+        description="Авторизуйтесь, чтобы оформить заказ и сохранить его в истории."
+        icon="i-lucide-lock-keyhole"
+        title="Нужен вход в аккаунт"
+        to="/auth?redirect=/checkout"
+      />
     </div>
 
     <div
       v-else-if="!cart.items.length"
-      class="grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
+      class="mx-auto grid min-h-[calc(100vh-8rem)] w-full max-w-370 place-items-center px-4 py-8 sm:px-6 lg:px-8"
     >
-      <div>
-        <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
-          <ShoppingCart class="size-7" />
-        </div>
-        <h2 class="mt-4 text-xl font-semibold tracking-normal text-zinc-950 dark:text-white">Корзина пуста</h2>
-        <UButton
-          class="mt-5 rounded-full"
-          color="primary"
-          to="/"
-        >
-          В каталог
-        </UButton>
-      </div>
+      <CheckoutStateCard
+        button-icon="i-lucide-layout-grid"
+        button-label="В каталог"
+        description="Добавьте товары из каталога, а затем вернитесь к оформлению."
+        icon="i-lucide-shopping-cart"
+        title="Корзина пуста"
+        to="/"
+      />
     </div>
 
     <div
       v-else
-      class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]"
+      class="mx-auto grid w-full max-w-370 gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,0.82fr)_minmax(460px,1.18fr)] lg:px-8 lg:py-8 xl:gap-6"
     >
-      <div class="space-y-6">
-        <UCard
-          class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-          :ui="{ body: 'p-5 sm:p-6' }"
-        >
-          <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Способ получения</h2>
-          <div class="mt-5 grid gap-3 sm:grid-cols-2">
-            <button
-              type="button"
-              class="rounded-3xl p-4 text-left transition"
-              :class="draft.obtainingMethod === 'DELIVERY' ? 'bg-emerald-50 ring-2 ring-emerald-500 dark:bg-emerald-950/40' : 'bg-[#f9fafb] hover:bg-zinc-100 dark:bg-zinc-800/60 dark:hover:bg-zinc-800'"
-              @click="setObtainingMethod('DELIVERY')"
-            >
-              <Truck class="mb-3 size-6 text-emerald-600 dark:text-emerald-300" />
-              <p class="font-semibold text-zinc-950 dark:text-white">Доставка</p>
-              <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Курьерская доставка через OZON.</p>
-            </button>
-            <button
-              type="button"
-              class="rounded-3xl p-4 text-left transition"
-              :class="draft.obtainingMethod === 'PICKUP' ? 'bg-emerald-50 ring-2 ring-emerald-500 dark:bg-emerald-950/40' : 'bg-[#f9fafb] hover:bg-zinc-100 dark:bg-zinc-800/60 dark:hover:bg-zinc-800'"
-              @click="setObtainingMethod('PICKUP')"
-            >
-              <Store class="mb-3 size-6 text-emerald-600 dark:text-emerald-300" />
-              <p class="font-semibold text-zinc-950 dark:text-white">Самовывоз</p>
-              <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Заберите заказ после подтверждения.</p>
-            </button>
-          </div>
-        </UCard>
-
-        <UCard
-          class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-          :ui="{ body: 'p-5 sm:p-6' }"
-        >
-          <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Оплата</h2>
-          <div class="mt-5 grid gap-3 sm:grid-cols-2">
-            <button
-              type="button"
-              class="rounded-3xl p-4 text-left transition"
-              :class="draft.paymentMethod === 'ONLINE' ? 'bg-emerald-50 ring-2 ring-emerald-500 dark:bg-emerald-950/40' : 'bg-[#f9fafb] hover:bg-zinc-100 dark:bg-zinc-800/60 dark:hover:bg-zinc-800'"
-              @click="draft.paymentMethod = 'ONLINE'"
-            >
-              <CreditCard class="mb-3 size-6 text-emerald-600 dark:text-emerald-300" />
-              <p class="font-semibold text-zinc-950 dark:text-white">Онлайн</p>
-              <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Оплата через YooKassa.</p>
-            </button>
-            <button
-              type="button"
-              class="rounded-3xl p-4 text-left transition disabled:cursor-not-allowed disabled:opacity-50"
-              :class="draft.paymentMethod === 'OFFLINE' ? 'bg-emerald-50 ring-2 ring-emerald-500 dark:bg-emerald-950/40' : 'bg-[#f9fafb] hover:bg-zinc-100 dark:bg-zinc-800/60 dark:hover:bg-zinc-800'"
-              :disabled="draft.obtainingMethod === 'DELIVERY'"
-              @click="draft.paymentMethod = 'OFFLINE'"
-            >
-              <Wallet class="mb-3 size-6 text-emerald-600 dark:text-emerald-300" />
-              <p class="font-semibold text-zinc-950 dark:text-white">При получении</p>
-              <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Доступно только для самовывоза.</p>
-            </button>
-          </div>
-        </UCard>
-
-        <section
-          v-if="draft.obtainingMethod === 'DELIVERY'"
-          class="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]"
-        >
-          <UCard
-            class="rounded-[2rem] bg-white ring-0 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
-            :ui="{ body: 'space-y-5 p-5 sm:p-6' }"
-          >
-            <h2 class="text-xl font-semibold text-zinc-950 dark:text-white">Адрес доставки</h2>
-            <div class="grid gap-4 sm:grid-cols-2">
-              <UFormField
-                label="Город"
-                required
-                :error="fieldErrors.city"
-              >
-                <UInput
-                  v-model="draft.city"
-                  class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
-                  size="lg"
-                  variant="none"
-                  placeholder="Москва"
-                  :ui="checkoutInputUi"
-                />
-              </UFormField>
-              <UFormField
-                label="Улица"
-                required
-                :error="fieldErrors.street"
-              >
-                <UInput
-                  v-model="draft.street"
-                  class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
-                  size="lg"
-                  variant="none"
-                  placeholder="Тверская"
-                  :ui="checkoutInputUi"
-                />
-              </UFormField>
-              <UFormField
-                label="Дом"
-                required
-                :error="fieldErrors.house"
-              >
-                <UInput
-                  v-model="draft.house"
-                  class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
-                  size="lg"
-                  variant="none"
-                  placeholder="10"
-                  :ui="checkoutInputUi"
-                />
-              </UFormField>
-              <UFormField label="Квартира">
-                <UInput
-                  v-model="draft.apartment"
-                  class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
-                  size="lg"
-                  variant="none"
-                  placeholder="45"
-                  :ui="checkoutInputUi"
-                />
-              </UFormField>
-              <UFormField label="Подъезд">
-                <UInput
-                  v-model="draft.entrance"
-                  class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
-                  size="lg"
-                  variant="none"
-                  :ui="checkoutInputUi"
-                />
-              </UFormField>
-              <UFormField label="Этаж">
-                <UInput
-                  v-model="draft.floor"
-                  class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
-                  size="lg"
-                  variant="none"
-                  :ui="checkoutInputUi"
-                />
-              </UFormField>
-            </div>
-            <UFormField label="Домофон">
-              <UInput
-                v-model="draft.intercom"
-                class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
-                size="lg"
-                variant="none"
-                :ui="checkoutInputUi"
-              />
-            </UFormField>
-            <UFormField label="Комментарий курьеру">
-              <UTextarea
-                v-model="draft.comment"
-                class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
-                :rows="4"
-                variant="none"
-                placeholder="Например, позвонить за 10 минут"
-                :ui="checkoutTextareaUi"
-              />
-            </UFormField>
-          </UCard>
-
-          <CheckoutDeliveryMap
-            :city="draft.city"
-            :street="draft.street"
-            :house="draft.house"
-          />
-        </section>
-      </div>
-
-      <aside class="lg:sticky lg:top-24 lg:self-start">
-        <OrderSummary
-          :items="cart.items"
+      <main
+        v-auto-animate
+        class="space-y-4 lg:pb-8"
+      >
+        <CheckoutOverviewCard
+          :facts="checkoutFacts"
           :subtotal="cart.subtotal"
-          :delivery-label="draft.obtainingMethod === 'DELIVERY' ? 'OZON, по тарифу' : 'самовывоз'"
-        >
-          <template #actions>
-            <div class="mt-6">
-              <UAlert
-                v-if="submitError"
-                color="error"
-                variant="soft"
-                :description="submitError"
-                class="mb-4 rounded-3xl"
-              />
-              <UButton
-                color="primary"
-                size="xl"
-                block
-                class="rounded-full"
-                :loading="submitting"
-                @click="submitOrder"
-              >
-                <CheckCircle2 class="size-5" />
-                Подтвердить заказ
-              </UButton>
-            </div>
-          </template>
-        </OrderSummary>
+        />
+
+        <CheckoutContactSection
+          :error="fieldErrors.customerPhone"
+          :phone="draft.customerPhone"
+          @update-phone="updateCheckoutField('customerPhone', $event)"
+        />
+
+        <CheckoutChoiceGroupsSection
+          :obtaining-method="draft.obtainingMethod"
+          :obtaining-options="obtainingOptions"
+          :payment-method="draft.paymentMethod"
+          :payment-options="paymentOptions"
+          @select-obtaining="setObtainingMethod"
+          @select-payment="setPaymentMethod"
+        />
+        <CheckoutDeliveryDetailsSection
+          :draft="draft"
+          :field-errors="fieldErrors"
+          :is-delivery="isDelivery"
+          @update-field="updateCheckoutField"
+        />
+
+        <CheckoutSubmitPanel
+          :delivery-label="deliveryLabel"
+          :hidden-items-count="hiddenCheckoutItemsCount"
+          :preview-items="checkoutPreviewItems"
+          :submit-error="submitError"
+          :submitting="submitting"
+          :subtotal="cart.subtotal"
+          :total-items="cart.totalItems"
+          @submit="submitOrder"
+        />
+      </main>
+
+      <aside class="min-h-[520px] lg:sticky lg:top-28 lg:h-[calc(100vh-8rem)] lg:self-start">
+        <CheckoutDeliveryMap
+          :city="draft.city"
+          :house="draft.house"
+          :obtaining-method="draft.obtainingMethod"
+          :street="draft.street"
+          class="h-full"
+        />
       </aside>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { CheckCircle2, CreditCard, LockKeyhole, ShoppingCart, Store, Truck, Wallet } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import { getErrorMessage } from "~~/app/shared/lib/shopFormatters";
+import { formatCurrency, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
 import { shopFetch } from "~~/app/shared/lib/shopFetch";
-import type { ObtainingMethod, ShopOrder } from "~~/app/shared/types/shop";
+import type { ObtainingMethod, PaymentMethod, ShopOrder } from "~~/app/shared/types/shop";
 import { useAuthStore } from "~~/app/stores/auth";
-import { useCartStore } from "~~/app/stores/cart";
+import { useCartStore, type CheckoutDraft } from "~~/app/stores/cart";
 
 type CreateOrderResponse = {
   order: ShopOrder;
@@ -285,6 +111,16 @@ type CreateOrderResponse = {
     confirmationUrl: string | null;
   };
 };
+
+type CheckoutChoice<TValue extends string> = {
+  value: TValue;
+  title: string;
+  description: string;
+  icon: string;
+  badge?: string;
+  disabled?: boolean;
+};
+type CheckoutTextField = keyof Omit<CheckoutDraft, "obtainingMethod" | "paymentMethod">;
 
 useSeoMeta({
   title: "Оформление заказа",
@@ -298,10 +134,65 @@ const loading = ref(true);
 const submitting = ref(false);
 const submitError = ref("");
 const fieldErrors = reactive<Record<string, string | undefined>>({});
-const checkoutInputUi = { base: "h-11 rounded-2xl bg-transparent" };
-const checkoutTextareaUi = { base: "rounded-2xl bg-transparent" };
+const obtainingOptions: Array<CheckoutChoice<ObtainingMethod>> = [
+  {
+    value: "DELIVERY",
+    title: "Доставка",
+    description: "OZON по указанному адресу.",
+    icon: "i-lucide-truck"
+  },
+  {
+    value: "PICKUP",
+    title: "Самовывоз",
+    description: "После подтверждения менеджером.",
+    icon: "i-lucide-store"
+  }
+];
+
+const isDelivery = computed(() => draft.obtainingMethod === "DELIVERY");
+const deliveryLabel = computed(() => isDelivery.value ? "OZON" : "самовывоз");
+const addressSummary = computed(() => fullAddress() || "Адрес пока не заполнен");
+const customerPhone = computed(() => (draft.customerPhone ?? "").trim());
+const checkoutPreviewItems = computed(() => cart.items.slice(0, 4));
+const hiddenCheckoutItemsCount = computed(() => Math.max(cart.items.length - checkoutPreviewItems.value.length, 0));
+const checkoutFacts = computed(() => [
+  {
+    label: "Получение",
+    value: isDelivery.value ? "Доставка OZON" : "Самовывоз"
+  },
+  {
+    label: "Адрес",
+    value: isDelivery.value ? addressSummary.value : "Пункт выдачи"
+  },
+  {
+    label: "Телефон",
+    value: customerPhone.value || "Не указан"
+  },
+  {
+    label: "Итого",
+    value: formatCurrency(cart.subtotal)
+  }
+]);
+const paymentOptions = computed<Array<CheckoutChoice<PaymentMethod>>>(() => [
+  {
+    value: "ONLINE",
+    title: "Онлайн",
+    description: "Через YooKassa.",
+    icon: "i-lucide-credit-card",
+    badge: isDelivery.value ? "обязательно" : "быстро"
+  },
+  {
+    value: "OFFLINE",
+    title: "При получении",
+    description: "Только для самовывоза.",
+    icon: "i-lucide-wallet",
+    disabled: isDelivery.value
+  }
+]);
 
 onMounted(async () => {
+  draft.customerPhone = draft.customerPhone ?? "";
+
   const user = auth.user ?? await auth.fetchMe();
 
   if (user) {
@@ -319,12 +210,25 @@ function setObtainingMethod(value: ObtainingMethod) {
   }
 }
 
+function setPaymentMethod(value: PaymentMethod) {
+  if (isDelivery.value && value === "OFFLINE") {
+    return;
+  }
+
+  draft.paymentMethod = value;
+}
+
+function updateCheckoutField(field: CheckoutTextField, value: string) {
+  draft[field] = value;
+  fieldErrors[field] = undefined;
+}
+
 function validateDelivery() {
   fieldErrors.city = undefined;
   fieldErrors.street = undefined;
   fieldErrors.house = undefined;
 
-  if (draft.obtainingMethod !== "DELIVERY") {
+  if (!isDelivery.value) {
     return true;
   }
 
@@ -333,6 +237,18 @@ function validateDelivery() {
   if (!draft.house.trim()) fieldErrors.house = "Введите дом";
 
   return !fieldErrors.city && !fieldErrors.street && !fieldErrors.house;
+}
+
+function validateContact() {
+  fieldErrors.customerPhone = undefined;
+
+  if (!customerPhone.value) {
+    fieldErrors.customerPhone = "Введите телефон";
+  } else if (!/^\+?[0-9\s().-]{5,30}$/.test(customerPhone.value)) {
+    fieldErrors.customerPhone = "Введите корректный телефон";
+  }
+
+  return !fieldErrors.customerPhone;
 }
 
 function fullAddress() {
@@ -345,8 +261,11 @@ function fullAddress() {
 async function submitOrder() {
   submitError.value = "";
 
-  if (!validateDelivery()) {
-    submitError.value = "Заполните обязательные поля доставки";
+  const contactValid = validateContact();
+  const deliveryValid = validateDelivery();
+
+  if (!contactValid || !deliveryValid) {
+    submitError.value = "Заполните обязательные поля";
     return;
   }
 
@@ -357,9 +276,10 @@ async function submitOrder() {
       method: "POST",
       body: {
         obtainingMethod: draft.obtainingMethod,
-        paymentMethod: draft.obtainingMethod === "DELIVERY" ? "ONLINE" : draft.paymentMethod,
+        paymentMethod: isDelivery.value ? "ONLINE" : draft.paymentMethod,
+        customerPhone: customerPhone.value,
         orderItems: cart.orderItems,
-        ...(draft.obtainingMethod === "DELIVERY"
+        ...(isDelivery.value
           ? {
             delivery: {
               address: fullAddress(),

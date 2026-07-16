@@ -113,6 +113,7 @@ export default defineEventHandler(async (event) => {
         userId: user.id,
         obtainingMethod: body.obtainingMethod,
         paymentMethod: body.paymentMethod,
+        customerPhone: body.customerPhone,
         stockReserved: true,
 
         orderStatus:

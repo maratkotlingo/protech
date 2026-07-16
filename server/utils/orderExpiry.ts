@@ -5,6 +5,10 @@ import {
 } from "@prisma/client";
 import { prisma } from "./prisma";
 import { restoreProductStock } from "./orderStock";
+import {
+  broadcastOrderStatusChangeMessage,
+  createOrderStatusChangeMessage
+} from "./orderStatusNotification";
 
 export type ExpireUnpaidOrdersOptions = {
   expiresBefore?: Date;
@@ -61,7 +65,7 @@ export async function expireUnpaidOrders(
   const expiredOrderIds: number[] = [];
 
   for (const candidate of candidates) {
-    const expired = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({
         where: { id: candidate.id },
         include: {
@@ -87,7 +91,7 @@ export async function expireUnpaidOrders(
         order.createdAt > expiresBefore ||
         order.payment?.paymentStatus !== PaymentStatus.PENDING
       ) {
-        return false;
+        return { expired: false, statusMessage: null };
       }
 
       const claimed = await tx.order.updateMany({
@@ -110,7 +114,7 @@ export async function expireUnpaidOrders(
       });
 
       if (claimed.count !== 1) {
-        return false;
+        return { expired: false, statusMessage: null };
       }
 
       await restoreProductStock(tx, order.orderItems, {
@@ -126,11 +130,19 @@ export async function expireUnpaidOrders(
         }
       });
 
-      return true;
+      const statusMessage = await createOrderStatusChangeMessage(tx, {
+        orderId: order.id,
+        userId: order.userId,
+        previousStatus: order.orderStatus,
+        nextStatus: OrderStatus.CANCELLED
+      });
+
+      return { expired: true, statusMessage };
     });
 
-    if (expired) {
+    if (result.expired) {
       expiredOrderIds.push(candidate.id);
+      broadcastOrderStatusChangeMessage(result.statusMessage);
     }
   }
 

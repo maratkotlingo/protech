@@ -1,5 +1,5 @@
 <template>
-  <section class="rounded-[2rem] bg-[#f9fafb]/90 p-2 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur dark:bg-zinc-950/85 dark:shadow-black/20">
+  <section class="rounded-[2rem] bg-[#f9fafb]/90 p-2 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur  ">
     <div class="grid gap-3 lg:grid-cols-[minmax(260px,1fr)_minmax(220px,280px)_auto] lg:items-center">
       <UInput
         v-model="search"
@@ -7,9 +7,9 @@
         variant="none"
         size="xl"
         placeholder="Найти товар, бренд или описание"
-        class="w-full rounded-full bg-white shadow-sm shadow-zinc-950/5 dark:bg-zinc-900"
+        class="w-full rounded-full bg-white shadow-sm shadow-zinc-950/5 "
         :ui="{
-          base: 'h-[3.25rem] rounded-full bg-transparent text-zinc-900 placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500'
+          base: 'h-[3.25rem] rounded-full bg-transparent text-zinc-900 placeholder:text-zinc-400  ',
         }"
       />
 
@@ -23,7 +23,7 @@
         variant="none"
         size="lg"
         icon="i-lucide-layout-grid"
-        class="min-w-0 rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900"
+        class="min-w-0 rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 "
         :ui="selectUi"
       />
 
@@ -38,12 +38,12 @@
           variant="none"
           size="lg"
           icon="i-lucide-arrow-up-down"
-          class="w-full rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 sm:w-52 sm:shrink-0 dark:bg-zinc-900"
+          class="w-full rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 sm:w-52 sm:shrink-0 "
           :ui="sortUi"
         />
 
-        <div class="flex h-[3.25rem] items-center gap-3 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900">
-          <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Со скидкой</span>
+        <div class="flex h-[3.25rem] items-center gap-3 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 ">
+          <span class="text-sm font-medium text-zinc-700">Со скидкой</span>
           <USwitch
             v-model="discountOnly"
             color="primary"
@@ -57,13 +57,13 @@
           variant="ghost"
           size="lg"
           icon="i-lucide-sliders-horizontal"
-          class="h-[3.25rem] rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          class="h-[3.25rem] rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100  "
           @click="$emit('openFilters')"
         >
           Прочее
           <span
             v-if="activeFilterCount"
-            class="ml-1 grid size-5 place-items-center rounded-full bg-zinc-950 text-xs text-white dark:bg-white dark:text-zinc-950"
+            class="ml-1 grid size-5 place-items-center rounded-full bg-zinc-950 text-xs text-white  "
           >
             {{ activeFilterCount }}
           </span>
@@ -97,12 +97,12 @@ const discountOnly = defineModel<boolean>("discountOnly", { required: true });
 
 const selectUi = {
   base: "h-[3.25rem] rounded-full bg-transparent",
-  content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 dark:bg-zinc-900",
+  content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 ",
   viewport: "p-1"
 };
 const sortUi = {
   base: "h-[3.25rem] rounded-full bg-transparent",
-  content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 dark:bg-zinc-900",
+  content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 ",
   viewport: "p-1"
 };
 </script>

@@ -71,6 +71,13 @@
               <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
                 {{ order.user?.name || order.user?.email || "Гость" }} · {{ formatDate(order.createdAt) }}
               </p>
+              <p class="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[var(--admin-text)]">
+                <UIcon
+                  name="i-lucide-phone"
+                  class="size-4 text-[var(--admin-text-muted)]"
+                />
+                {{ order.customerPhone || "Телефон не указан" }}
+              </p>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2 xl:w-[560px]">
@@ -138,6 +145,10 @@
                 <div class="flex justify-between gap-4">
                   <dt class="text-[var(--admin-text-muted)]">Получение</dt>
                   <dd class="text-[var(--admin-text)]">{{ obtainingMethodLabels[order.obtainingMethod] }}</dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                  <dt class="text-[var(--admin-text-muted)]">Телефон</dt>
+                  <dd class="text-right font-medium text-[var(--admin-text)]">{{ order.customerPhone || "Не указан" }}</dd>
                 </div>
                 <div
                   v-if="order.delivery"

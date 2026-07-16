@@ -4,6 +4,8 @@ import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { $fetch, setup } from "@nuxt/test-utils/e2e";
 import {
+  MessageSenderRole,
+  MessageType,
   OrderStatus,
   PaymentMethod,
   PaymentStatus,
@@ -396,6 +398,7 @@ describe("cart/order integration", () => {
       order: {
         id: number;
         orderStatus: OrderStatus;
+        customerPhone: string | null;
         stockReserved: boolean;
         payment: {
           paymentStatus: PaymentStatus;
@@ -411,6 +414,7 @@ describe("cart/order integration", () => {
       body: {
         obtainingMethod: "PICKUP",
         paymentMethod: "OFFLINE",
+        customerPhone: "+7 900 123-45-67",
         orderItems: [
           {
             productId: product.id,
@@ -421,6 +425,7 @@ describe("cart/order integration", () => {
     });
 
     expect(response.order.orderStatus).toBe(OrderStatus.CONFIRMED);
+    expect(response.order.customerPhone).toBe("+7 900 123-45-67");
     expect(response.order.stockReserved).toBe(true);
     expect(response.order.payment.paymentStatus).toBe(PaymentStatus.UPON_RECEIPT);
     expect(response.payment).toEqual({
@@ -437,6 +442,7 @@ describe("cart/order integration", () => {
     const response = await $fetch<{
       order: {
         id: number;
+        customerPhone: string | null;
         payment: {
           paymentStatus: PaymentStatus;
         };
@@ -451,6 +457,7 @@ describe("cart/order integration", () => {
       body: {
         obtainingMethod: "PICKUP",
         paymentMethod: "ONLINE",
+        customerPhone: "+7 900 765-43-21",
         orderItems: [
           {
             productId: product.id,
@@ -465,6 +472,7 @@ describe("cart/order integration", () => {
 
     expect(response.payment.type).toBe("yookassa");
     expect(response.payment.confirmationUrl).toMatch(/^https:\/\/yookassa\.test\/payments\//);
+    expect(response.order.customerPhone).toBe("+7 900 765-43-21");
     expect(response.order.payment.paymentStatus).toBe(PaymentStatus.PENDING);
     expect(confirmation?.return_url).toBe(`http://localhost:3000/orders/${response.order.id}`);
   });
@@ -658,6 +666,21 @@ describe("cart/order integration", () => {
     });
 
     expect(payment.paymentStatus).toBe(PaymentStatus.UPON_RECEIPT);
+
+    const statusMessages = await prisma.message.findMany({
+      where: {
+        userId: user.id,
+        messageType: MessageType.DELIVERY,
+        senderRole: MessageSenderRole.SYSTEM
+      },
+      orderBy: {
+        createdAt: "asc"
+      }
+    });
+
+    expect(statusMessages).toHaveLength(2);
+    expect(statusMessages[0]?.message).toContain(String(order.id));
+    expect(statusMessages[1]?.message).toContain(String(order.id));
   });
 
   it("expires unpaid online orders and releases reserved stock", async () => {

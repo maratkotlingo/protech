@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
         orderStatus: true,
         paymentMethod: true,
         obtainingMethod: true,
+        customerPhone: true,
         createdAt: true,
         updatedAt: true,
         user: { select: { id: true, name: true, email: true } },

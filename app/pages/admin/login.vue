@@ -1,7 +1,7 @@
 <template>
   <main class="grid min-h-screen place-items-center bg-[var(--admin-surface-muted)] px-5 py-12">
     <UCard
-      class="w-full max-w-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] shadow-2xl shadow-green-950/10 dark:shadow-black/40"
+      class="w-full max-w-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] shadow-2xl shadow-green-950/10 "
       :ui="{ body: 'p-8 sm:p-10' }"
     >
       <div class="mb-9 space-y-6 text-center">

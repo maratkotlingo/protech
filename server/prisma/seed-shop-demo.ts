@@ -5,6 +5,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import {
   AuditAction,
   MessageType,
+  MessageSenderRole,
   ObtainingMethod,
   OrderStatus,
   PaymentMethod,
@@ -1178,6 +1179,7 @@ async function seedOrders(
       paymentStatus: PaymentStatus.PAID,
       paymentMethod: PaymentMethod.ONLINE,
       obtainingMethod: ObtainingMethod.DELIVERY,
+      customerPhone: "+7 900 110-20-30",
       address: "Москва, Ленинградский проспект, 36",
       items: [
         { article: "OZ-MOTUL-8100-5W30-4L", quantity: 1 },
@@ -1193,6 +1195,7 @@ async function seedOrders(
       paymentStatus: PaymentStatus.UPON_RECEIPT,
       paymentMethod: PaymentMethod.OFFLINE,
       obtainingMethod: ObtainingMethod.PICKUP,
+      customerPhone: "+7 901 220-30-40",
       items: [
         { article: "OZ-DVR-SUPERHD-1296", quantity: 1 },
         { article: "OZ-BASEUS-CC-30W", quantity: 1 }
@@ -1206,6 +1209,7 @@ async function seedOrders(
       paymentStatus: PaymentStatus.PAID,
       paymentMethod: PaymentMethod.ONLINE,
       obtainingMethod: ObtainingMethod.DELIVERY,
+      customerPhone: "+7 902 330-40-50",
       address: "Санкт-Петербург, Невский проспект, 84",
       items: [
         { article: "OZ-COMPRESSOR-2PISTON-12V", quantity: 1 },
@@ -1221,6 +1225,7 @@ async function seedOrders(
       paymentStatus: PaymentStatus.PENDING,
       paymentMethod: PaymentMethod.ONLINE,
       obtainingMethod: ObtainingMethod.DELIVERY,
+      customerPhone: "+7 903 440-50-60",
       address: "Казань, улица Баумана, 19",
       items: [
         { article: "OZ-HOLDER-AIRVENT-360", quantity: 1 },
@@ -1236,6 +1241,7 @@ async function seedOrders(
       paymentStatus: PaymentStatus.CANCELLED,
       paymentMethod: PaymentMethod.ONLINE,
       obtainingMethod: ObtainingMethod.PICKUP,
+      customerPhone: "+7 900 110-20-30",
       items: [
         { article: "OZ-STOUN-H7-4300K", quantity: 1 },
         { article: "OZ-WIPER-HYBRID-530-500", quantity: 1 }
@@ -1283,6 +1289,7 @@ async function seedOrders(
         obtainingMethod: orderSeed.obtainingMethod,
         orderStatus: orderSeed.status,
         paymentMethod: orderSeed.paymentMethod,
+        customerPhone: orderSeed.customerPhone,
         stockReserved: orderSeed.status !== OrderStatus.CANCELLED,
         createdAt,
         updatedAt: createdAt,
@@ -1339,25 +1346,43 @@ async function seedMessages(customers: Array<{ id: string }>) {
       {
         userId: at(customers, 0, "customers").id,
         messageType: MessageType.PRICE,
+        senderRole: MessageSenderRole.SYSTEM,
         message: "[Demo] Цена на коврики TPE снижена, старую цену видно в карточке товара.",
         createdAt: daysAgo(4)
       },
       {
         userId: at(customers, 1, "customers").id,
         messageType: MessageType.STOCK,
+        senderRole: MessageSenderRole.SYSTEM,
         message: "[Demo] Вы подписаны на поступление задней щетки Bosch 330 мм.",
         createdAt: daysAgo(3)
       },
       {
         userId: at(customers, 2, "customers").id,
         messageType: MessageType.FAQ_ANSWER,
+        senderRole: MessageSenderRole.SYSTEM,
         message: "[Demo] Магазин ответил на ваш вопрос о гарантии на компрессор.",
         createdAt: daysAgo(2)
       },
       {
         userId: at(customers, 3, "customers").id,
         messageType: MessageType.DELIVERY,
+        senderRole: MessageSenderRole.SYSTEM,
         message: "[Demo] Заказ с аксессуарами для салона ожидает подтверждения.",
+        createdAt: daysAgo(1)
+      },
+      {
+        userId: at(customers, 0, "customers").id,
+        messageType: MessageType.SUPPORT,
+        senderRole: MessageSenderRole.USER,
+        message: "[Demo] Подскажите, можно ли изменить адрес доставки?",
+        createdAt: daysAgo(1)
+      },
+      {
+        userId: at(customers, 0, "customers").id,
+        messageType: MessageType.SUPPORT,
+        senderRole: MessageSenderRole.ADMIN,
+        message: "[Demo] Да, напишите новый адрес, и мы обновим данные до передачи заказа.",
         createdAt: daysAgo(1)
       }
     ]

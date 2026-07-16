@@ -1,50 +1,73 @@
 <template>
-  <div class="overflow-hidden rounded-[2rem] bg-white shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20">
-    <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-      <div>
-        <p class="font-semibold text-zinc-950 dark:text-white">Карта доставки</p>
-        <p class="text-sm text-zinc-500 dark:text-zinc-400">
-          {{ statusText }}
-        </p>
+  <section class="relative min-h-[520px] overflow-hidden rounded-[2rem] bg-zinc-900 shadow-[0_28px_90px_rgba(15,23,42,0.16)] ">
+    <iframe
+      :src="mapSrc"
+      class="absolute inset-0 size-full border-0"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      :title="mapTitle"
+    />
+
+    <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(9,9,11,0.34),rgba(9,9,11,0.02)_38%,rgba(9,9,11,0.48))]" />
+
+    <div class="absolute left-4 right-4 top-4 flex flex-wrap items-start justify-between gap-3">
+      <div class="max-w-sm rounded-[1.5rem] bg-white/90 px-4 py-3 shadow-xl shadow-zinc-950/15 backdrop-blur-xl ">
+        <div class="flex items-center gap-2">
+          <span class="grid size-9 place-items-center rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-950/20">
+            <UIcon
+              :name="isPickup ? 'i-lucide-store' : 'i-lucide-map-pin'"
+              class="size-4.5"
+            />
+          </span>
+          <div>
+            <p class="text-sm font-semibold text-zinc-950">{{ panelTitle }}</p>
+            <p class="mt-0.5 text-xs text-zinc-500">{{ statusText }}</p>
+          </div>
+        </div>
       </div>
+
       <UBadge
-        :color="house ? 'primary' : 'neutral'"
+        :color="badgeColor"
         variant="soft"
-        class="rounded-full"
+        class="rounded-full bg-white/90 px-3 py-1.5 shadow-lg shadow-zinc-950/10 backdrop-blur "
       >
-        {{ house ? "Дом отмечен" : "Уточняется" }}
+        {{ badgeText }}
       </UBadge>
     </div>
 
-    <div class="relative mx-3 mb-3 aspect-[4/3] min-h-80 overflow-hidden rounded-[1.45rem] bg-[#f9fafb] dark:bg-zinc-800/60">
-      <iframe
-        :src="mapSrc"
-        class="absolute inset-0 size-full border-0"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        title="Карта адреса доставки"
-      />
-      <div
-        v-if="pending"
-        class="absolute inset-x-4 top-4 rounded-2xl bg-white/95 px-4 py-3 text-sm text-zinc-500 shadow-lg shadow-zinc-950/10 backdrop-blur dark:bg-zinc-900/90 dark:text-zinc-400"
-      >
-        Ищу адрес на карте...
+    <div class="absolute inset-x-4 bottom-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+      <div class="rounded-[1.5rem] bg-white/90 p-4 shadow-xl shadow-zinc-950/15 backdrop-blur-xl ">
+        <p class="text-xs font-semibold uppercase text-zinc-400">Точка на карте</p>
+        <p class="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-zinc-950 ">
+          {{ locationLabel }}
+        </p>
       </div>
+
       <div
-        v-if="error"
-        class="absolute inset-x-4 bottom-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 shadow-lg shadow-red-950/10 dark:bg-red-950 dark:text-red-200"
+        v-if="pending || error"
+        class="rounded-[1.5rem] px-4 py-3 text-sm shadow-xl backdrop-blur-xl"
+        :class="error ? 'bg-red-50/95 text-red-700 shadow-red-950/10' : 'bg-white/90 text-zinc-500 shadow-zinc-950/10  '"
       >
-        {{ error }}
+        <span class="inline-flex items-center gap-2">
+          <UIcon
+            :name="error ? 'i-lucide-circle-alert' : 'i-lucide-loader-circle'"
+            class="size-4"
+            :class="{ 'animate-spin': pending && !error }"
+          />
+          {{ error || "Ищу адрес на карте..." }}
+        </span>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
 import { useDebounceFn } from "@vueuse/core";
+import type { ObtainingMethod } from "~~/app/shared/types/shop";
 
 const props = defineProps<{
   city: string;
+  obtainingMethod: ObtainingMethod;
   street: string;
   house: string;
 }>();
@@ -57,26 +80,64 @@ type NominatimResult = {
 
 const pending = ref(false);
 const error = ref("");
-const position = ref({
+const deliveryFallbackPosition = {
   lat: 55.751244,
   lon: 37.618423,
   label: "Москва"
+};
+const pickupPosition = {
+  lat: 57.626074,
+  lon: 39.88447,
+  label: "Пункт самовывоза ProTech, Ярославль"
+};
+const position = ref({
+  ...deliveryFallbackPosition
 });
 
+const isPickup = computed(() => props.obtainingMethod === "PICKUP");
 const addressQuery = computed(() => [props.city, props.street, props.house]
   .map((part) => part.trim())
   .filter(Boolean)
   .join(", "));
 
 const statusText = computed(() => {
+  if (isPickup.value) return "Самовывоз после подтверждения заказа";
   if (!props.city.trim()) return "Введите город, затем улицу и дом";
   if (!props.street.trim()) return "Город найден, добавьте улицу";
   if (!props.house.trim()) return "Улица найдена, добавьте номер дома";
   return position.value.label;
 });
+const panelTitle = computed(() => isPickup.value ? "Карта самовывоза" : "Карта доставки");
+const locationLabel = computed(() => {
+  if (isPickup.value) return pickupPosition.label;
+  return addressQuery.value || "Адрес доставки пока не указан";
+});
+const badgeColor = computed(() => {
+  if (isPickup.value || props.house.trim()) return "primary";
+  return "neutral";
+});
+const badgeText = computed(() => {
+  if (isPickup.value) return "Пункт выдачи";
+  return props.house.trim() ? "Дом отмечен" : "Уточняется";
+});
+const mapTitle = computed(() => isPickup.value ? "Карта пункта самовывоза" : "Карта адреса доставки");
 
 const geocodeAddress = useDebounceFn(async () => {
-  if (!import.meta.client || !props.city.trim()) {
+  if (isPickup.value) {
+    position.value = { ...pickupPosition };
+    pending.value = false;
+    error.value = "";
+    return;
+  }
+
+  if (!props.city.trim()) {
+    position.value = { ...deliveryFallbackPosition };
+    pending.value = false;
+    error.value = "";
+    return;
+  }
+
+  if (!import.meta.client) {
     return;
   }
 
@@ -110,12 +171,12 @@ const geocodeAddress = useDebounceFn(async () => {
   }
 }, 700);
 
-watch(addressQuery, () => {
+watch([addressQuery, isPickup], () => {
   void geocodeAddress();
 }, { immediate: true });
 
 const mapSrc = computed(() => {
-  const span = props.house.trim() ? 0.008 : props.street.trim() ? 0.035 : 0.18;
+  const span = isPickup.value ? 0.018 : props.house.trim() ? 0.008 : props.street.trim() ? 0.035 : 0.18;
   const lat = position.value.lat;
   const lon = position.value.lon;
   const bbox = [
@@ -124,7 +185,7 @@ const mapSrc = computed(() => {
     lon + span,
     lat + span * 0.65
   ].join(",");
-  const marker = props.house.trim() ? `&marker=${lat},${lon}` : "";
+  const marker = isPickup.value || props.house.trim() ? `&marker=${lat},${lon}` : "";
 
   return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik${marker}`;
 });

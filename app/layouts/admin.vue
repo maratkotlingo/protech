@@ -27,7 +27,7 @@
     >
       <UCard class="w-full max-w-lg border border-[var(--admin-border)] bg-[var(--admin-surface)]">
         <div class="space-y-5 text-center">
-          <div class="mx-auto grid size-14 place-items-center rounded-lg bg-red-100 text-red-600 dark:bg-red-950 dark:text-red-300">
+          <div class="mx-auto grid size-14 place-items-center rounded-lg bg-red-100 text-red-600">
             <LockKeyhole class="size-7" />
           </div>
           <div>
@@ -102,8 +102,4 @@ const mobileMenuOpen = ref(false);
 const { data, pending, error, refresh } = await useAsyncData("admin-me", () =>
   adminFetch<{ user: AdminUser }>("/api/admin/me")
 );
-
-onMounted(() => {
-  ui.hydrateColorMode();
-});
 </script>

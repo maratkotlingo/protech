@@ -1,0 +1,181 @@
+<template>
+  <div class="space-y-7">
+    <UFormField
+      label="Название"
+      required
+      :error="fieldErrors.name"
+    >
+      <UInput
+        :model-value="form.name"
+        class="w-full"
+        size="xl"
+        placeholder="Например, Аккумулятор ProTech X"
+        @update:model-value="emit('updateField', 'name', String($event ?? ''))"
+      />
+    </UFormField>
+
+    <div class="grid gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+      <UFormField
+        label="Артикул"
+        required
+        :error="fieldErrors.article"
+      >
+        <UInput
+          :model-value="form.article"
+          class="w-full"
+          size="xl"
+          placeholder="PT-X-001"
+          @update:model-value="emit('updateField', 'article', String($event ?? ''))"
+        />
+      </UFormField>
+
+      <UFormField
+        label="Категория"
+        required
+        :error="fieldErrors.categoryId"
+      >
+        <USelect
+          :model-value="form.categoryId"
+          class="w-full"
+          size="xl"
+          :items="categoryItems"
+          placeholder="Выберите категорию"
+          @update:model-value="emit('selectCategory', $event)"
+        />
+      </UFormField>
+    </div>
+
+    <UFormField
+      label="Описание"
+      required
+      :error="fieldErrors.description"
+    >
+      <UTextarea
+        :model-value="form.description"
+        class="w-full"
+        size="xl"
+        autoresize
+        :rows="8"
+        :maxrows="18"
+        :ui="{ base: 'min-h-48 text-base leading-7' }"
+        placeholder="Коротко опишите свойства, комплектацию и назначение товара"
+        @update:model-value="emit('updateField', 'description', String($event ?? ''))"
+      />
+    </UFormField>
+
+    <div class="grid gap-5 lg:grid-cols-3">
+      <UFormField
+        label="Цена"
+        required
+        :error="fieldErrors.currentPrice"
+      >
+        <UInput
+          :model-value="form.currentPrice"
+          class="w-full"
+          size="xl"
+          type="number"
+          min="0"
+          step="0.01"
+          @update:model-value="emit('updateField', 'currentPrice', toNumberValue($event))"
+        />
+      </UFormField>
+
+      <UFormField
+        label="Себестоимость"
+        :error="fieldErrors.costPrice"
+      >
+        <UInput
+          :model-value="form.costPrice"
+          class="w-full"
+          size="xl"
+          type="number"
+          min="0"
+          step="0.01"
+          @update:model-value="emit('updateField', 'costPrice', toNumberValue($event))"
+        />
+      </UFormField>
+
+      <UFormField
+        label="Старая цена"
+        :error="fieldErrors.oldPrice"
+      >
+        <UInput
+          :model-value="form.oldPrice"
+          class="w-full"
+          size="xl"
+          type="number"
+          min="0"
+          step="0.01"
+          @update:model-value="emit('updateField', 'oldPrice', toNumberValue($event))"
+        />
+      </UFormField>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
+      <UFormField
+        label="Ссылка OZON"
+        :error="fieldErrors.ozonLink"
+      >
+        <UInput
+          :model-value="form.ozonLink"
+          class="w-full"
+          size="xl"
+          placeholder="https://www.ozon.ru/..."
+          @update:model-value="emit('updateField', 'ozonLink', String($event ?? ''))"
+        />
+      </UFormField>
+
+      <div class="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-5">
+        <USwitch
+          :model-value="form.isActive"
+          label="Товар активен"
+          description="Показывать товар в публичном каталоге"
+          @update:model-value="emit('updateField', 'isActive', Boolean($event))"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { ProductFormState } from "~~/app/shared/types/admin";
+
+export type ProductEditorField =
+  | "name"
+  | "article"
+  | "description"
+  | "currentPrice"
+  | "costPrice"
+  | "oldPrice"
+  | "ozonLink"
+  | "isActive";
+
+export type ProductEditorFieldValue = ProductFormState[ProductEditorField];
+type SelectValue = number | string | null | undefined;
+type SelectItem = {
+  class?: string;
+  label?: string;
+  type?: "separator";
+  value?: number | string;
+};
+
+defineProps<{
+  categoryItems: SelectItem[];
+  fieldErrors: Record<string, string | undefined>;
+  form: ProductFormState;
+}>();
+
+const emit = defineEmits<{
+  selectCategory: [value: SelectValue];
+  updateField: [field: ProductEditorField, value: ProductEditorFieldValue];
+}>();
+
+function toNumberValue(value: string | number | null | undefined) {
+  if (value === "" || value === null || value === undefined) {
+    return null;
+  }
+
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : null;
+}
+</script>

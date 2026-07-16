@@ -85,6 +85,7 @@ import {
   HelpCircle,
   Layers3,
   MessageSquareText,
+  MessagesSquare,
   PackageSearch,
   PanelLeftClose,
   PanelLeftOpen,
@@ -113,6 +114,7 @@ const navItems = [
   { label: "Остатки", to: "/admin/stock", icon: Warehouse },
   { label: "Справочники", to: "/admin/catalog", icon: Layers3 },
   { label: "Заказы", to: "/admin/orders", icon: ClipboardList },
+  { label: "Сообщения", to: "/admin/messages", icon: MessagesSquare },
   { label: "Отзывы", to: "/admin/reviews", icon: MessageSquareText },
   { label: "FAQ", to: "/admin/faq", icon: HelpCircle },
   { label: "Аудит", to: "/admin/audit", icon: ScrollText }

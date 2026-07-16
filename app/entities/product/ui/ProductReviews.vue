@@ -20,11 +20,11 @@
     </div>
 
     <div class="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-      <aside class="rounded-[2rem] bg-[#f9fafb] p-6 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900/70 dark:shadow-black/20">
+      <aside class="rounded-[2rem] bg-[#f9fafb] p-6 shadow-sm shadow-zinc-950/5  ">
         <div class="flex items-end justify-between gap-4">
           <div>
             <p class="text-sm font-medium text-zinc-400">Средняя оценка</p>
-            <p class="mt-2 text-6xl font-semibold tracking-normal text-zinc-950 dark:text-white">
+            <p class="mt-2 text-6xl font-semibold tracking-normal text-zinc-950 ">
               {{ averageRatingLabel }}
             </p>
           </div>
@@ -37,7 +37,7 @@
             :key="rating"
             name="i-lucide-star"
             class="size-5"
-            :class="rating <= roundedAverage ? 'fill-amber-400' : 'text-zinc-300 dark:text-zinc-700'"
+            :class="rating <= roundedAverage ? 'fill-amber-400' : 'text-zinc-300 '"
           />
         </div>
 
@@ -50,8 +50,8 @@
             :key="item.rating"
             class="grid grid-cols-[2rem_minmax(0,1fr)_2.5rem] items-center gap-3 text-sm"
           >
-            <span class="font-medium text-zinc-500 dark:text-zinc-400">{{ item.rating }}</span>
-            <div class="h-2 overflow-hidden rounded-full bg-white shadow-inner shadow-zinc-950/5 dark:bg-zinc-950/70">
+            <span class="font-medium text-zinc-500">{{ item.rating }}</span>
+            <div class="h-2 overflow-hidden rounded-full bg-white shadow-inner shadow-zinc-950/5 ">
               <div
                 class="h-full rounded-full bg-amber-400 transition-all duration-500"
                 :style="{ width: `${item.percent}%` }"
@@ -63,7 +63,7 @@
       </aside>
 
       <div class="space-y-5">
-        <div class="rounded-[2rem] bg-[#f9fafb] p-3 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900/70 dark:shadow-black/20">
+        <div class="rounded-[2rem] bg-[#f9fafb] p-3 shadow-sm shadow-zinc-950/5  ">
           <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div
               v-auto-animate
@@ -74,7 +74,7 @@
                 :key="filter.key"
                 type="button"
                 class="rounded-full px-4 py-2 text-sm font-medium transition duration-300 hover:scale-[1.03]"
-                :class="ratingFilter === filter.value ? 'bg-zinc-950 text-white shadow-lg shadow-zinc-950/20 dark:bg-white dark:text-zinc-950' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:text-zinc-950 dark:bg-zinc-950/70 dark:text-zinc-300 dark:hover:text-white'"
+                :class="ratingFilter === filter.value ? 'bg-zinc-950 text-white shadow-lg shadow-zinc-950/20' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:text-zinc-950   '"
                 @click="selectRatingFilter(filter.value)"
               >
                 {{ filter.label }}
@@ -89,7 +89,7 @@
               color="neutral"
               variant="none"
               icon="i-lucide-arrow-up-down"
-              class="w-full rounded-full bg-white shadow-sm shadow-zinc-950/5 xl:w-56 dark:bg-zinc-950/70"
+              class="w-full rounded-full bg-white shadow-sm shadow-zinc-950/5 xl:w-56 "
               :ui="reviewSelectUi"
               aria-label="Сортировка отзывов"
             />
@@ -99,27 +99,27 @@
         <div v-auto-animate>
           <div
             v-if="reviewFormOpen"
-            class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 sm:p-6 dark:bg-zinc-900/70 dark:shadow-black/20"
+            class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 sm:p-6  "
           >
             <form
               class="space-y-5"
               @submit.prevent="submitReview"
             >
               <div>
-                <p class="mb-2 text-sm font-semibold text-zinc-950 dark:text-white">Оценка</p>
+                <p class="mb-2 text-sm font-semibold text-zinc-950">Оценка</p>
                 <div class="flex gap-1">
                   <button
                     v-for="rating in 5"
                     :key="rating"
                     type="button"
-                    class="rounded-full p-1 text-amber-400 transition duration-300 hover:scale-110 hover:bg-amber-50 dark:hover:bg-amber-950/40"
+                    class="rounded-full p-1 text-amber-400 transition duration-300 hover:scale-110 hover:bg-amber-50 "
                     :aria-label="`Поставить ${rating}`"
                     @click="form.rating = rating"
                   >
                     <UIcon
                       name="i-lucide-star"
                       class="size-8"
-                      :class="rating <= form.rating ? 'fill-amber-400' : 'text-zinc-300 dark:text-zinc-700'"
+                      :class="rating <= form.rating ? 'fill-amber-400' : 'text-zinc-300 '"
                     />
                   </button>
                 </div>
@@ -129,7 +129,7 @@
                 <UFormField label="Плюсы">
                   <UTextarea
                     v-model="form.advantages"
-                    class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70"
+                    class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 "
                     :rows="3"
                     variant="none"
                     placeholder="Что понравилось"
@@ -140,7 +140,7 @@
                 <UFormField label="Минусы">
                   <UTextarea
                     v-model="form.disadvantages"
-                    class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70"
+                    class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 "
                     :rows="3"
                     variant="none"
                     placeholder="Что можно улучшить"
@@ -152,7 +152,7 @@
               <UFormField label="Комментарий">
                 <UTextarea
                   v-model="form.comment"
-                  class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70"
+                  class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 "
                   :rows="4"
                   variant="none"
                   placeholder="Поделитесь опытом использования"
@@ -182,7 +182,7 @@
           <article
             v-for="review in visibleReviews"
             :key="review.id"
-            class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10 sm:p-6 dark:bg-zinc-900/70 dark:shadow-black/20 dark:hover:bg-zinc-900"
+            class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10 sm:p-6   "
           >
             <div class="flex flex-wrap items-start justify-between gap-4">
               <div class="flex items-center gap-3">
@@ -194,42 +194,42 @@
                 >
                 <div
                   v-else
-                  class="grid size-12 place-items-center rounded-full bg-white font-semibold text-emerald-700 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70 dark:text-emerald-300"
+                  class="grid size-12 place-items-center rounded-full bg-white font-semibold text-emerald-700 shadow-sm shadow-zinc-950/5  "
                 >
                   {{ (review.user?.name ?? "П").slice(0, 1).toUpperCase() }}
                 </div>
                 <div>
-                  <p class="font-semibold text-zinc-950 dark:text-white">
+                  <p class="font-semibold text-zinc-950 ">
                     {{ review.user?.name || "Покупатель" }}
                   </p>
-                  <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                  <p class="text-sm text-zinc-500 ">
                     {{ formatDate(review.createdAt) }}
                   </p>
                 </div>
               </div>
 
-              <div class="flex rounded-full bg-white px-3 py-2 text-amber-400 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70">
+              <div class="flex rounded-full bg-white px-3 py-2 text-amber-400 shadow-sm shadow-zinc-950/5 ">
                 <UIcon
                   v-for="rating in 5"
                   :key="rating"
                   name="i-lucide-star"
                   class="size-4"
-                  :class="rating <= review.rating ? 'fill-amber-400' : 'text-zinc-300 dark:text-zinc-700'"
+                  :class="rating <= review.rating ? 'fill-amber-400' : 'text-zinc-300 '"
                 />
               </div>
             </div>
 
-            <div class="mt-6 grid gap-4 text-sm leading-7 text-zinc-600 md:grid-cols-3 dark:text-zinc-300">
+            <div class="mt-6 grid gap-4 text-sm leading-7 text-zinc-600 md:grid-cols-3 ">
               <div v-if="review.advantages">
-                <p class="font-semibold text-zinc-950 dark:text-white">Плюсы</p>
+                <p class="font-semibold text-zinc-950">Плюсы</p>
                 <p class="mt-1">{{ review.advantages }}</p>
               </div>
               <div v-if="review.disadvantages">
-                <p class="font-semibold text-zinc-950 dark:text-white">Минусы</p>
+                <p class="font-semibold text-zinc-950">Минусы</p>
                 <p class="mt-1">{{ review.disadvantages }}</p>
               </div>
               <div v-if="review.comment">
-                <p class="font-semibold text-zinc-950 dark:text-white">Комментарий</p>
+                <p class="font-semibold text-zinc-950">Комментарий</p>
                 <p class="mt-1">{{ review.comment }}</p>
               </div>
             </div>
@@ -250,16 +250,16 @@
 
             <div
               v-if="review.reviewAnswers.length"
-              class="mt-5 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/70"
+              class="mt-5 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 "
             >
-              <p class="flex items-center gap-2 text-sm font-semibold text-zinc-950 dark:text-white">
+              <p class="flex items-center gap-2 text-sm font-semibold text-zinc-950 ">
                 <UIcon
                   name="i-lucide-store"
-                  class="size-4 text-emerald-600 dark:text-emerald-300"
+                  class="size-4 text-emerald-600 "
                 />
                 Ответ магазина
               </p>
-              <p class="mt-2 text-sm leading-7 text-zinc-600 dark:text-zinc-300">
+              <p class="mt-2 text-sm leading-7 text-zinc-600 ">
                 {{ review.reviewAnswers[0]?.text }}
               </p>
             </div>
@@ -267,7 +267,7 @@
 
           <div
             v-if="!filteredReviews.length"
-            class="grid min-h-44 place-items-center rounded-[2rem] bg-[#f9fafb] px-6 text-center text-zinc-500 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900/70 dark:text-zinc-400 dark:shadow-black/20"
+            class="grid min-h-44 place-items-center rounded-[2rem] bg-[#f9fafb] px-6 text-center text-zinc-500 shadow-sm shadow-zinc-950/5   "
           >
             Отзывов с такой оценкой пока нет.
           </div>
@@ -281,7 +281,7 @@
               variant="soft"
               icon="i-lucide-plus"
               size="lg"
-              class="rounded-full bg-[#f9fafb] transition duration-300 hover:scale-[1.02] dark:bg-zinc-900/70"
+              class="rounded-full bg-[#f9fafb] transition duration-300 hover:scale-[1.02] "
               @click="loadMoreReviews"
             >
               Показать еще {{ remainingReviewsCount }}
@@ -331,8 +331,8 @@ const reviewSortOptions: Array<{ label: string; value: ReviewSort }> = [
   { label: "Сначала низкие", value: "lowest" }
 ];
 const reviewSelectUi = {
-  base: "h-11 rounded-full bg-transparent font-medium text-zinc-700 dark:text-zinc-200",
-  content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 dark:bg-zinc-900",
+  base: "h-11 rounded-full bg-transparent font-medium text-zinc-700 ",
+  content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 ",
   item: "rounded-xl",
   viewport: "p-1"
 };

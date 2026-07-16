@@ -10,7 +10,7 @@
       <div class="flex items-center justify-between gap-4">
         <div>
           <p class="text-xs font-medium uppercase text-zinc-400">Расширенные</p>
-          <h2 class="text-2xl font-semibold tracking-normal text-zinc-950 dark:text-white">
+          <h2 class="text-2xl font-semibold tracking-normal text-zinc-950 ">
             Фильтры
           </h2>
         </div>
@@ -21,7 +21,7 @@
           icon="i-lucide-x"
           size="lg"
           square
-          class="rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+          class="rounded-full bg-zinc-100 hover:bg-zinc-200  "
           aria-label="Закрыть фильтры"
           @click="closeDrawer"
         />
@@ -30,17 +30,17 @@
 
     <template #body>
       <div class="space-y-8">
-        <section class="rounded-[1.75rem] bg-[#f9fafb] p-4 shadow-sm shadow-zinc-950/5 dark:bg-zinc-800/60 dark:shadow-black/10">
+        <section class="rounded-[1.75rem] bg-[#f9fafb] p-4 shadow-sm shadow-zinc-950/5  ">
           <div class="flex items-start justify-between gap-4">
             <div>
-              <h3 class="font-semibold text-zinc-950 dark:text-white">Цена</h3>
-              <p class="mt-1 text-xs font-medium text-zinc-400 dark:text-zinc-500">
+              <h3 class="font-semibold text-zinc-950">Цена</h3>
+              <p class="mt-1 text-xs font-medium text-zinc-400 ">
                 {{ availablePriceRangeLabel }}
               </p>
             </div>
 
             <div
-              class="flex h-8 min-w-32 shrink-0 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-zinc-700 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:text-zinc-200"
+              class="flex h-8 min-w-32 shrink-0 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-zinc-700 shadow-sm shadow-zinc-950/5  "
             >
               <UIcon
                 v-if="priceRangePending"
@@ -52,7 +52,7 @@
           </div>
 
           <div class="mt-4 grid grid-cols-2 gap-2.5">
-            <label class="rounded-[1.25rem] bg-white px-3 py-2.5 shadow-sm shadow-zinc-950/5 transition-colors focus-within:bg-white dark:bg-zinc-900">
+            <label class="rounded-[1.25rem] bg-white px-3 py-2.5 shadow-sm shadow-zinc-950/5 transition-colors focus-within:bg-white ">
               <span class="text-[11px] font-semibold uppercase text-zinc-400">От</span>
               <UInput
                 :model-value="priceMin"
@@ -66,7 +66,7 @@
               />
             </label>
 
-            <label class="rounded-[1.25rem] bg-white px-3 py-2.5 shadow-sm shadow-zinc-950/5 transition-colors focus-within:bg-white dark:bg-zinc-900">
+            <label class="rounded-[1.25rem] bg-white px-3 py-2.5 shadow-sm shadow-zinc-950/5 transition-colors focus-within:bg-white ">
               <span class="text-[11px] font-semibold uppercase text-zinc-400">До</span>
               <UInput
                 :model-value="priceMax"
@@ -81,7 +81,7 @@
             </label>
           </div>
 
-          <div class="mt-4 rounded-[1.35rem] bg-white/80 px-4 py-4 shadow-sm shadow-zinc-950/5 dark:bg-zinc-950/30">
+          <div class="mt-4 rounded-[1.35rem] bg-white/80 px-4 py-4 shadow-sm shadow-zinc-950/5 ">
             <USlider
               v-model="priceRange"
               :disabled="priceRangePending || !hasPriceRange"
@@ -115,7 +115,7 @@
             v-for="attribute in attributes"
             :key="attribute.id"
           >
-            <h3 class="font-semibold text-zinc-950 dark:text-white">
+            <h3 class="font-semibold text-zinc-950 ">
               {{ attribute.name }}<span v-if="attribute.unit" class="text-zinc-400">, {{ attribute.unit }}</span>
             </h3>
             <div
@@ -128,7 +128,7 @@
                 :label="option.value"
                 :model-value="isAttributeSelected(attribute.id, option.value)"
                 color="primary"
-                class="rounded-2xl bg-[#f9fafb] p-4 dark:bg-zinc-800/60"
+                class="rounded-2xl bg-[#f9fafb] p-4 "
                 @update:model-value="$emit('toggleAttribute', attribute.id, option.value)"
               >
                 <template #label>
@@ -136,7 +136,7 @@
                     <span class="flex min-w-0 items-center gap-2">
                       <span
                         v-if="isColorAttribute(attribute)"
-                        class="size-4 shrink-0 rounded-full ring-2 ring-white dark:ring-zinc-900"
+                        class="size-4 shrink-0 rounded-full ring-2 ring-white "
                         :style="{ backgroundColor: colorToCss(option.value) }"
                       />
                       <span class="truncate">{{ option.value }}</span>
@@ -162,7 +162,7 @@
 
           <p
             v-if="!attributes.length"
-            class="rounded-3xl bg-[#f9fafb] p-5 text-sm leading-6 text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400"
+            class="rounded-3xl bg-[#f9fafb] p-5 text-sm leading-6 text-zinc-500  "
           >
             Для текущей категории пока нет дополнительных характеристик.
           </p>
@@ -232,14 +232,14 @@ const PRICE_FILTER_STEP = 100;
 
 const drawerUi = {
   overlay: "bg-zinc-950/25 backdrop-blur-sm",
-  content: "w-[min(440px,calc(100vw-1rem))] max-w-none rounded-l-[2rem] bg-white shadow-2xl shadow-zinc-950/20 ring-0 dark:bg-zinc-900",
+  content: "w-[min(440px,calc(100vw-1rem))] max-w-none rounded-l-[2rem] bg-white shadow-2xl shadow-zinc-950/20 ring-0 ",
   container: "h-full gap-0 overflow-hidden p-0",
   header: "px-6 pb-4 pt-6",
   body: "min-h-0 flex-1 overflow-y-auto px-6 pb-8",
-  footer: "bg-white/95 px-6 py-5 shadow-[0_-18px_40px_rgba(24,24,27,0.06)] backdrop-blur dark:bg-zinc-900/95"
+  footer: "bg-white/95 px-6 py-5 shadow-[0_-18px_40px_rgba(24,24,27,0.06)] backdrop-blur ",
 };
 const priceInputUi = {
-  base: "h-7 rounded-none bg-transparent px-0 text-base font-semibold text-zinc-950 disabled:opacity-60 dark:text-white"
+  base: "h-7 rounded-none bg-transparent px-0 text-base font-semibold text-zinc-950 disabled:opacity-60 ",
 };
 
 const hasPriceRange = computed(() => props.priceRangeMax > props.priceRangeMin);

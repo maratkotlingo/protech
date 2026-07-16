@@ -1,6 +1,6 @@
 <template>
-  <article class="group overflow-hidden rounded-3xl bg-white p-3 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10 dark:bg-zinc-900 dark:shadow-black/20 dark:hover:shadow-black/30">
-    <div class="relative overflow-hidden rounded-[1.45rem] bg-zinc-100 dark:bg-zinc-800">
+  <article class="group overflow-hidden rounded-3xl bg-white p-3 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10   ">
+    <div class="relative overflow-hidden rounded-[1.45rem] bg-zinc-100 ">
       <NuxtLink :to="`/product/${product.id}`">
         <img
           :src="product.mainImage || '/favicon.ico'"
@@ -23,7 +23,7 @@
           v-if="isOutOfStock(product)"
           color="neutral"
           variant="soft"
-          class="rounded-full bg-white/85 backdrop-blur dark:bg-zinc-900/80"
+          class="rounded-full bg-white/85 backdrop-blur "
         >
           Нет в наличии
         </UBadge>
@@ -36,7 +36,7 @@
           icon="i-lucide-heart"
           size="lg"
           square
-          class="absolute right-4 top-4 rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 dark:bg-zinc-900/85"
+          class="absolute right-4 top-4 rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 "
           :class="favorite ? 'text-red-500' : ''"
           :loading="loadingFavorite"
           :aria-label="favorite ? 'Убрать из избранного' : 'Добавить в избранное'"
@@ -50,7 +50,7 @@
         :icon="cartButtonIcon"
         size="lg"
         class="absolute inset-x-4 bottom-4 justify-center rounded-full opacity-100 shadow-lg shadow-zinc-950/15 transition duration-300 sm:translate-y-3 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 sm:group-focus-within:translate-y-0 sm:group-focus-within:opacity-100"
-        :class="inCart ? 'bg-red-50/95 text-red-700 hover:bg-red-100 dark:bg-red-950/80 dark:text-red-200 dark:hover:bg-red-950' : ''"
+        :class="inCart ? 'bg-red-50/95 text-red-700 hover:bg-red-100' : ''"
         :disabled="!inCart && isOutOfStock(product)"
         :loading="loadingCart"
         @click="onToggleCart"
@@ -64,7 +64,7 @@
         <p class="truncate text-xs font-medium uppercase text-zinc-400">
           {{ productBrand(product) }}
         </p>
-        <div class="flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <div class="flex items-center gap-1 text-sm text-zinc-500 ">
           <UIcon
             name="i-lucide-star"
             class="size-4"
@@ -76,12 +76,12 @@
 
       <NuxtLink
         :to="`/product/${product.id}`"
-        class="mt-2 line-clamp-2 min-h-12 text-base font-semibold leading-6 text-zinc-950 transition hover:text-emerald-700 dark:text-white dark:hover:text-emerald-300"
+        class="mt-2 line-clamp-2 min-h-12 text-base font-semibold leading-6 text-zinc-950 transition hover:text-emerald-700  "
       >
         {{ product.name }}
       </NuxtLink>
 
-      <p class="mt-2 line-clamp-2 min-h-11 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
+      <p class="mt-2 line-clamp-2 min-h-11 text-sm leading-6 text-zinc-500 ">
         {{ product.description || product.article || product.category?.name }}
       </p>
 
@@ -89,7 +89,7 @@
         <div class="flex flex-wrap items-baseline gap-2">
           <span
             class="text-lg font-semibold"
-            :class="product.oldPrice ? 'text-red-600 dark:text-red-400' : 'text-zinc-950 dark:text-white'"
+            :class="product.oldPrice ? 'text-red-600' : 'text-zinc-950 '"
           >
             {{ formatCurrency(product.currentPrice) }}
           </span>
@@ -108,7 +108,7 @@
           <span
             v-for="color in productColorValues(product).slice(0, 3)"
             :key="`${product.id}-${color}`"
-            class="size-4 rounded-full ring-2 ring-white dark:ring-zinc-900"
+            class="size-4 rounded-full ring-2 ring-white "
             :style="{ backgroundColor: colorToCss(color) }"
           />
         </div>

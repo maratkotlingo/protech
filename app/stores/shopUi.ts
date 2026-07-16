@@ -1,4 +1,3 @@
-export type ShopThemePreference = "light" | "dark" | "system";
 export type ShopCatalogAttributeFilter = {
   attributeId: number;
   value: string;
@@ -6,7 +5,6 @@ export type ShopCatalogAttributeFilter = {
 
 export const useShopUiStore = defineStore("shop-ui", {
   state: () => ({
-    themePreference: "system" as ShopThemePreference,
     catalog: {
       search: "",
       categoryId: null as number | null,
@@ -18,21 +16,6 @@ export const useShopUiStore = defineStore("shop-ui", {
     }
   }),
   actions: {
-    setThemePreference(value: ShopThemePreference) {
-      this.themePreference = value;
-
-      const colorMode = useColorMode();
-      colorMode.preference = value;
-    },
-    toggleTheme() {
-      const colorMode = useColorMode();
-      const next = colorMode.value === "dark" ? "light" : "dark";
-      this.setThemePreference(next);
-    },
-    hydrateColorMode() {
-      const colorMode = useColorMode();
-      colorMode.preference = this.themePreference;
-    },
     resetCatalogFilters() {
       this.catalog.search = "";
       this.catalog.categoryId = null;

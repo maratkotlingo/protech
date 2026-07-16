@@ -137,6 +137,22 @@ export type ObtainingMethod = "DELIVERY" | "PICKUP";
 export type PaymentMethod = "OFFLINE" | "ONLINE";
 export type OrderStatus = "NEW" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "COMPLETED" | "CANCELLED";
 export type PaymentStatus = "PENDING" | "UPON_RECEIPT" | "PAID" | "CANCELLED";
+export type MessageType = "DELIVERY" | "STOCK" | "PRICE" | "FAQ_ANSWER" | "REVIEW_ANSWER" | "SUPPORT";
+export type MessageSenderRole = "USER" | "ADMIN" | "SYSTEM";
+
+export type ShopMessage = {
+  id: number;
+  userId: string;
+  messageType: MessageType;
+  senderRole: MessageSenderRole;
+  message: string;
+  readAt: string | null;
+  createdAt: string;
+};
+
+export type MessagesResponse = {
+  messages: ShopMessage[];
+};
 
 export type OrderStatusHistoryItem = {
   id: string;
@@ -150,6 +166,7 @@ export type ShopOrder = {
   obtainingMethod: ObtainingMethod;
   orderStatus: OrderStatus;
   paymentMethod: PaymentMethod;
+  customerPhone: string | null;
   createdAt: string;
   updatedAt: string;
   statusHistory?: OrderStatusHistoryItem[];

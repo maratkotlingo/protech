@@ -16,7 +16,7 @@
             v-if="delta"
             :class="[
               'rounded-full px-3 py-1 text-sm font-medium',
-              positive ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+              positive ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700  '
             ]"
           >
             {{ delta }}

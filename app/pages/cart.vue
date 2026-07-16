@@ -1,18 +1,18 @@
 <template>
   <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
     <section
-      class="rounded-[2rem] bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8 dark:bg-zinc-950/80 dark:shadow-black/25">
+      class="rounded-[2rem] bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8  ">
       <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div class="max-w-3xl">
           <p
-            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200">
+            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700  ">
             <UIcon name="i-lucide-shopping-cart" class="size-4" />
             Корзина
           </p>
-          <h1 class="mt-4 text-4xl font-semibold tracking-normal text-zinc-950 sm:text-5xl dark:text-white">
+          <h1 class="mt-4 text-4xl font-semibold tracking-normal text-zinc-950 sm:text-5xl ">
             Готово к оформлению
           </h1>
-          <p class="mt-4 max-w-2xl text-base leading-7 text-zinc-500 dark:text-zinc-400">
+          <p class="mt-4 max-w-2xl text-base leading-7 text-zinc-500 ">
             Проверьте товары, количество и наличие перед переходом к оплате.
           </p>
         </div>
@@ -27,12 +27,12 @@ color="primary" icon="i-lucide-layout-grid" to="/" size="lg"
       <div class="mt-8 grid gap-3 md:grid-cols-4">
         <div
 v-for="metric in cartMetrics" :key="metric.label"
-          class="rounded-[1.5rem] bg-[#f9fafb] p-4 dark:bg-zinc-900/80">
+          class="rounded-[1.5rem] bg-[#f9fafb] p-4 ">
           <div class="flex items-center justify-between gap-4">
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ metric.label }}</p>
+            <p class="text-sm text-zinc-500 ">{{ metric.label }}</p>
             <UIcon :name="metric.icon" class="size-5 text-zinc-400" />
           </div>
-          <p class="mt-2 text-2xl font-semibold text-zinc-950 dark:text-white">{{ metric.value }}</p>
+          <p class="mt-2 text-2xl font-semibold text-zinc-950 ">{{ metric.value }}</p>
         </div>
       </div>
     </section>
@@ -58,18 +58,18 @@ v-else-if="!cart.items.length" class="mt-8" icon="i-lucide-shopping-cart" title=
     <div v-else class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_400px]">
       <section class="space-y-4">
         <div
-          class="rounded-[2rem] bg-[#f9fafb] p-4 shadow-sm shadow-zinc-950/5 sm:p-5 dark:bg-zinc-900/80 dark:shadow-black/20">
+          class="rounded-[2rem] bg-[#f9fafb] p-4 shadow-sm shadow-zinc-950/5 sm:p-5  ">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 class="text-2xl font-semibold tracking-normal text-zinc-950 dark:text-white">Товары в корзине</h2>
-              <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+              <h2 class="text-2xl font-semibold tracking-normal text-zinc-950 ">Товары в корзине</h2>
+              <p class="mt-1 text-sm text-zinc-500 ">
                 {{ cart.items.length }} позиций, {{ cart.totalItems }} шт.
               </p>
             </div>
 
             <UButton
 color="error" variant="soft" icon="i-lucide-trash-2"
-              class="rounded-full bg-red-50/80 transition duration-300 hover:scale-[1.02] dark:bg-red-950/30"
+              class="rounded-full bg-red-50/80 transition duration-300 hover:scale-[1.02] "
               :loading="cart.pending" @click="clearCart">
               Очистить
             </UButton>
@@ -99,7 +99,7 @@ color="primary" size="xl" block icon="i-lucide-credit-card" to="/checkout"
               </UButton>
               <UButton
 color="neutral" variant="soft" block icon="i-lucide-heart" to="/favorites"
-                class="rounded-full bg-[#f3f4f6] transition duration-300 hover:scale-[1.01] dark:bg-zinc-900">
+                class="rounded-full bg-[#f3f4f6] transition duration-300 hover:scale-[1.01] ">
                 Смотреть избранное
               </UButton>
             </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#f9fafb] text-zinc-950 dark:bg-zinc-950 dark:text-white">
+  <div class="min-h-screen bg-[#f9fafb] text-zinc-950  ">
     <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
       <ProductCatalogHero :cart-total="cart.totalItems" />
 
@@ -53,7 +53,7 @@
       >
         <div
           v-if="loadingMore"
-          class="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400"
+          class="flex items-center gap-3 text-sm text-zinc-500 "
         >
           <UIcon name="i-lucide-loader-circle" class="size-5 animate-spin text-emerald-600" />
           Подгружаю товары

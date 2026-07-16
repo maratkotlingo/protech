@@ -8,39 +8,39 @@
       >
         Аккаунт покупателя
       </UBadge>
-      <h1 class="mt-5 text-5xl font-semibold tracking-normal text-zinc-950 dark:text-white">
+      <h1 class="mt-5 text-5xl font-semibold tracking-normal text-zinc-950 ">
         Войдите, чтобы покупки стали удобнее
       </h1>
       <div class="mt-8 grid gap-4">
         <div
           v-for="item in benefits"
           :key="item.title"
-          class="flex gap-4 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:shadow-black/20"
+          class="flex gap-4 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5  "
         >
-          <div class="grid size-11 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+          <div class="grid size-11 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700  ">
             <component
               :is="item.icon"
               class="size-5"
             />
           </div>
           <div>
-            <p class="font-semibold text-zinc-950 dark:text-white">{{ item.title }}</p>
-            <p class="mt-1 text-sm leading-6 text-zinc-500 dark:text-zinc-400">{{ item.description }}</p>
+            <p class="font-semibold text-zinc-950">{{ item.title }}</p>
+            <p class="mt-1 text-sm leading-6 text-zinc-500">{{ item.description }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <UCard
-      class="rounded-[2rem] bg-white ring-0 shadow-2xl shadow-zinc-950/10 dark:bg-zinc-900 dark:shadow-black/30"
+      class="rounded-[2rem] bg-white ring-0 shadow-2xl shadow-zinc-950/10  "
       :ui="{ body: 'p-6 sm:p-8' }"
     >
       <div class="mb-7">
-        <div class="grid grid-cols-2 rounded-full bg-[#f9fafb] p-1 dark:bg-zinc-800">
+        <div class="grid grid-cols-2 rounded-full bg-[#f9fafb] p-1 ">
           <button
             type="button"
             class="rounded-full px-4 py-2 text-sm font-medium transition"
-            :class="mode === 'login' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:text-white' : 'text-zinc-500 dark:text-zinc-400'"
+            :class="mode === 'login' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5' : 'text-zinc-500 '"
             @click="mode = 'login'"
           >
             Вход
@@ -48,7 +48,7 @@
           <button
             type="button"
             class="rounded-full px-4 py-2 text-sm font-medium transition"
-            :class="mode === 'register' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5 dark:bg-zinc-900 dark:text-white' : 'text-zinc-500 dark:text-zinc-400'"
+            :class="mode === 'register' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5' : 'text-zinc-500 '"
             @click="mode = 'register'"
           >
             Регистрация
@@ -68,7 +68,7 @@
         >
           <UInput
             v-model="form.name"
-            class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
+            class="w-full rounded-2xl bg-[#f9fafb] "
             size="xl"
             variant="none"
             autocomplete="name"
@@ -88,7 +88,7 @@
         >
           <UInput
             v-model="form.email"
-            class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
+            class="w-full rounded-2xl bg-[#f9fafb] "
             size="xl"
             variant="none"
             type="email"
@@ -109,7 +109,7 @@
         >
           <UInput
             v-model="form.password"
-            class="w-full rounded-2xl bg-[#f9fafb] dark:bg-zinc-800"
+            class="w-full rounded-2xl bg-[#f9fafb] "
             size="xl"
             variant="none"
             :type="showPassword ? 'text' : 'password'"

@@ -1,5 +1,9 @@
 import { AuditAction, OrderStatus, PaymentStatus } from "@prisma/client";
 import { reserveProductStock, restoreProductStock } from "~~/server/utils/orderStock";
+import {
+  broadcastOrderStatusChangeMessage,
+  createOrderStatusChangeMessage
+} from "~~/server/utils/orderStatusNotification";
 import { updatePaymentStatusSchema } from "~~/shared/schemas/admin/orders/updatePaymentStatus";
 
 function getOrderStatusForActivePayment(paymentStatus: PaymentStatus) {
@@ -12,13 +16,14 @@ export default defineEventHandler(async (event) => {
   const body = await validateBody(event, updatePaymentStatusSchema);
   const paymentStatus = body.paymentStatus as PaymentStatus;
 
-  const updatedPayment = await prisma.$transaction(async (tx) => {
+  const { updatedPayment, statusMessage } = await prisma.$transaction(async (tx) => {
     const payment = await tx.payment.findUnique({
       where: { orderId: body.orderId },
       include: {
         order: {
           select: {
             id: true,
+            userId: true,
             orderStatus: true,
             stockReserved: true,
             orderItems: {
@@ -36,6 +41,8 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    let nextOrderStatus: OrderStatus | null = null;
+
     if (paymentStatus === PaymentStatus.CANCELLED) {
       if (payment.order.orderStatus !== OrderStatus.CANCELLED) {
         if (payment.order.stockReserved) {
@@ -52,6 +59,8 @@ export default defineEventHandler(async (event) => {
             stockReserved: false
           }
         });
+
+        nextOrderStatus = OrderStatus.CANCELLED;
       }
     } else if (payment.order.orderStatus === OrderStatus.CANCELLED) {
       if (!payment.order.stockReserved) {
@@ -68,11 +77,18 @@ export default defineEventHandler(async (event) => {
           stockReserved: true
         }
       });
+
+      nextOrderStatus = getOrderStatusForActivePayment(paymentStatus);
     } else if (!payment.order.stockReserved) {
       await reserveProductStock(tx, payment.order.orderItems, {
         orderId: payment.order.id,
         reason: "Admin payment status update"
       });
+
+      nextOrderStatus =
+        paymentStatus === PaymentStatus.PAID && payment.order.orderStatus === OrderStatus.NEW
+          ? OrderStatus.CONFIRMED
+          : null;
 
       await tx.order.update({
         where: { id: payment.order.id },
@@ -95,15 +111,28 @@ export default defineEventHandler(async (event) => {
           stockReserved: true
         }
       });
+
+      nextOrderStatus = OrderStatus.CONFIRMED;
     }
 
-    return await tx.payment.update({
+    const updatedPayment = await tx.payment.update({
       where: { orderId: body.orderId },
       data: {
         paymentStatus,
         paidAt: paymentStatus === PaymentStatus.PAID ? new Date() : null
       }
     });
+
+    const statusMessage = nextOrderStatus
+      ? await createOrderStatusChangeMessage(tx, {
+          orderId: payment.order.id,
+          userId: payment.order.userId,
+          previousStatus: payment.order.orderStatus,
+          nextStatus: nextOrderStatus
+        })
+      : null;
+
+    return { updatedPayment, statusMessage };
   }).catch((error) => {
     const prismaError = toPrismaHttpError(error, {
       P2025: "Платёж или заказ не найден"
@@ -127,6 +156,8 @@ export default defineEventHandler(async (event) => {
       paymentStatus: updatedPayment.paymentStatus
     }
   });
+
+  broadcastOrderStatusChangeMessage(statusMessage);
 
   return { success: true, payment: updatedPayment };
 });
