@@ -1,5 +1,5 @@
 <template>
-  <header class="sticky top-0 z-10 border-b border-zinc-200/80 bg-white/95 px-4 py-4 backdrop-blur sm:px-5  ">
+  <header class="sticky top-0 z-30 border-b border-zinc-200/80 bg-white/95 px-4 py-4 backdrop-blur sm:px-5">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div class="min-w-0">
         <p class="text-sm text-zinc-500">

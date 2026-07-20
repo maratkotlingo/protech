@@ -6,6 +6,7 @@
     :cart-quantity="cartQuantity"
     :loading-cart="loadingCart"
     :loading-favorite="loadingFavorite"
+    :compact="compact"
     @toggle-cart="$emit('toggle-cart', $event)"
     @toggle-favorite="$emit('toggle-favorite', $event)"
   />
@@ -21,6 +22,7 @@ defineProps<{
   cartQuantity?: number;
   loadingFavorite?: boolean;
   loadingCart?: boolean;
+  compact?: boolean;
 }>();
 
 defineEmits<{

@@ -1,55 +1,73 @@
 <template>
-  <div class="mx-auto w-full max-w-370 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-    <section class="rounded-4xl bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8  ">
-      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+  <div class="mx-auto w-full max-w-370 px-4 py-5 sm:px-6 lg:px-8 lg:py-6">
+    <section class="rounded-2xl bg-white/90 p-4 shadow-[0_16px_50px_rgba(15,23,42,0.06)] sm:p-5">
+      <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div class="max-w-3xl">
           <p
-            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700  ">
+            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
             <UIcon name="i-lucide-package-check" class="size-4" />
             История
           </p>
-          <h1 class="mt-4 text-4xl font-semibold tracking-normal text-zinc-950 sm:text-5xl ">
+          <h1 class="mt-2 text-2xl font-semibold tracking-normal text-zinc-950 sm:text-3xl">
             Мои заказы
           </h1>
-          <p class="mt-4 max-w-2xl text-base leading-7 text-zinc-500 ">
+          <p class="mt-1.5 max-w-2xl text-sm leading-6 text-zinc-500">
             Статусы, оплата, получение и состав заказов собраны в одном спокойном интерфейсе.
           </p>
         </div>
 
-        <UButton color="primary" icon="i-lucide-layout-grid" to="/" size="lg"
-          class="rounded-full px-5 transition duration-300 hover:scale-[1.02]">
+        <UButton
+          color="primary"
+          icon="i-lucide-layout-grid"
+          to="/"
+          size="md"
+          class="rounded-full px-4 transition duration-300 hover:scale-[1.02]"
+        >
           В каталог
         </UButton>
       </div>
 
-      <div class="mt-8 grid gap-3 md:grid-cols-4">
-        <div v-for="metric in orderMetrics" :key="metric.label" class="rounded-[1.5rem] bg-[#f9fafb] p-4 ">
-          <div class="flex items-center justify-between gap-4">
-            <p class="text-sm text-zinc-500">{{ metric.label }}</p>
-            <UIcon :name="metric.icon" class="size-5 text-zinc-400" />
+      <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <div v-for="metric in orderMetrics" :key="metric.label" class="rounded-xl bg-[#f9fafb] px-3 py-2.5">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-xs text-zinc-500">{{ metric.label }}</p>
+            <UIcon :name="metric.icon" class="size-4 text-zinc-400" />
           </div>
-          <p class="mt-2 text-2xl font-semibold text-zinc-950">{{ metric.value }}</p>
+          <p class="mt-1 text-lg font-semibold text-zinc-950">{{ metric.value }}</p>
         </div>
       </div>
     </section>
 
-    <div v-if="loading" class="mt-8 space-y-4">
-      <USkeleton v-for="item in 3" :key="item" class="h-56 rounded-4xl" />
+    <div v-if="loading" class="mt-5 space-y-3">
+      <USkeleton v-for="item in 3" :key="item" class="h-32 rounded-2xl" />
     </div>
 
-    <OrderEmptyState v-else-if="!auth.user" class="mt-8" icon="i-lucide-package-check"
+    <OrderEmptyState
+      v-else-if="!auth.user"
+      class="mt-5"
+      icon="i-lucide-package-check"
       title="Войдите, чтобы увидеть заказы"
-      description="После входа здесь появятся статусы, оплата и состав ваших заказов." action-label="Войти"
-      action-icon="i-lucide-user-round" action-to="/auth?redirect=/orders" />
+      description="После входа здесь появятся статусы, оплата и состав ваших заказов."
+      action-label="Войти"
+      action-icon="i-lucide-user-round"
+      action-to="/auth?redirect=/orders"
+    />
 
-    <OrderEmptyState v-else-if="!orders.length" class="mt-8" icon="i-lucide-shopping-bag" title="Заказов пока нет"
-      description="Начните с каталога: добавьте товары в корзину и оформите первый заказ." action-label="Начать покупки"
-      action-icon="i-lucide-layout-grid" action-to="/" />
+    <OrderEmptyState
+      v-else-if="!orders.length"
+      class="mt-5"
+      icon="i-lucide-shopping-bag"
+      title="Заказов пока нет"
+      description="Начните с каталога: добавьте товары в корзину и оформите первый заказ."
+      action-label="Начать покупки"
+      action-icon="i-lucide-layout-grid"
+      action-to="/"
+    />
 
-    <div v-else class="mt-8 space-y-4">
+    <div v-else class="mt-5 space-y-3">
       <div
         v-if="historicalOrdersCount"
-        class="flex flex-col gap-3 rounded-[1.5rem] bg-white/85 p-4 shadow-sm shadow-zinc-950/5 sm:flex-row sm:items-center sm:justify-between"
+        class="flex flex-col gap-3 rounded-2xl bg-white/85 px-4 py-3 shadow-sm shadow-zinc-950/5 sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
           <p class="font-semibold text-zinc-950">
@@ -81,7 +99,7 @@
       <div
         v-else
         v-auto-animate
-        class="space-y-4"
+        class="space-y-3"
       >
         <OrderCard
           v-for="order in visibleOrders"
@@ -178,7 +196,7 @@ function isActiveOrder(order: ShopOrder) {
 
 function getOrderCardClass(order: ShopOrder) {
   return isActiveOrder(order)
-    ? "!bg-emerald-50/80 ring-1 ring-emerald-200 shadow-lg shadow-emerald-950/10"
+    ? "!bg-emerald-50/75 ring-1 ring-emerald-200/80 shadow-sm shadow-emerald-950/10"
     : "!bg-white/70 opacity-70 grayscale-[0.15]";
 }
 </script>

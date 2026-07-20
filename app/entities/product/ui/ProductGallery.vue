@@ -1,7 +1,7 @@
 <template>
-  <div class="space-y-5">
-    <div class="group relative overflow-hidden rounded-4xl bg-[#f9fafb] p-2 shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
-      <div class="relative overflow-hidden rounded-[1.65rem] bg-white">
+  <div class="space-y-3">
+    <div class="group relative overflow-hidden rounded-2xl bg-[#f9fafb] p-1.5 shadow-[0_16px_50px_rgba(15,23,42,0.07)]">
+      <div class="relative overflow-hidden rounded-xl bg-white">
         <Transition
           mode="out-in"
           enter-active-class="transition duration-300 ease-out"
@@ -15,13 +15,13 @@
             :key="activeImage.url"
             :src="activeImage.url"
             :alt="alt"
-            class="aspect-square w-full bg-zinc-100 object-cover md:aspect-4/4"
+            class="aspect-[3/4] w-full bg-zinc-100 object-contain"
           >
         </Transition>
 
-        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-zinc-950/20 to-transparent" />
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-zinc-950/18 to-transparent" />
 
-        <div class="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
+        <div class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
           {{ selectedIndex + 1 }} / {{ imageItems.length }}
         </div>
 
@@ -30,9 +30,9 @@
             color="neutral"
             variant="soft"
             icon="i-lucide-expand"
-            size="lg"
+            size="md"
             square
-            class="absolute right-4 top-4 rounded-full bg-white/90 shadow-lg shadow-zinc-950/10 backdrop-blur-xl transition duration-300 hover:scale-105"
+            class="absolute right-3 top-3 rounded-full bg-white/90 shadow-lg shadow-zinc-950/10 backdrop-blur-xl transition duration-300 hover:scale-105"
             aria-label="Открыть фото полноэкранно"
             @click="openZoom"
           />
@@ -40,14 +40,14 @@
 
         <div
           v-if="imageItems.length > 1"
-          class="absolute bottom-4 right-4 flex gap-2"
+          class="absolute bottom-3 right-3 flex gap-2"
         >
           <UTooltip text="Предыдущее фото">
             <UButton
               color="neutral"
               variant="soft"
               icon="i-lucide-chevron-left"
-              size="lg"
+              size="md"
               square
               class="rounded-full bg-white/90 shadow-lg shadow-zinc-950/10 backdrop-blur-xl transition duration-300 hover:scale-105"
               aria-label="Предыдущее фото"
@@ -60,7 +60,7 @@
               color="neutral"
               variant="soft"
               icon="i-lucide-chevron-right"
-              size="lg"
+              size="md"
               square
               class="rounded-full bg-white/90 shadow-lg shadow-zinc-950/10 backdrop-blur-xl transition duration-300 hover:scale-105"
               aria-label="Следующее фото"
@@ -74,13 +74,13 @@
     <div
       v-if="imageItems.length > 1"
       v-auto-animate
-      class="flex gap-3 overflow-x-auto px-1 pb-2"
+      class="flex gap-2 overflow-x-auto px-1 pb-1.5"
     >
       <button
         v-for="(image, index) in imageItems"
         :key="image.url"
-        class="shrink-0 rounded-2xl bg-[#f9fafb] p-1.5 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10"
-        :class="index === selectedIndex ? 'scale-[1.04] bg-emerald-50 ring-4 ring-emerald-100' : 'ring-4 ring-transparent'"
+        class="shrink-0 rounded-xl bg-[#f9fafb] p-1 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10"
+        :class="index === selectedIndex ? 'scale-[1.03] bg-emerald-50 ring-2 ring-emerald-200' : 'ring-2 ring-transparent'"
         type="button"
         :aria-label="`Открыть фото ${index + 1}`"
         @click="selectedIndex = index"
@@ -88,7 +88,7 @@
         <img
           :src="image.url"
           :alt="alt"
-          class="size-20 rounded-xl object-cover sm:size-24"
+          class="aspect-[3/4] w-16 rounded-lg bg-white object-contain sm:w-[72px]"
           loading="lazy"
         >
       </button>
@@ -100,11 +100,11 @@
       :ui="modalUi"
     >
       <template #body>
-        <div class="relative overflow-hidden rounded-[1.5rem] bg-[#f9fafb]">
+        <div class="relative overflow-hidden rounded-2xl bg-[#f9fafb]">
           <img
             :src="activeImage.url"
             :alt="alt"
-            class="mx-auto block max-h-[78dvh] max-w-full object-contain"
+            class="mx-auto block aspect-[3/4] max-h-[82dvh] max-w-full object-contain"
           >
           <div
             v-if="imageItems.length > 1"

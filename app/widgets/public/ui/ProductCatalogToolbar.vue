@@ -27,7 +27,7 @@
         :ui="selectUi"
       />
 
-      <div class="flex flex-wrap items-stretch gap-2 lg:justify-end">
+      <div class="grid grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-stretch lg:justify-end">
         <USelectMenu
           v-model="sort"
           :items="sortOptions"
@@ -38,12 +38,12 @@
           variant="none"
           size="lg"
           icon="i-lucide-arrow-up-down"
-          class="w-full rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 sm:w-48 sm:shrink-0 "
+          class="col-span-2 w-full rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 lg:w-48 lg:shrink-0 "
           :ui="sortUi"
         />
 
-        <div class="flex h-12 items-center gap-2 rounded-full bg-white px-3 shadow-sm shadow-zinc-950/5 ">
-          <span class="text-sm font-medium text-zinc-700">Со скидкой</span>
+        <div class="flex h-12 min-w-0 items-center justify-between gap-2 rounded-full bg-white px-3 shadow-sm shadow-zinc-950/5">
+          <span class="text-xs font-medium text-zinc-700 sm:text-sm">Со скидкой</span>
           <USwitch
             v-model="discountOnly"
             color="primary"
@@ -52,8 +52,8 @@
           />
         </div>
 
-        <div class="flex h-12 items-center gap-2 rounded-full bg-white px-3 shadow-sm shadow-zinc-950/5 ">
-          <span class="text-sm font-medium text-zinc-700">В наличии</span>
+        <div class="flex h-12 min-w-0 items-center justify-between gap-2 rounded-full bg-white px-3 shadow-sm shadow-zinc-950/5">
+          <span class="text-xs font-medium text-zinc-700 sm:text-sm">В наличии</span>
           <USwitch
             v-model="inStockOnly"
             color="primary"
@@ -67,7 +67,7 @@
           variant="ghost"
           size="lg"
           icon="i-lucide-sliders-horizontal"
-          class="h-12 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100  "
+          class="col-span-2 h-12 w-full justify-center rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 lg:w-auto"
           @click="$emit('openFilters')"
         >
           Прочее

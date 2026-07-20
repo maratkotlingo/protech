@@ -1,5 +1,5 @@
 <template>
-  <section class="rounded-lg border border-zinc-200/80 bg-white p-4 shadow-sm shadow-zinc-950/5   ">
+  <section class="relative z-0 rounded-lg border border-zinc-200/80 bg-white p-4 shadow-sm shadow-zinc-950/5">
     <div class="flex items-center justify-between gap-4">
       <div>
         <h3 class="text-lg font-semibold tracking-normal text-zinc-950">История статусов</h3>
@@ -26,7 +26,7 @@
             :class="getConnectorClass(step, steps[index + 1])"
           />
           <span
-            class="relative z-10 grid size-9 place-items-center rounded-full"
+            class="relative z-[1] grid size-9 place-items-center rounded-full"
             :class="getStepIconClass(step.state)"
           >
             <UIcon

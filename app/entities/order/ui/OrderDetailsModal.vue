@@ -7,29 +7,31 @@
     <template #body>
       <div
         v-if="order"
-        class="max-h-[calc(92dvh-3.5rem)] overflow-y-auto overscroll-contain bg-[#f8faf9] "
+        class="bg-[#f8faf9] pb-2"
       >
-        <OrderDetailsHeader
-          :order="order"
-          :order-total="orderTotal"
-        />
-
-        <div class="grid gap-4 px-4 pb-6 pt-4 sm:pb-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div class="space-y-4">
-            <OrderCurrentStateCard
-              :location-text="currentLocationText"
-              :state="currentState"
-            />
-
-            <OrderTrackingTimeline :steps="trackingSteps" />
-
-            <OrderDetailsItemsPanel :items="order.orderItems" />
-          </div>
-
-          <OrderDetailsInfoSidebar
-            :payment-rows="paymentRows"
-            :receiving-rows="receivingRows"
+        <div class="max-h-[calc(92dvh-4rem)] overflow-y-auto overscroll-contain">
+          <OrderDetailsHeader
+            :order="order"
+            :order-total="orderTotal"
           />
+
+          <div class="grid gap-4 px-4 pb-6 pt-4 sm:pb-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div class="space-y-4">
+              <OrderCurrentStateCard
+                :location-text="currentLocationText"
+                :state="currentState"
+              />
+
+              <OrderTrackingTimeline :steps="trackingSteps" />
+
+              <OrderDetailsItemsPanel :items="order.orderItems" />
+            </div>
+
+            <OrderDetailsInfoSidebar
+              :payment-rows="paymentRows"
+              :receiving-rows="receivingRows"
+            />
+          </div>
         </div>
       </div>
     </template>

@@ -1,7 +1,7 @@
 <template>
   <section
     v-if="attributes.length"
-    class="space-y-6"
+    class="space-y-3"
   >
     <ProductSectionHeading
       eyebrow="Спецификации"
@@ -10,7 +10,7 @@
 
     <div
       v-auto-animate
-      class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4"
     >
       <ProductAttributeCard
         v-for="attribute in attributes"

@@ -1,6 +1,14 @@
 <template>
-  <article class="group rounded-[2rem] bg-white/90 p-4 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10 sm:p-5   ">
-    <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+  <article
+    role="button"
+    tabindex="0"
+    class="group cursor-pointer rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:p-4"
+    :aria-label="`Открыть детали заказа №${order.id}`"
+    @click="openDetails"
+    @keydown.enter="openDetails"
+    @keydown.space.prevent="openDetails"
+  >
+    <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:justify-between">
       <div class="min-w-0">
         <div class="flex flex-wrap items-center gap-2">
           <OrderStatusPill
@@ -14,64 +22,63 @@
           />
         </div>
 
-        <button
-          type="button"
-          class="mt-4 block cursor-pointer text-left text-2xl font-semibold tracking-normal text-zinc-950 transition hover:text-emerald-700 focus:outline-none focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2   "
-          :aria-label="`Открыть детали заказа №${order.id}`"
-          @click="emit('openDetails', order)"
-        >
+        <h2 class="mt-2 text-lg font-semibold tracking-normal text-zinc-950 transition group-hover:text-emerald-700 sm:text-xl">
           Заказ №{{ order.id }}
-        </button>
-        <p class="mt-1 text-sm text-zinc-500 ">
-          {{ formatDateTime(order.createdAt) }}
-        </p>
-        <p
-          v-if="order.customerPhone"
-          class="mt-2 inline-flex items-center gap-2 text-sm font-medium text-zinc-600 "
-        >
-          <UIcon
-            name="i-lucide-phone"
-            class="size-4 text-zinc-400"
-          />
-          {{ order.customerPhone }}
-        </p>
+        </h2>
+
+        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-zinc-500 sm:text-sm">
+          <span>{{ formatDateTime(order.createdAt) }}</span>
+          <span
+            v-if="order.customerPhone"
+            class="inline-flex items-center gap-1.5 font-medium text-zinc-600"
+          >
+            <UIcon
+              name="i-lucide-phone"
+              class="size-3.5 text-zinc-400"
+            />
+            {{ order.customerPhone }}
+          </span>
+        </div>
+
+        <div class="mt-3 flex flex-wrap gap-2">
+          <span
+            v-for="metric in metrics"
+            :key="metric.label"
+            class="inline-flex items-center gap-1.5 rounded-full bg-[#f9fafb] px-2.5 py-1 text-xs font-medium text-zinc-600"
+          >
+            <UIcon
+              :name="metric.icon"
+              class="size-3.5 text-zinc-400"
+            />
+            <span class="text-zinc-400">{{ metric.label }}</span>
+            <span class="text-zinc-700">{{ metric.value }}</span>
+          </span>
+        </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-5 lg:justify-end">
+      <div class="flex items-center justify-between gap-3 sm:justify-start lg:justify-end">
         <div class="flex -space-x-3">
           <img
             v-for="item in order.orderItems.slice(0, 4)"
             :key="item.id"
             :src="item.productMainImage || item.product?.mainImage || '/favicon.ico'"
             :alt="item.productName"
-            class="size-13 rounded-2xl object-cover ring-4 ring-white "
+            class="size-10 rounded-xl object-cover ring-2 ring-white sm:size-11"
           >
           <span
             v-if="hiddenItemsCount > 0"
-            class="grid size-13 place-items-center rounded-2xl bg-[#f3f4f6] text-sm font-semibold text-zinc-500 ring-4 ring-white   "
+            class="grid size-10 place-items-center rounded-xl bg-[#f3f4f6] text-sm font-semibold text-zinc-500 ring-2 ring-white sm:size-11"
           >
             +{{ hiddenItemsCount }}
           </span>
         </div>
 
-        <div class="min-w-32 lg:text-right">
-          <p class="text-sm text-zinc-500">{{ order.orderItems.length }} позиций</p>
-          <p class="mt-1 text-2xl font-semibold text-zinc-950 ">
+        <div class="min-w-28 text-right">
+          <p class="text-xs text-zinc-500">{{ order.orderItems.length }} позиций</p>
+          <p class="mt-0.5 text-lg font-semibold text-zinc-950 sm:text-xl">
             {{ formatCurrency(order.payment?.amount) }}
           </p>
         </div>
-
-      </div>
-    </div>
-
-    <div class="mt-5 grid gap-3 sm:grid-cols-3">
-      <div
-        v-for="metric in metrics"
-        :key="metric.label"
-        class="rounded-[1.35rem] bg-[#f9fafb] p-4 "
-      >
-        <p class="text-xs uppercase tracking-[0.18em] text-zinc-400">{{ metric.label }}</p>
-        <p class="mt-2 text-sm font-semibold text-zinc-950">{{ metric.value }}</p>
       </div>
     </div>
   </article>
@@ -92,16 +99,23 @@ const emit = defineEmits<{
 const hiddenItemsCount = computed(() => Math.max(props.order.orderItems.length - 4, 0));
 const metrics = computed(() => [
   {
+    icon: props.order.obtainingMethod === "DELIVERY" ? "i-lucide-truck" : "i-lucide-store",
     label: "Получение",
     value: props.order.obtainingMethod === "DELIVERY" ? "Доставка" : "Самовывоз"
   },
   {
+    icon: props.order.paymentMethod === "ONLINE" ? "i-lucide-credit-card" : "i-lucide-wallet",
     label: "Оплата",
     value: props.order.paymentMethod === "ONLINE" ? "Онлайн" : "При получении"
   },
   {
+    icon: "i-lucide-clock-3",
     label: "Обновлен",
     value: formatDateTime(props.order.updatedAt)
   }
 ]);
+
+function openDetails() {
+  emit("openDetails", props.order);
+}
 </script>

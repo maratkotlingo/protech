@@ -1,5 +1,5 @@
 <template>
-  <section class="rounded-[2rem] bg-white p-5 shadow-sm shadow-zinc-950/5 sm:p-6">
+  <section class="rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 sm:p-5">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
         <h2 class="text-2xl font-semibold tracking-normal text-zinc-950">Динамика цены</h2>
@@ -16,144 +16,146 @@
       </UBadge>
     </div>
 
-    <div class="mt-6 grid gap-3 sm:grid-cols-4">
-      <div class="rounded-[1.5rem] bg-[#f9fafb] p-4">
-        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Сейчас</p>
-        <p class="mt-2 text-2xl font-semibold text-zinc-950">{{ formatCurrency(currentValue) }}</p>
+    <div class="mt-5 grid items-stretch gap-3 lg:grid-cols-[minmax(260px,0.78fr)_minmax(0,1.35fr)]">
+      <div class="grid h-full grid-cols-2 gap-3">
+        <div class="rounded-2xl bg-[#f9fafb] p-4">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Сейчас</p>
+          <p class="mt-2 text-xl font-semibold text-zinc-950 sm:text-2xl">{{ formatCurrency(currentValue) }}</p>
+        </div>
+        <div class="rounded-2xl bg-[#f9fafb] p-4">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Минимум</p>
+          <p class="mt-2 text-xl font-semibold text-zinc-950 sm:text-2xl">{{ formatCurrency(minValue) }}</p>
+        </div>
+        <div class="rounded-2xl bg-[#f9fafb] p-4">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Максимум</p>
+          <p class="mt-2 text-xl font-semibold text-zinc-950 sm:text-2xl">{{ formatCurrency(maxValue) }}</p>
+        </div>
+        <div class="rounded-2xl bg-[#f9fafb] p-4">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">За период</p>
+          <p
+            class="mt-2 text-xl font-semibold sm:text-2xl"
+            :class="trendMeta.textClass"
+          >
+            {{ signedCurrency(changeAmount) }}
+          </p>
+          <p class="mt-1 text-sm text-zinc-500">{{ signedPercent(changePercent) }}</p>
+        </div>
       </div>
-      <div class="rounded-[1.5rem] bg-[#f9fafb] p-4">
-        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Минимум</p>
-        <p class="mt-2 text-2xl font-semibold text-zinc-950">{{ formatCurrency(minValue) }}</p>
-      </div>
-      <div class="rounded-[1.5rem] bg-[#f9fafb] p-4">
-        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Максимум</p>
-        <p class="mt-2 text-2xl font-semibold text-zinc-950">{{ formatCurrency(maxValue) }}</p>
-      </div>
-      <div class="rounded-[1.5rem] bg-[#f9fafb] p-4">
-        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">За период</p>
-        <p
-          class="mt-2 text-2xl font-semibold"
-          :class="trendMeta.textClass"
-        >
-          {{ signedCurrency(changeAmount) }}
-        </p>
-        <p class="mt-1 text-sm text-zinc-500">{{ signedPercent(changePercent) }}</p>
-      </div>
-    </div>
 
-    <div
-      v-if="entries.length > 1"
-      class="mt-6 overflow-hidden rounded-[1.75rem] bg-[#f9fafb] p-4"
-    >
-      <svg
-        viewBox="0 0 760 320"
-        class="h-80 w-full"
-        role="img"
-        aria-label="График изменения цены"
+      <div
+        v-if="entries.length > 1"
+        class="flex overflow-hidden rounded-2xl bg-[#f9fafb] p-2 sm:p-4 lg:min-h-80"
       >
-        <defs>
-          <linearGradient
-            id="price-area-gradient"
-            x1="0"
-            x2="0"
-            y1="0"
-            y2="1"
-          >
-            <stop
-              offset="0%"
-              :stop-color="trendMeta.stroke"
-              stop-opacity="0.22"
-            />
-            <stop
-              offset="100%"
-              :stop-color="trendMeta.stroke"
-              stop-opacity="0"
-            />
-          </linearGradient>
-        </defs>
-
-        <g>
-          <line
-            v-for="line in gridLines"
-            :key="line.key"
-            x1="72"
-            x2="724"
-            :y1="line.y"
-            :y2="line.y"
-            stroke="#e4e4e7"
-            stroke-dasharray="4 8"
-          />
-          <text
-            v-for="line in gridLines"
-            :key="`${line.key}-label`"
-            x="18"
-            :y="line.y + 5"
-            fill="#71717a"
-            font-size="13"
-          >
-            {{ compactCurrency(line.value) }}
-          </text>
-        </g>
-
-        <path
-          :d="areaPath"
-          fill="url(#price-area-gradient)"
-        />
-        <polyline
-          :points="linePoints"
-          fill="none"
-          :stroke="trendMeta.stroke"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="5"
-        />
-
-        <g
-          v-for="point in plottedPoints"
-          :key="point.key"
+        <svg
+          viewBox="0 0 760 320"
+          class="h-auto w-full lg:h-full lg:min-h-80"
+          role="img"
+          aria-label="График изменения цены"
         >
-          <circle
-            :cx="point.x"
-            :cy="point.y"
-            r="6"
-            fill="white"
-            :stroke="trendMeta.stroke"
-            stroke-width="4"
+          <defs>
+            <linearGradient
+              id="price-area-gradient"
+              x1="0"
+              x2="0"
+              y1="0"
+              y2="1"
+            >
+              <stop
+                offset="0%"
+                :stop-color="trendMeta.stroke"
+                stop-opacity="0.22"
+              />
+              <stop
+                offset="100%"
+                :stop-color="trendMeta.stroke"
+                stop-opacity="0"
+              />
+            </linearGradient>
+          </defs>
+
+          <g>
+            <line
+              v-for="line in gridLines"
+              :key="line.key"
+              x1="72"
+              x2="724"
+              :y1="line.y"
+              :y2="line.y"
+              stroke="#e4e4e7"
+              stroke-dasharray="4 8"
+            />
+            <text
+              v-for="line in gridLines"
+              :key="`${line.key}-label`"
+              x="18"
+              :y="line.y + 5"
+              fill="#71717a"
+              font-size="13"
+            >
+              {{ compactCurrency(line.value) }}
+            </text>
+          </g>
+
+          <path
+            :d="areaPath"
+            fill="url(#price-area-gradient)"
           />
-          <text
-            v-if="point.showValue"
-            :x="point.x"
-            :y="point.y - 14"
-            text-anchor="middle"
-            fill="#18181b"
-            font-size="13"
-            font-weight="600"
-          >
-            {{ compactCurrency(point.value) }}
-          </text>
-        </g>
+          <polyline
+            :points="linePoints"
+            fill="none"
+            :stroke="trendMeta.stroke"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="5"
+          />
 
-        <g>
-          <text
-            v-for="label in xAxisLabels"
-            :key="label.key"
-            :x="label.x"
-            y="300"
-            text-anchor="middle"
-            fill="#71717a"
-            font-size="13"
+          <g
+            v-for="point in plottedPoints"
+            :key="point.key"
           >
-            {{ label.label }}
-          </text>
-        </g>
-      </svg>
-    </div>
+            <circle
+              :cx="point.x"
+              :cy="point.y"
+              r="6"
+              fill="white"
+              :stroke="trendMeta.stroke"
+              stroke-width="4"
+            />
+            <text
+              v-if="point.showValue"
+              :x="point.x"
+              :y="point.y - 14"
+              text-anchor="middle"
+              fill="#18181b"
+              font-size="13"
+              font-weight="600"
+            >
+              {{ compactCurrency(point.value) }}
+            </text>
+          </g>
 
-    <div
-      v-else
-      class="mt-6 grid min-h-36 place-items-center rounded-[1.75rem] bg-[#f9fafb] px-6 text-center text-sm text-zinc-500"
-    >
-      Пока есть только текущая цена. График появится после следующего изменения.
+          <g>
+            <text
+              v-for="label in xAxisLabels"
+              :key="label.key"
+              :x="label.x"
+              y="300"
+              text-anchor="middle"
+              fill="#71717a"
+              font-size="13"
+            >
+              {{ label.label }}
+            </text>
+          </g>
+        </svg>
+      </div>
+
+      <div
+        v-else
+        class="grid min-h-40 place-items-center rounded-2xl bg-[#f9fafb] px-6 text-center text-sm text-zinc-500 lg:min-h-80"
+      >
+        Пока есть только текущая цена. График появится после следующего изменения.
+      </div>
     </div>
   </section>
 </template>

@@ -1,80 +1,142 @@
 <template>
-  <div class="mx-auto grid min-h-[calc(100dvh-9rem)] w-full max-w-330 px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto w-full max-w-330 px-4 py-4 sm:px-6 lg:px-8 lg:py-5">
     <section
-      class="grid min-h-170 overflow-hidden rounded-[1.5rem] border border-zinc-100 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
-      <div class="grid min-h-0 grid-rows-[auto_minmax(0,1fr)_auto]">
-        <header class="border-b border-zinc-100 px-4 py-4 sm:px-5">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <span
-                class="grid size-12 place-items-center rounded-[1.15rem] bg-zinc-950 text-white shadow-lg shadow-zinc-950/15">
-                <UIcon name="i-lucide-message-circle" class="size-6" />
-              </span>
-              <div>
-                <h1 class="text-2xl font-semibold tracking-normal text-zinc-950">
-                  Сообщения
-                </h1>
-                <p class="mt-1 flex items-center gap-2 text-sm text-zinc-500">
-                  <span class="size-2 rounded-full" :class="socketConnected ? 'bg-emerald-500' : 'bg-zinc-300'" />
-                  {{ connectionLabel }}
-                </p>
-              </div>
+      class="flex min-h-[calc(100dvh-8rem)] flex-col rounded-2xl border border-zinc-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
+    >
+      <header class="shrink-0 border-b border-zinc-100 px-3 py-3 sm:px-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <span
+              class="grid size-10 place-items-center rounded-xl bg-zinc-950 text-white shadow-md shadow-zinc-950/15"
+            >
+              <UIcon
+                name="i-lucide-message-circle"
+                class="size-5"
+              />
+            </span>
+            <div>
+              <h1 class="text-xl font-semibold tracking-normal text-zinc-950 sm:text-2xl">
+                Сообщения
+              </h1>
+              <p class="mt-0.5 flex items-center gap-2 text-xs text-zinc-500 sm:text-sm">
+                <span
+                  class="size-2 rounded-full"
+                  :class="socketConnected ? 'bg-emerald-500' : 'bg-zinc-300'"
+                />
+                {{ connectionLabel }}
+              </p>
             </div>
-
-            <UButton color="neutral" variant="soft" icon="i-lucide-refresh-cw" square
-              class="rounded-full bg-[#f3f4f6] transition duration-300 hover:scale-105" :loading="loading"
-              aria-label="Обновить сообщения" @click="loadMessages" />
-          </div>
-        </header>
-
-        <div ref="messagesContainer" class="min-h-0 overflow-y-auto bg-[#f8faf9] px-4 py-5 sm:px-5">
-          <div v-if="loading" class="space-y-3">
-            <USkeleton v-for="item in 5" :key="item" class="h-18 rounded-lg" />
           </div>
 
-          <OrderEmptyState v-else-if="!messages.length" icon="i-lucide-message-circle" title="Сообщений пока нет"
-            description="Напишите нам по заказу, оплате, доставке или товару." class="mx-auto max-w-xl bg-white" />
+          <UButton
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-refresh-cw"
+            square
+            class="rounded-full bg-[#f3f4f6] transition duration-300 hover:scale-105"
+            :loading="loading"
+            aria-label="Обновить сообщения"
+            @click="loadMessages"
+          />
+        </div>
+      </header>
 
-          <div v-else v-auto-animate class="space-y-4">
-            <article v-for="message in messages" :key="message.id" class="flex"
-              :class="message.senderRole === 'USER' ? 'justify-end' : 'justify-start'">
-              <div class="max-w-[min(42rem,86%)] rounded-[1.15rem] px-4 py-3 shadow-sm" :class="message.senderRole === 'USER'
-                ? 'rounded-br-sm bg-emerald-600 text-white shadow-emerald-950/10'
-                : 'rounded-bl-sm bg-white text-zinc-950 shadow-zinc-950/5 ring-1 ring-zinc-100'">
-                <p class="text-xs font-semibold"
-                  :class="message.senderRole === 'USER' ? 'text-emerald-50/80' : 'text-zinc-400'">
-                  {{ getSenderLabel(message.senderRole) }}
-                </p>
-                <p class="mt-1 whitespace-pre-line wrap-break-words text-sm leading-6">
-                  {{ message.message }}
-                </p>
-                <time class="mt-2 block text-xs"
-                  :class="message.senderRole === 'USER' ? 'text-emerald-50/70' : 'text-zinc-400'">
-                  {{ formatDateTime(message.createdAt) }}
-                </time>
-              </div>
-            </article>
-          </div>
+      <div class="flex-1 bg-[#f8faf9] px-3 py-4 sm:px-4">
+        <div
+          v-if="loading"
+          class="space-y-3"
+        >
+          <USkeleton
+            v-for="item in 5"
+            :key="item"
+            class="h-14 rounded-lg"
+          />
         </div>
 
-        <form class="border-t border-zinc-100 bg-white p-3 sm:p-4" @submit.prevent="sendMessage">
-          <UFormField :error="messageError">
+        <OrderEmptyState
+          v-else-if="!messages.length"
+          icon="i-lucide-message-circle"
+          title="Сообщений пока нет"
+          description="Напишите нам по заказу, оплате, доставке или товару."
+          class="mx-auto max-w-xl !min-h-72 bg-white"
+        />
+
+        <div
+          v-else
+          v-auto-animate
+          class="space-y-3"
+        >
+          <article
+            v-for="message in messages"
+            :key="message.id"
+            class="flex"
+            :class="message.senderRole === 'USER' ? 'justify-end' : 'justify-start'"
+          >
             <div
-              class="flex items-end gap-2 rounded-[1.55rem] bg-[#f3f4f6] p-2 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45">
-              <textarea ref="messageInput" v-model="draftMessage"
-                class="h-14 min-h-14 max-h-42 flex-1 resize-none overflow-y-hidden rounded-[1.2rem] bg-transparent px-4 py-4 text-sm leading-6 text-zinc-950 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-60"
-                :disabled="submitting" placeholder="Сообщение" rows="1" @input="resizeMessageInput"
-                @keydown.enter.exact.prevent="sendMessage" />
-              <button type="submit"
-                class="mb-1 grid size-12 shrink-0 place-items-center rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-950/15 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
-                :disabled="!draftMessage.trim()" aria-label="Отправить сообщение">
-                <UIcon :name="submitting ? 'i-lucide-loader-circle' : 'i-lucide-send'" class="size-4"
-                  :class="submitting ? 'animate-spin' : ''" />
-              </button>
+              class="max-w-[min(38rem,88%)] rounded-2xl px-3 py-2 shadow-sm sm:px-3.5"
+              :class="message.senderRole === 'USER'
+                ? 'rounded-br-sm bg-emerald-600 text-white shadow-emerald-950/10'
+                : 'rounded-bl-sm bg-white text-zinc-950 shadow-zinc-950/5 ring-1 ring-zinc-100'"
+            >
+              <p
+                class="text-xs font-semibold"
+                :class="message.senderRole === 'USER' ? 'text-emerald-50/80' : 'text-zinc-400'"
+              >
+                {{ getSenderLabel(message.senderRole) }}
+              </p>
+              <p class="mt-1 whitespace-pre-line wrap-break-words text-sm leading-5">
+                {{ message.message }}
+              </p>
+              <time
+                class="mt-1.5 block text-xs"
+                :class="message.senderRole === 'USER' ? 'text-emerald-50/70' : 'text-zinc-400'"
+              >
+                {{ formatDateTime(message.createdAt) }}
+              </time>
             </div>
-          </UFormField>
-        </form>
+          </article>
+        </div>
+
+        <div
+          ref="messagesEnd"
+          class="h-px scroll-mb-28"
+          aria-hidden="true"
+        />
       </div>
+
+      <form
+        class="sticky bottom-0 z-20 rounded-b-2xl border-t border-zinc-100 bg-white/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-18px_44px_rgba(15,23,42,0.08)] backdrop-blur sm:p-3 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
+        @submit.prevent="sendMessage"
+      >
+        <UFormField :error="messageError">
+          <div
+            class="flex items-end gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45"
+          >
+            <textarea
+              ref="messageInput"
+              v-model="draftMessage"
+              class="h-12 min-h-12 max-h-36 flex-1 resize-none overflow-y-hidden rounded-xl bg-transparent px-3 py-3 text-sm leading-5 text-zinc-950 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-60"
+              :disabled="submitting"
+              placeholder="Сообщение"
+              rows="1"
+              @input="resizeMessageInput"
+              @keydown.enter.exact.prevent="sendMessage"
+            />
+            <button
+              type="submit"
+              class="mb-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-950/15 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+              :disabled="!draftMessage.trim()"
+              aria-label="Отправить сообщение"
+            >
+              <UIcon
+                :name="submitting ? 'i-lucide-loader-circle' : 'i-lucide-send'"
+                class="size-4"
+                :class="submitting ? 'animate-spin' : ''"
+              />
+            </button>
+          </div>
+        </UFormField>
+      </form>
     </section>
   </div>
 </template>
@@ -113,10 +175,10 @@ const submitting = ref(false);
 const draftMessage = ref("");
 const messageError = ref("");
 const socketConnected = ref(false);
-const messagesContainer = ref<HTMLElement | null>(null);
+const messagesEnd = ref<HTMLElement | null>(null);
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 let socket: WebSocket | null = null;
-const messageInputMinHeight = 56;
+const messageInputMinHeight = 48;
 const messageInputMaxHeight = messageInputMinHeight * 3;
 
 const connectionLabel = computed(() => socketConnected.value ? "Онлайн" : "История сообщений");
@@ -146,11 +208,13 @@ async function loadMessages() {
     const response = await shopFetch<MessagesResponse>("/api/public/messages");
     messages.value = response.messages;
     messageNotifications.clearUnread();
-    await scrollToBottom();
   } catch (error) {
     toast.error(getErrorMessage(error, "Не удалось загрузить сообщения"));
   } finally {
     loading.value = false;
+    if (messages.value.length) {
+      await scrollToBottom();
+    }
   }
 }
 
@@ -307,10 +371,7 @@ function resizeMessageInput() {
 
 async function scrollToBottom() {
   await nextTick();
-  const element = messagesContainer.value;
 
-  if (element) {
-    element.scrollTop = element.scrollHeight;
-  }
+  messagesEnd.value?.scrollIntoView({ block: "end" });
 }
 </script>

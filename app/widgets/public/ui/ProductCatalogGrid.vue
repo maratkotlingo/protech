@@ -1,19 +1,19 @@
 <template>
   <div
     v-if="pending && !products.length"
-    class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
+    class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4"
   >
     <USkeleton
       v-for="item in 8"
       :key="item"
-      class="h-[520px] rounded-3xl"
+      class="h-[360px] rounded-2xl sm:h-[560px]"
     />
   </div>
 
   <div
     v-else-if="products.length"
     v-auto-animate
-    class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
+    class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4"
   >
     <ProductCatalogCard
       v-for="product in products"

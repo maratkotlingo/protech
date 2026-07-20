@@ -1,8 +1,8 @@
 <template>
-  <article class="group grid grid-cols-[96px_minmax(0,1fr)] gap-4 rounded-[2rem] bg-white/90 p-4 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10 sm:grid-cols-[112px_minmax(0,1fr)] xl:grid-cols-[120px_minmax(0,1fr)_160px]   ">
+  <article class="group grid grid-cols-[80px_minmax(0,1fr)] gap-3 rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/10 sm:grid-cols-[88px_minmax(0,1fr)] xl:grid-cols-[96px_minmax(0,1fr)_140px]">
     <NuxtLink
       :to="`/product/${item.product.id}`"
-      class="relative block size-24 overflow-hidden rounded-[1.5rem] bg-[#f3f4f6] sm:size-28 xl:size-30 "
+      class="relative block size-20 overflow-hidden rounded-xl bg-[#f3f4f6] sm:size-24"
     >
       <img
         :src="item.product.mainImage || '/favicon.ico'"
@@ -11,28 +11,28 @@
       >
       <span
         v-if="discountPercent"
-        class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-emerald-700 shadow-sm shadow-zinc-950/10 backdrop-blur  "
+        class="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shadow-sm shadow-zinc-950/10 backdrop-blur"
       >
         -{{ discountPercent }}%
       </span>
     </NuxtLink>
 
     <div class="min-w-0">
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-1.5">
         <span
           v-if="item.product.category?.name"
-          class="rounded-full bg-[#f3f4f6] px-3 py-1.5 text-xs font-medium text-zinc-500  "
+          class="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-xs font-medium text-zinc-500"
         >
           {{ item.product.category.name }}
         </span>
         <span
           v-if="item.product.article"
-          class="rounded-full bg-[#f3f4f6] px-3 py-1.5 text-xs font-medium text-zinc-500  "
+          class="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-xs font-medium text-zinc-500"
         >
           Арт. {{ item.product.article }}
         </span>
         <span
-          class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
+          class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
           :class="stockMeta.class"
         >
           <span
@@ -45,22 +45,22 @@
 
       <NuxtLink
         :to="`/product/${item.product.id}`"
-        class="mt-3 block line-clamp-2 text-xl font-semibold tracking-normal text-zinc-950 transition hover:text-emerald-700  "
+        class="mt-2 block line-clamp-2 text-base font-semibold tracking-normal text-zinc-950 transition hover:text-emerald-700 sm:text-lg"
       >
         {{ item.product.name }}
       </NuxtLink>
       <p
         v-if="item.product.description"
-        class="mt-2 line-clamp-2 max-w-2xl text-sm leading-6 text-zinc-500 "
+        class="mt-1 line-clamp-1 max-w-2xl text-sm leading-5 text-zinc-500"
       >
         {{ item.product.description }}
       </p>
 
-      <div class="mt-5 flex flex-wrap items-center gap-3">
-        <div class="inline-flex items-center gap-2 rounded-[1.35rem] bg-[#f3f4f6] p-1.5 shadow-sm shadow-zinc-950/5 ">
+      <div class="mt-3 flex flex-wrap items-center gap-2">
+        <div class="inline-flex items-center gap-1.5 rounded-xl bg-[#f3f4f6] p-1 shadow-sm shadow-zinc-950/5">
           <button
             type="button"
-            class="grid size-10 place-items-center rounded-2xl bg-white text-zinc-700 shadow-sm shadow-zinc-950/5 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:text-emerald-700 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-100 disabled:text-zinc-300    "
+            class="grid size-8 place-items-center rounded-lg bg-white text-zinc-700 shadow-sm shadow-zinc-950/5 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:text-emerald-700 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-100 disabled:text-zinc-300"
             :disabled="loading || normalizedLocalQuantity <= 1"
             aria-label="Уменьшить количество"
             @click="changeQuantity(normalizedLocalQuantity - 1)"
@@ -71,10 +71,10 @@
             />
           </button>
 
-          <div class="grid min-w-14 place-items-center px-1">
+          <div class="grid min-w-12 place-items-center px-1">
             <input
               v-model="localQuantity"
-              class="h-6 w-12 bg-transparent text-center text-base font-semibold text-zinc-950 outline-none "
+              class="h-5 w-10 bg-transparent text-center text-sm font-semibold text-zinc-950 outline-none"
               type="text"
               inputmode="numeric"
               pattern="[0-9]*"
@@ -82,12 +82,12 @@
               @blur="commitQuantity"
               @keydown.enter.prevent="commitQuantity"
             >
-            <span class="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-400">шт</span>
+            <span class="text-[10px] font-semibold uppercase text-zinc-400">шт</span>
           </div>
 
           <button
             type="button"
-            class="grid size-10 place-items-center rounded-2xl bg-emerald-600 text-white shadow-sm shadow-emerald-950/15 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:bg-emerald-500 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-200 disabled:text-zinc-400  "
+            class="grid size-8 place-items-center rounded-lg bg-emerald-600 text-white shadow-sm shadow-emerald-950/15 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:bg-emerald-500 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-200 disabled:text-zinc-400"
             :disabled="loading || normalizedLocalQuantity >= maxQuantity"
             aria-label="Увеличить количество"
             @click="changeQuantity(normalizedLocalQuantity + 1)"
@@ -99,23 +99,25 @@
           </button>
         </div>
 
-        <UButton
-          color="error"
-          variant="soft"
-          icon="i-lucide-trash-2"
-          class="rounded-full bg-red-50/80 transition duration-300 hover:scale-[1.02] "
-          :loading="loading"
-          @click="$emit('remove', item.product.id)"
-        >
-          Удалить
-        </UButton>
+        <UTooltip text="Удалить из корзины">
+          <UButton
+            color="error"
+            variant="soft"
+            icon="i-lucide-trash-2"
+            square
+            class="rounded-full bg-red-50/80 transition duration-300 hover:scale-[1.02]"
+            :loading="loading"
+            aria-label="Удалить из корзины"
+            @click="$emit('remove', item.product.id)"
+          />
+        </UTooltip>
       </div>
     </div>
 
-    <div class="col-span-2 flex items-center justify-between gap-4 rounded-[1.25rem] bg-[#f9fafb] px-4 py-3 sm:col-span-1 sm:col-start-2 xl:col-auto xl:flex-col xl:items-end xl:justify-start xl:bg-transparent xl:px-0 xl:py-1 xl:text-right  ">
+    <div class="col-span-2 flex items-center justify-between gap-3 rounded-xl bg-[#f9fafb] px-3 py-2 sm:col-span-1 sm:col-start-2 xl:col-auto xl:flex-col xl:items-end xl:justify-start xl:bg-transparent xl:px-0 xl:py-0.5 xl:text-right">
       <div>
-        <p class="text-xs uppercase tracking-[0.16em] text-zinc-400">Сумма</p>
-        <p class="mt-1 text-xl font-semibold text-zinc-950 ">
+        <p class="text-xs uppercase text-zinc-400">Сумма</p>
+        <p class="mt-0.5 text-lg font-semibold text-zinc-950">
           {{ formatCurrency(lineTotal) }}
         </p>
         <p
@@ -125,7 +127,7 @@
           {{ formatCurrency(originalLineTotal) }}
         </p>
       </div>
-      <p class="shrink-0 text-sm text-zinc-500 ">
+      <p class="shrink-0 text-xs text-zinc-500 sm:text-sm">
         {{ formatCurrency(item.product.currentPrice) }} за шт.
       </p>
     </div>
