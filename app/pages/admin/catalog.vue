@@ -1,24 +1,26 @@
 ﻿<template>
-  <div class="space-y-5">
+  <div class="catalog-shop-page space-y-5">
     <AdminPageHeader
       title="Справочники"
-      kicker="Catalog dictionaries"
+      kicker="Каталог"
       description="Категории товаров и характеристики, которые используются в карточках каталога."
     >
       <template #actions>
         <UButton
           color="neutral"
-          variant="outline"
+          variant="ghost"
+          icon="i-lucide-refresh-cw"
+          size="lg"
+          class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           :loading="pending"
           @click="refresh()"
         >
-          <RefreshCw class="size-4" />
           Обновить
         </UButton>
       </template>
     </AdminPageHeader>
 
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
       <AdminMetricCard
         label="Категории"
         :value="formatNumber(categories.length)"
@@ -67,9 +69,10 @@
       variant="soft"
       title="Не удалось загрузить справочники"
       :description="getErrorMessage(error)"
+      class="rounded-2xl"
     />
 
-    <div class="grid gap-6 xl:grid-cols-2">
+    <div class="grid gap-4 xl:grid-cols-2">
       <UCard
         class="admin-list-card"
         :ui="{ body: 'p-0' }"
@@ -86,9 +89,10 @@
             </div>
             <UButton
               color="primary"
+              icon="i-lucide-plus"
+              class="rounded-full shadow-lg shadow-emerald-950/10"
               @click="openCategoryForm()"
             >
-              <Plus class="size-4" />
               Добавить
             </UButton>
           </div>
@@ -96,12 +100,12 @@
 
         <div
           v-if="categories.length"
-          class="divide-y divide-[var(--admin-border)]"
+          class="space-y-3 bg-[#f9fafb] p-3 sm:p-4"
         >
           <div
             v-for="category in categories"
             :key="category.id"
-            class="flex items-center justify-between gap-4 px-4 py-4 transition hover:bg-[#f9fafb]"
+            class="flex items-center justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/10"
           >
             <div class="min-w-0">
               <p class="truncate font-medium text-[var(--admin-text)]">
@@ -117,6 +121,7 @@
                   color="neutral"
                   variant="ghost"
                   square
+                  class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
                   aria-label="Редактировать категорию"
                   @click="openCategoryForm(category)"
                 >
@@ -128,6 +133,7 @@
                   color="error"
                   variant="ghost"
                   square
+                  class="rounded-full"
                   aria-label="Удалить категорию"
                   :loading="deletingCategoryId === category.id"
                   @click="deleteCategory(category)"
@@ -173,9 +179,10 @@
             </div>
             <UButton
               color="primary"
+              icon="i-lucide-plus"
+              class="rounded-full shadow-lg shadow-emerald-950/10"
               @click="openAttributeForm()"
             >
-              <Plus class="size-4" />
               Добавить
             </UButton>
           </div>
@@ -183,12 +190,12 @@
 
         <div
           v-if="attributes.length"
-          class="divide-y divide-[var(--admin-border)]"
+          class="space-y-3 bg-[#f9fafb] p-3 sm:p-4"
         >
           <div
             v-for="attribute in attributes"
             :key="attribute.id"
-            class="flex items-center justify-between gap-4 px-4 py-4 transition hover:bg-[#f9fafb]"
+            class="flex items-center justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/10"
           >
             <div class="min-w-0">
               <p class="truncate font-medium text-[var(--admin-text)]">
@@ -210,6 +217,7 @@
                   color="neutral"
                   variant="ghost"
                   square
+                  class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
                   aria-label="Редактировать характеристику"
                   @click="openAttributeForm(attribute)"
                 >
@@ -221,6 +229,7 @@
                   color="error"
                   variant="ghost"
                   square
+                  class="rounded-full"
                   aria-label="Удалить характеристику"
                   :loading="deletingAttributeId === attribute.id"
                   @click="deleteAttribute(attribute)"
@@ -263,8 +272,8 @@
         >
           <UInput
             v-model="categoryName"
-            class="w-full"
             size="lg"
+            class="w-full rounded-2xl bg-[#f9fafb]"
             placeholder="Название категории"
           />
         </UFormField>
@@ -274,12 +283,14 @@
           <UButton
             color="neutral"
             variant="ghost"
+            class="rounded-full"
             @click="closeCategoryForm"
           >
             Отмена
           </UButton>
           <UButton
             color="primary"
+            class="rounded-full"
             :loading="savingCategory"
             @click="saveCategory"
           >
@@ -302,8 +313,8 @@
           >
             <UInput
               v-model="attributeForm.name"
-              class="w-full"
               size="lg"
+              class="w-full rounded-2xl bg-[#f9fafb]"
               placeholder="Например, Мощность"
             />
           </UFormField>
@@ -313,8 +324,8 @@
           >
             <UInput
               v-model="attributeForm.unit"
-              class="w-full"
               size="lg"
+              class="w-full rounded-2xl bg-[#f9fafb]"
               placeholder="Вт, мм, шт."
             />
           </UFormField>
@@ -325,12 +336,14 @@
           <UButton
             color="neutral"
             variant="ghost"
+            class="rounded-full"
             @click="closeAttributeForm"
           >
             Отмена
           </UButton>
           <UButton
             color="primary"
+            class="rounded-full"
             :loading="savingAttribute"
             @click="saveAttribute"
           >
@@ -350,7 +363,7 @@
 </template>
 
 <script setup lang="ts">
-import { FolderTree, ListChecks, Pencil, Plus, RefreshCw, Tags, Trash2 } from "@lucide/vue";
+import { FolderTree, ListChecks, Pencil, Tags, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";

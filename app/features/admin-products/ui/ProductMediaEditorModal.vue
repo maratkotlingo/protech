@@ -1,17 +1,36 @@
 <template>
   <UModal
     v-model:open="open"
-    :title="productName ? `Изображения: ${productName}` : 'Изображения товара'"
-    description="Быстрая замена главного фото и дополнительных изображений без полной формы товара."
-    scrollable
-    :ui="{ content: 'max-w-4xl', body: 'p-6 sm:p-7' }"
+    :ui="mediaModalUi"
   >
+    <template #header>
+      <div class="flex min-w-0 items-start gap-4">
+        <div class="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-500 text-white shadow-lg shadow-amber-950/15">
+          <UIcon
+            name="i-lucide-images"
+            class="size-6"
+          />
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs font-semibold uppercase text-amber-700">
+            Медиа товара
+          </p>
+          <h2 class="mt-1 truncate text-xl font-semibold tracking-normal text-zinc-950 sm:text-2xl">
+            {{ mediaTitle }}
+          </h2>
+          <p class="mt-1 max-w-3xl text-sm leading-6 text-zinc-500">
+            {{ mediaDescription }}
+          </p>
+        </div>
+      </div>
+    </template>
+
     <template #body>
       <div
         v-if="loading"
-        class="grid min-h-72 place-items-center"
+        class="grid min-h-96 place-items-center bg-[#f9fafb]"
       >
-        <div class="flex items-center gap-3 text-[var(--admin-text-muted)]">
+        <div class="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-zinc-500 shadow-sm shadow-zinc-950/5">
           <LoaderCircle class="size-5 animate-spin" />
           Загружаю изображения
         </div>
@@ -19,49 +38,60 @@
 
       <form
         v-else
-        class="space-y-7"
+        id="product-media-editor-form"
+        class="grid gap-5 bg-[#f9fafb] p-4 sm:p-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
         @submit.prevent="save"
       >
-        <section class="space-y-4 rounded-md border border-[var(--admin-border)] p-5">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h3 class="text-lg font-semibold text-[var(--admin-text)]">
-                Главное фото
-              </h3>
-              <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
-                Это изображение видно в каталоге и карточке товара.
-              </p>
+        <section class="space-y-5 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70 sm:p-5">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-amber-50 text-amber-700">
+                <UIcon
+                  name="i-lucide-image"
+                  class="size-5"
+                />
+              </span>
+              <div>
+                <h3 class="text-lg font-semibold text-zinc-950">
+                  Главное фото
+                </h3>
+                <p class="mt-1 text-sm leading-6 text-zinc-500">
+                  Это изображение видно в каталоге и карточке товара.
+                </p>
+              </div>
             </div>
-            <label class="block">
-              <input
-                class="sr-only"
-                type="file"
-                accept="image/png,image/jpeg,image/webp,image/gif"
-                @change="uploadMainImage"
-              >
-              <UButton
-                as="span"
-                color="neutral"
-                variant="outline"
-                type="button"
-                :loading="uploadingMain"
-              >
-                <Upload class="size-4" />
-                Загрузить
-              </UButton>
-            </label>
+            <input
+              ref="mainImageInput"
+              class="hidden"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              @change="uploadMainImage"
+            >
+            <UButton
+              color="neutral"
+              variant="outline"
+              type="button"
+              size="lg"
+              class="min-h-11 min-w-36 justify-center rounded-full px-5"
+              :disabled="uploadingMain"
+              :loading="uploadingMain"
+              @click="openMainImagePicker"
+            >
+              <Upload class="size-4" />
+              Загрузить
+            </UButton>
           </div>
 
-          <div class="overflow-hidden rounded-md border border-[var(--admin-border)] bg-[var(--admin-surface-muted)]">
+          <div class="overflow-hidden rounded-2xl bg-[#f3f4f6] shadow-inner shadow-zinc-950/5">
             <img
               v-if="mainImage"
               :src="mainImage"
               alt=""
-              class="aspect-[16/7] w-full object-cover"
+              class="aspect-[3/4] w-full object-cover"
             >
             <div
               v-else
-              class="grid aspect-[16/7] place-items-center text-[var(--admin-text-muted)]"
+              class="grid aspect-[3/4] place-items-center text-zinc-400"
             >
               <ImageIcon class="size-12" />
             </div>
@@ -73,47 +103,61 @@
           >
             <UInput
               v-model="mainImage"
-              class="w-full"
+              class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
               size="lg"
+              variant="none"
               placeholder="/uploads/file.webp или https://..."
+              :ui="mediaInputUi"
               @update:model-value="fieldErrors.mainImage = undefined"
             />
           </UFormField>
         </section>
 
-        <section class="space-y-4 rounded-md border border-[var(--admin-border)] p-5">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h3 class="text-lg font-semibold text-[var(--admin-text)]">
-                Дополнительные фото
-              </h3>
-              <p class="mt-1 text-sm text-[var(--admin-text-muted)]">
-                Галерея товара на публичной странице.
-              </p>
+        <section class="space-y-5 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70 sm:p-5">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-violet-50 text-violet-700">
+                <UIcon
+                  name="i-lucide-gallery-horizontal"
+                  class="size-5"
+                />
+              </span>
+              <div>
+                <h3 class="text-lg font-semibold text-zinc-950">
+                  Дополнительные фото
+                </h3>
+                <p class="mt-1 text-sm leading-6 text-zinc-500">
+                  Галерея товара на публичной странице.
+                </p>
+              </div>
             </div>
             <div class="flex flex-wrap gap-2">
-              <label class="block">
-                <input
-                  class="sr-only"
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
-                  @change="uploadGalleryImage"
-                >
-                <UButton
-                  as="span"
-                  color="neutral"
-                  variant="outline"
-                  type="button"
-                  :loading="uploadingGallery"
-                >
-                  <Upload class="size-4" />
-                  Загрузить
-                </UButton>
-              </label>
+              <input
+                ref="galleryImageInput"
+                class="hidden"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                @change="uploadGalleryImage"
+              >
+              <UButton
+                color="neutral"
+                variant="outline"
+                type="button"
+                size="lg"
+                class="min-h-11 min-w-36 justify-center rounded-full px-5"
+                :disabled="uploadingGallery"
+                :loading="uploadingGallery"
+                @click="openGalleryImagePicker"
+              >
+                <Upload class="size-4" />
+                Загрузить
+              </UButton>
               <UButton
                 color="primary"
                 variant="soft"
                 type="button"
+                size="lg"
+                class="min-h-11 rounded-full px-5"
                 @click="addGalleryUrl"
               >
                 <Plus class="size-4" />
@@ -127,27 +171,28 @@
             color="error"
             variant="soft"
             :description="fieldErrors.productImages"
+            class="rounded-2xl"
           />
 
           <div
             v-if="productImages.length"
-            class="grid gap-4 md:grid-cols-2"
+            class="grid gap-3 sm:grid-cols-2"
           >
             <div
               v-for="(image, index) in productImages"
               :key="index"
-              class="space-y-3 rounded-md bg-[#f9fafb] p-3"
+              class="space-y-3 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5"
             >
-              <div class="overflow-hidden rounded-md border border-[var(--admin-border)] bg-white">
+              <div class="overflow-hidden rounded-2xl bg-white shadow-sm shadow-zinc-950/5">
                 <img
                   v-if="image.url"
                   :src="image.url"
                   alt=""
-                  class="aspect-[4/3] w-full object-cover"
+                  class="aspect-[3/4] w-full object-cover"
                 >
                 <div
                   v-else
-                  class="grid aspect-[4/3] place-items-center text-[var(--admin-text-muted)]"
+                  class="grid aspect-[3/4] place-items-center text-zinc-400"
                 >
                   <ImageIcon class="size-8" />
                 </div>
@@ -156,15 +201,19 @@
               <div class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
                 <UInput
                   v-model="image.url"
-                  class="w-full"
+                  class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
                   size="lg"
+                  variant="none"
                   placeholder="URL изображения"
+                  :ui="mediaInputUi"
                   @update:model-value="fieldErrors.productImages = undefined"
                 />
                 <UButton
                   color="error"
                   variant="ghost"
                   type="button"
+                  size="lg"
+                  class="min-h-11 rounded-full"
                   aria-label="Удалить изображение"
                   @click="removeGalleryImage(index)"
                 >
@@ -176,7 +225,7 @@
 
           <div
             v-else
-            class="grid min-h-32 place-items-center rounded-md bg-[#f9fafb] px-4 text-center text-sm text-[var(--admin-text-muted)]"
+            class="grid min-h-48 place-items-center rounded-2xl bg-[#f9fafb] px-4 text-center text-sm leading-6 text-zinc-500"
           >
             Добавьте URL или загрузите изображение в галерею.
           </div>
@@ -190,6 +239,7 @@
           color="neutral"
           variant="ghost"
           size="lg"
+          class="min-h-12 justify-center rounded-full px-6"
           @click="closeEditor"
         >
           Отмена
@@ -197,8 +247,10 @@
         <UButton
           color="primary"
           size="lg"
+          type="submit"
+          form="product-media-editor-form"
+          class="min-h-12 justify-center rounded-full px-6 shadow-lg shadow-emerald-950/10"
           :loading="submitting"
-          @click="save"
         >
           <Save class="size-4" />
           Сохранить изображения
@@ -231,10 +283,25 @@ const loading = ref(false);
 const submitting = ref(false);
 const uploadingMain = ref(false);
 const uploadingGallery = ref(false);
+const mainImageInput = ref<HTMLInputElement | null>(null);
+const galleryImageInput = ref<HTMLInputElement | null>(null);
 const productName = ref("");
 const mainImage = ref("");
 const productImages = ref<ProductFormState["productImages"]>([]);
 const fieldErrors = reactive<Record<string, string | undefined>>({});
+const mediaModalUi = {
+  content: "max-h-[calc(100dvh-2rem)] max-w-6xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-zinc-950/20 ring-0 sm:max-h-[calc(100dvh-4rem)]",
+  header: "shrink-0 border-b border-zinc-100 bg-white/95 px-4 py-4 backdrop-blur sm:px-6",
+  body: "min-h-0 flex-1 overflow-y-auto overscroll-contain p-0",
+  footer: "shrink-0 border-t border-zinc-100 bg-white/95 px-4 py-4 sm:px-6"
+};
+const mediaInputUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-900"
+};
+const mediaTitle = computed(() => productName.value ? `Изображения: ${productName.value}` : "Изображения товара");
+const mediaDescription = computed(() =>
+  "Быстрая замена главного фото и дополнительных изображений без полной формы товара."
+);
 
 async function loadProduct() {
   if (!props.productId) {
@@ -271,6 +338,18 @@ function removeGalleryImage(index: number) {
 
 function closeEditor() {
   open.value = false;
+}
+
+function openMainImagePicker() {
+  if (!uploadingMain.value) {
+    mainImageInput.value?.click();
+  }
+}
+
+function openGalleryImagePicker() {
+  if (!uploadingGallery.value) {
+    galleryImageInput.value?.click();
+  }
 }
 
 function buildPayload() {

@@ -5,23 +5,26 @@
       fluid
         ? 'h-full w-full'
         : collapsed
-          ? 'sticky top-0 h-screen w-[var(--admin-sidebar-collapsed-width)]'
-          : 'sticky top-0 h-screen w-[var(--admin-sidebar-width)]'
+          ? 'fixed inset-y-0 left-0 z-40 hidden w-[var(--admin-sidebar-collapsed-width)] lg:flex'
+          : 'fixed inset-y-0 left-0 z-40 hidden w-[var(--admin-sidebar-width)] lg:flex'
     ]"
   >
     <div
       :class="[
-        'flex min-h-18 items-center gap-3 border-b border-[var(--admin-border)] px-3 py-3',
+        'flex min-h-20 items-center gap-3 border-b border-zinc-100 px-3 py-3',
         collapsed ? 'justify-center' : 'justify-between'
       ]"
     >
       <NuxtLink
         to="/admin"
-        class="group flex min-w-0 items-center gap-3 rounded-lg p-1 transition hover:bg-[var(--admin-accent-soft)]/45"
+        :class="[
+          'group flex min-w-0 items-center gap-3 rounded-2xl p-1.5 transition hover:bg-emerald-50',
+          collapsed ? 'justify-center' : ''
+        ]"
         aria-label="ProTech Admin"
         @click="$emit('navigate')"
       >
-        <span class="admin-icon-tile size-10 shrink-0 transition group-hover:scale-[1.03]">
+        <span class="admin-icon-tile size-11 shrink-0 rounded-2xl transition group-hover:scale-[1.03]">
           <Zap class="size-6" />
         </span>
         <span
@@ -46,7 +49,7 @@
           variant="ghost"
           icon="i-lucide-panel-left-close"
           square
-          class="rounded-md"
+          class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
           aria-label="Свернуть навигацию"
           @click="ui.toggleSidebar()"
         />
@@ -55,35 +58,40 @@
 
     <div
       v-if="!collapsed"
-      class="border-b border-[var(--admin-border)] px-4 py-3"
+      class="px-3 py-3"
     >
-      <p class="text-xs font-semibold uppercase text-[var(--admin-accent-strong)]">
-        Рабочее пространство
-      </p>
-      <p class="mt-1 text-xs leading-5 text-[var(--admin-text-muted)]">
-        Каталог, склад, продажи и поддержка.
-      </p>
+      <div class="rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
+        <p class="text-xs font-semibold uppercase text-emerald-700">
+          Рабочее пространство
+        </p>
+        <p class="mt-1 text-xs leading-5 text-zinc-500">
+          Каталог, склад, продажи и поддержка.
+        </p>
+      </div>
     </div>
 
     <nav
       :class="[
-        'admin-muted-scroll flex-1 overflow-y-auto py-3',
-        collapsed ? 'px-2' : 'px-3'
+        'admin-muted-scroll flex-1 overflow-y-auto',
+        collapsed ? 'px-2 py-3' : 'px-3 pb-4'
       ]"
     >
       <div
         v-for="group in navGroups"
         :key="group.label"
-        class="mb-4 last:mb-0"
+        :class="[
+          'mb-3 last:mb-0',
+          collapsed ? '' : 'rounded-2xl bg-[#f9fafb]/70 p-2'
+        ]"
       >
         <p
           v-if="!collapsed"
-          class="mb-1 px-2 text-[0.68rem] font-semibold uppercase text-[var(--admin-text-subtle)]"
+          class="mb-1 px-2 text-[0.68rem] font-semibold uppercase text-zinc-400"
         >
           {{ group.label }}
         </p>
 
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <UTooltip
             v-for="item in group.items"
             :key="item.to"
@@ -101,10 +109,10 @@
             >
               <span
                 :class="[
-                  'grid size-8 shrink-0 place-items-center rounded-md transition',
+                  'grid size-9 shrink-0 place-items-center rounded-xl transition',
                   isActive(item.to)
-                    ? 'bg-[var(--admin-accent)] text-white shadow-sm shadow-emerald-950/15'
-                    : 'bg-white text-[var(--admin-text-muted)] ring-1 ring-[var(--admin-border)] group-hover:text-[var(--admin-accent-strong)]'
+                    ? 'bg-[var(--admin-accent)] text-white shadow-lg shadow-emerald-950/15'
+                    : 'bg-white text-zinc-400 shadow-sm shadow-zinc-950/5 group-hover:text-emerald-700'
                 ]"
               >
                 <component
@@ -127,22 +135,24 @@
     <div
       v-if="showCollapse"
       :class="[
-        'border-t border-[var(--admin-border)] p-3',
+        'border-t border-zinc-100 p-3',
         collapsed ? 'space-y-2' : 'space-y-3'
       ]"
     >
-      <UButton
+      <NuxtLink
         v-if="!collapsed"
-        color="neutral"
-        variant="outline"
-        icon="i-lucide-store"
         to="/"
-        block
-        class="justify-center rounded-md bg-white"
+        class="flex items-center gap-3 rounded-2xl bg-[#f9fafb] p-3 text-sm font-semibold text-zinc-700 shadow-inner shadow-zinc-950/5 transition hover:bg-emerald-50 hover:text-emerald-700"
         @click="$emit('navigate')"
       >
-        В магазин
-      </UButton>
+        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-emerald-700 shadow-sm shadow-zinc-950/5">
+          <Store class="size-5" />
+        </span>
+        <span class="min-w-0">
+          <span class="block truncate">В магазин</span>
+          <span class="block truncate text-xs font-medium text-zinc-400">Публичная витрина</span>
+        </span>
+      </NuxtLink>
 
       <div
         v-if="collapsed"
@@ -155,7 +165,7 @@
             icon="i-lucide-store"
             to="/"
             square
-            class="rounded-md"
+            class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-emerald-700"
             aria-label="В магазин"
             @click="$emit('navigate')"
           />
@@ -167,7 +177,7 @@
             variant="ghost"
             icon="i-lucide-panel-left-open"
             square
-            class="rounded-md"
+            class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
             aria-label="Развернуть навигацию"
             @click="ui.toggleSidebar()"
           />
@@ -177,7 +187,7 @@
       <button
         v-if="!collapsed"
         type="button"
-        class="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-xs text-[var(--admin-text-muted)] transition hover:bg-[var(--admin-accent-soft)]/45 hover:text-[var(--admin-text)]"
+        class="flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left text-xs font-medium text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-950"
         @click="ui.toggleSidebar()"
       >
         <PanelLeftClose class="size-4" />
@@ -191,13 +201,12 @@
 import {
   BarChart3,
   ClipboardList,
-  HelpCircle,
   Layers3,
   MessageSquareText,
   MessagesSquare,
   PackageSearch,
   PanelLeftClose,
-  ScrollText,
+  Store,
   Users,
   Warehouse,
   Zap
@@ -242,15 +251,13 @@ const navGroups = [
   {
     label: "Контент",
     items: [
-      { label: "Отзывы", to: "/admin/reviews", icon: MessageSquareText },
-      { label: "FAQ", to: "/admin/faq", icon: HelpCircle }
+      { label: "Отзывы", to: "/admin/reviews", icon: MessageSquareText }
     ]
   },
   {
     label: "Система",
     items: [
-      { label: "Пользователи", to: "/admin/users", icon: Users },
-      { label: "Аудит", to: "/admin/audit", icon: ScrollText }
+      { label: "Пользователи", to: "/admin/users", icon: Users }
     ]
   }
 ];

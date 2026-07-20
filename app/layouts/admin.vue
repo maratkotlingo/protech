@@ -61,6 +61,7 @@
     <div
       v-else
       class="admin-layout"
+      :class="{ 'is-sidebar-collapsed': ui.sidebarCollapsed }"
     >
       <div class="hidden shrink-0 lg:block">
         <AdminSidebar :collapsed="ui.sidebarCollapsed" />

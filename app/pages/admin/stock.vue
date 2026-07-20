@@ -1,24 +1,26 @@
 <template>
-  <div class="space-y-5">
+  <div class="stock-shop-page space-y-5">
     <AdminPageHeader
       title="Остатки"
-      kicker="Inventory"
+      kicker="Склад"
       description="Контроль доступности товаров, быстрые корректировки и подсветка критических остатков."
     >
       <template #actions>
         <UButton
           color="neutral"
-          variant="outline"
+          variant="ghost"
+          icon="i-lucide-refresh-cw"
+          size="lg"
+          class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           :loading="pending"
           @click="refresh()"
         >
-          <RefreshCw class="size-4" />
           Обновить
         </UButton>
       </template>
     </AdminPageHeader>
 
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
       <AdminMetricCard
         label="Всего позиций"
         :value="formatNumber(stocks.length)"
@@ -65,7 +67,7 @@
       class="admin-list-card"
       :ui="{ body: 'p-0' }"
     >
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4">
         <div>
           <p class="admin-section-heading">
             Приход на склад
@@ -77,37 +79,46 @@
         <UBadge
           color="neutral"
           variant="soft"
-          class="rounded-md"
+          class="rounded-full px-3 py-1"
         >
           {{ arrivalItems.length }} в приходе
         </UBadge>
       </div>
 
-      <div class="space-y-5 p-4 sm:p-5">
+      <div class="space-y-5 bg-[#f9fafb] p-4 sm:p-5">
         <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px_auto] xl:items-end">
           <UFormField label="Добавить товар в приход">
-            <UInput
-              v-model="arrivalSearch"
-              class="w-full"
-              size="lg"
-              placeholder="Название или артикул"
-            >
-              <template #leading>
-                <Search class="size-4 text-[var(--admin-text-muted)]" />
-              </template>
-            </UInput>
+            <div class="rounded-2xl bg-white p-1.5 shadow-sm shadow-zinc-950/5">
+              <UInput
+                v-model="arrivalSearch"
+                class="w-full"
+                size="lg"
+                variant="none"
+                :ui="stockInputUi"
+                placeholder="Название или артикул"
+              >
+                <template #leading>
+                  <Search class="size-4 text-zinc-400" />
+                </template>
+              </UInput>
+            </div>
           </UFormField>
           <UFormField label="Комментарий">
-            <UInput
-              v-model="arrivalReason"
-              class="w-full"
-              size="lg"
-              placeholder="Поставка, инвентаризация"
-            />
+            <div class="rounded-2xl bg-white p-1.5 shadow-sm shadow-zinc-950/5">
+              <UInput
+                v-model="arrivalReason"
+                class="w-full"
+                size="lg"
+                variant="none"
+                :ui="stockInputUi"
+                placeholder="Поставка, инвентаризация"
+              />
+            </div>
           </UFormField>
           <UButton
             color="primary"
             size="lg"
+            class="h-12 justify-center rounded-full px-5 shadow-lg shadow-emerald-950/10"
             :disabled="!arrivalItems.length"
             :loading="arrivalSubmitting"
             @click="submitArrival"
@@ -119,13 +130,13 @@
 
         <div
           v-if="arrivalSearch.trim()"
-          class="overflow-hidden rounded-md border border-[var(--admin-border)]"
+          class="overflow-hidden rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
         >
           <button
             v-for="stock in arrivalSearchResults"
             :key="stock.product.id"
             type="button"
-            class="flex w-full items-center justify-between gap-4 border-b border-[var(--admin-border)] px-4 py-3 text-left last:border-b-0 transition hover:bg-[#f9fafb]"
+            class="flex w-full items-center justify-between gap-4 border-b border-zinc-100 px-4 py-3 text-left last:border-b-0 transition hover:bg-[#f9fafb]"
             @click="addArrivalItem(stock)"
           >
             <span class="min-w-0">
@@ -152,63 +163,68 @@
 
         <div
           v-if="arrivalItems.length"
-          class="overflow-x-auto rounded-md border border-[var(--admin-border)]"
+          class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3"
         >
-          <table class="w-full min-w-[760px] divide-y divide-[var(--admin-border)] text-sm">
-            <thead class="bg-[#f9fafb]">
-              <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
-                <th class="px-4 py-3 font-medium">Товар</th>
-                <th class="px-4 py-3 font-medium">Сейчас</th>
-                <th class="px-4 py-3 font-medium">Приход</th>
-                <th class="px-4 py-3 font-medium">Будет</th>
-                <th class="px-4 py-3 text-right font-medium">Действие</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[var(--admin-border)]">
-              <tr
-                v-for="item in arrivalItems"
-                :key="item.productId"
-                class="transition hover:bg-[#f9fafb]"
-              >
-                <td class="px-4 py-4">
-                  <p class="font-medium text-[var(--admin-text)]">
-                    {{ item.name }}
-                  </p>
-                  <p class="text-xs text-[var(--admin-text-muted)]">
-                    {{ item.article }}
-                  </p>
-                </td>
-                <td class="px-4 py-4 font-semibold text-[var(--admin-text)]">
+          <article
+            v-for="item in arrivalItems"
+            :key="item.productId"
+            class="rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="line-clamp-2 font-semibold leading-6 text-zinc-950">
+                  {{ item.name }}
+                </p>
+                <p class="mt-1 truncate text-xs font-medium uppercase text-zinc-400">
+                  {{ item.article }}
+                </p>
+              </div>
+              <UTooltip text="Убрать из прихода">
+                <UButton
+                  color="error"
+                  variant="ghost"
+                  class="rounded-full bg-[#f9fafb]"
+                  type="button"
+                  square
+                  aria-label="Убрать товар из прихода"
+                  @click="removeArrivalItem(item.productId)"
+                >
+                  <Trash2 class="size-4" />
+                </UButton>
+              </UTooltip>
+            </div>
+
+            <div class="mt-4 grid gap-3">
+              <div class="rounded-2xl bg-[#f9fafb] p-3">
+                <p class="text-xs font-semibold uppercase text-zinc-400">
+                  Сейчас
+                </p>
+                <p class="mt-2 text-sm font-semibold text-zinc-950">
                   {{ item.currentQuantity }} шт.
-                </td>
-                <td class="px-4 py-4">
-                  <UInput
-                    v-model.number="item.quantityDelta"
-                    size="lg"
-                    type="number"
-                    min="1"
-                    class="w-36"
-                  />
-                </td>
-                <td class="px-4 py-4 font-semibold text-[var(--admin-text)]">
+                </p>
+              </div>
+              <label class="block rounded-2xl bg-[#f9fafb] p-3">
+                <span class="mb-2 block text-xs font-semibold uppercase text-zinc-400">Приход</span>
+                <UInput
+                  v-model.number="item.quantityDelta"
+                  size="lg"
+                  type="number"
+                  min="1"
+                  class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
+                  variant="none"
+                  :ui="stockInputUi"
+                />
+              </label>
+              <div class="rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                <p class="text-xs font-semibold uppercase">
+                  Будет
+                </p>
+                <p class="mt-2 text-sm font-semibold">
                   {{ item.currentQuantity + Number(item.quantityDelta ?? 0) }} шт.
-                </td>
-                <td class="px-4 py-4">
-                  <div class="flex justify-end">
-                    <UButton
-                      color="error"
-                      variant="ghost"
-                      type="button"
-                      aria-label="Убрать товар из прихода"
-                      @click="removeArrivalItem(item.productId)"
-                    >
-                      <Trash2 class="size-4" />
-                    </UButton>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </p>
+              </div>
+            </div>
+          </article>
         </div>
 
         <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--admin-text-muted)]">
@@ -218,23 +234,23 @@
       </div>
     </UCard>
 
-    <UCard
-      class="admin-filter-card"
-      :ui="{ body: 'p-4 sm:p-5' }"
-    >
-      <UFormField label="Поиск по остаткам">
+    <section class="rounded-3xl bg-white/90 p-4 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur sm:p-5">
+      <label class="block rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
+        <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Поиск по остаткам</span>
         <UInput
           v-model="search"
-          class="w-full"
+          class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
           size="lg"
+          variant="none"
+          :ui="stockInputUi"
           placeholder="Название или артикул"
         >
           <template #leading>
-            <Search class="size-4 text-[var(--admin-text-muted)]" />
+            <Search class="size-4 text-zinc-400" />
           </template>
         </UInput>
-      </UFormField>
-    </UCard>
+      </label>
+    </section>
 
     <UAlert
       v-if="error"
@@ -242,13 +258,14 @@
       variant="soft"
       title="Не удалось загрузить остатки"
       :description="getErrorMessage(error)"
+      class="rounded-2xl"
     />
 
     <UCard
       class="admin-list-card"
       :ui="{ body: 'p-0' }"
     >
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4">
         <div>
           <p class="admin-section-heading">
             Остатки товаров
@@ -260,7 +277,7 @@
         <UBadge
           color="neutral"
           variant="soft"
-          class="rounded-md"
+          class="rounded-full px-3 py-1"
         >
           {{ filteredStocks.length }} позиций
         </UBadge>
@@ -268,70 +285,74 @@
 
       <div
         v-if="filteredStocks.length"
-        class="overflow-x-auto"
+        class="grid gap-3 bg-[#f9fafb] p-3 sm:grid-cols-2 sm:p-4 2xl:grid-cols-3"
       >
-        <table class="w-full min-w-[720px] divide-y divide-[var(--admin-border)] text-sm">
-          <thead class="bg-[#f9fafb]">
-            <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
-              <th class="px-4 py-3 font-medium">Товар</th>
-              <th class="px-4 py-3 font-medium">Текущий остаток</th>
-              <th class="px-4 py-3 font-medium">Новый остаток</th>
-              <th class="px-4 py-3 font-medium">Обновлено</th>
-              <th class="px-4 py-3 text-right font-medium">Действие</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[var(--admin-border)]">
-            <tr
-              v-for="stock in filteredStocks"
-              :key="stock.product.id"
-              class="transition hover:bg-[#f9fafb]"
-            >
-              <td class="px-4 py-4">
-                <p class="font-medium text-[var(--admin-text)]">
-                  {{ stock.product.name }}
-                </p>
-                <p class="text-xs text-[var(--admin-text-muted)]">
-                  {{ stock.product.article }}
-                </p>
-              </td>
-              <td class="px-4 py-4">
-                <div class="flex items-center gap-2">
-                  <span class="font-semibold text-[var(--admin-text)]">{{ stock.quantity }} шт.</span>
-                  <AdminStatusBadge
-                    type="stock"
-                    :value="stock.quantity"
-                  />
-                </div>
-              </td>
-              <td class="px-4 py-4">
-                <UInput
-                  v-model.number="draftQuantities[stock.product.id]"
-                  size="lg"
-                  type="number"
-                  min="0"
-                  class="w-36"
-                />
-              </td>
-              <td class="px-4 py-4 text-[var(--admin-text-muted)]">
+        <article
+          v-for="stock in filteredStocks"
+          :key="stock.product.id"
+          class="rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-zinc-950/10"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="line-clamp-2 font-semibold leading-6 text-zinc-950">
+                {{ stock.product.name }}
+              </p>
+              <p class="mt-1 truncate text-xs font-medium uppercase text-zinc-400">
+                {{ stock.product.article }}
+              </p>
+            </div>
+            <AdminStatusBadge
+              type="stock"
+              :value="stock.quantity"
+              class="shrink-0"
+            />
+          </div>
+
+          <div class="mt-4 grid gap-3">
+            <div class="rounded-2xl bg-[#f9fafb] p-3">
+              <p class="text-xs font-semibold uppercase text-zinc-400">
+                Текущий остаток
+              </p>
+              <p class="mt-2 text-lg font-semibold text-zinc-950">
+                {{ stock.quantity }} шт.
+              </p>
+            </div>
+
+            <label class="block rounded-2xl bg-[#f9fafb] p-3">
+              <span class="mb-2 block text-xs font-semibold uppercase text-zinc-400">Новый остаток</span>
+              <UInput
+                v-model.number="draftQuantities[stock.product.id]"
+                size="lg"
+                type="number"
+                min="0"
+                class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
+                variant="none"
+                :ui="stockInputUi"
+              />
+            </label>
+
+            <div class="rounded-2xl bg-[#f9fafb] p-3">
+              <p class="text-xs font-semibold uppercase text-zinc-400">
+                Обновлено
+              </p>
+              <p class="mt-2 text-sm font-medium text-zinc-700">
                 {{ formatDate(stock.updatedAt) }}
-              </td>
-              <td class="px-4 py-4">
-                <div class="flex justify-end">
-                  <UButton
-                    color="primary"
-                    variant="soft"
-                    :loading="savingId === stock.product.id"
-                    :disabled="draftQuantities[stock.product.id] === stock.quantity"
-                    @click="saveStock(stock)"
-                  >
-                    <Save class="size-4" />
-                    Сохранить
-                  </UButton>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </p>
+            </div>
+          </div>
+
+          <UButton
+            color="primary"
+            variant="soft"
+            icon="i-lucide-save"
+            class="mt-4 min-h-11 w-full justify-center rounded-full"
+            :loading="savingId === stock.product.id"
+            :disabled="draftQuantities[stock.product.id] === stock.quantity"
+            @click="saveStock(stock)"
+          >
+            Сохранить
+          </UButton>
+        </article>
       </div>
 
       <AdminEmptyState
@@ -348,7 +369,7 @@
 </template>
 
 <script setup lang="ts">
-import { CircleOff, PackagePlus, PackageX, Plus, RefreshCw, Save, Search, Trash2, Warehouse } from "@lucide/vue";
+import { CircleOff, PackagePlus, PackageX, Plus, Search, Trash2, Warehouse } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { formatDate, formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
@@ -376,6 +397,10 @@ const arrivalSubmitting = ref(false);
 const arrivalItems = ref<ArrivalDraftItem[]>([]);
 const savingId = ref<number | null>(null);
 const draftQuantities = reactive<Record<number, number>>({});
+
+const stockInputUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700"
+};
 
 const { data, pending, error, refresh } = await useAsyncData("admin-product-stocks", () => adminFetch<ProductStock[]>("/api/admin/products/stock"));
 

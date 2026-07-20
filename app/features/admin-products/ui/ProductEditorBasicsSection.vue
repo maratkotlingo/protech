@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-7">
+  <div class="space-y-5">
     <UFormField
       label="Название"
       required
@@ -7,9 +7,11 @@
     >
       <UInput
         :model-value="form.name"
-        class="w-full"
+        class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
         size="xl"
+        variant="none"
         placeholder="Например, Аккумулятор ProTech X"
+        :ui="inputUi"
         @update:model-value="emit('updateField', 'name', String($event ?? ''))"
       />
     </UFormField>
@@ -22,9 +24,11 @@
       >
         <UInput
           :model-value="form.article"
-          class="w-full"
+          class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
+          variant="none"
           placeholder="PT-X-001"
+          :ui="inputUi"
           @update:model-value="emit('updateField', 'article', String($event ?? ''))"
         />
       </UFormField>
@@ -36,10 +40,14 @@
       >
         <USelect
           :model-value="form.categoryId"
-          class="w-full"
+          class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
+          color="neutral"
+          variant="none"
+          :content="selectContent"
           :items="categoryItems"
           placeholder="Выберите категорию"
+          :ui="selectUi"
           @update:model-value="emit('selectCategory', $event)"
         />
       </UFormField>
@@ -52,12 +60,13 @@
     >
       <UTextarea
         :model-value="form.description"
-        class="w-full"
+        class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
         size="xl"
+        variant="none"
         autoresize
         :rows="8"
         :maxrows="18"
-        :ui="{ base: 'min-h-48 text-base leading-7' }"
+        :ui="textareaUi"
         placeholder="Коротко опишите свойства, комплектацию и назначение товара"
         @update:model-value="emit('updateField', 'description', String($event ?? ''))"
       />
@@ -71,11 +80,13 @@
       >
         <UInput
           :model-value="form.currentPrice"
-          class="w-full"
+          class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
+          variant="none"
           type="number"
           min="0"
           step="0.01"
+          :ui="inputUi"
           @update:model-value="emit('updateField', 'currentPrice', toNumberValue($event))"
         />
       </UFormField>
@@ -86,11 +97,13 @@
       >
         <UInput
           :model-value="form.costPrice"
-          class="w-full"
+          class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
+          variant="none"
           type="number"
           min="0"
           step="0.01"
+          :ui="inputUi"
           @update:model-value="emit('updateField', 'costPrice', toNumberValue($event))"
         />
       </UFormField>
@@ -101,11 +114,13 @@
       >
         <UInput
           :model-value="form.oldPrice"
-          class="w-full"
+          class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
+          variant="none"
           type="number"
           min="0"
           step="0.01"
+          :ui="inputUi"
           @update:model-value="emit('updateField', 'oldPrice', toNumberValue($event))"
         />
       </UFormField>
@@ -118,14 +133,16 @@
       >
         <UInput
           :model-value="form.ozonLink"
-          class="w-full"
+          class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
+          variant="none"
           placeholder="https://www.ozon.ru/..."
+          :ui="inputUi"
           @update:model-value="emit('updateField', 'ozonLink', String($event ?? ''))"
         />
       </UFormField>
 
-      <div class="rounded-md border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-5">
+      <div class="rounded-2xl bg-[#f9fafb] p-4 shadow-inner shadow-zinc-950/5 sm:p-5">
         <USwitch
           :model-value="form.isActive"
           label="Товар активен"
@@ -164,6 +181,25 @@ defineProps<{
   fieldErrors: Record<string, string | undefined>;
   form: ProductFormState;
 }>();
+
+const inputUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-900"
+};
+const textareaUi = {
+  base: "min-h-48 rounded-2xl bg-transparent text-base leading-7 text-zinc-900"
+};
+const selectContent = {
+  bodyLock: false,
+  collisionPadding: 12
+};
+const selectUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-900",
+  content: "max-w-[min(30rem,calc(100vw-1rem))] rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0",
+  item: "rounded-xl",
+  itemLabel: "truncate",
+  value: "truncate",
+  viewport: "max-h-72 p-1"
+};
 
 const emit = defineEmits<{
   selectCategory: [value: SelectValue];

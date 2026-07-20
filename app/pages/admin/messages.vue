@@ -1,24 +1,26 @@
 <template>
-  <div class="space-y-5">
+  <div class="messages-shop-page space-y-5">
     <AdminPageHeader
       title="Сообщения"
-      kicker="Support"
+      kicker="Поддержка"
       description="Диалоги с пользователями, вопросы по заказам и оперативные ответы."
     >
       <template #actions>
         <UButton
           color="neutral"
-          variant="outline"
+          variant="ghost"
+          icon="i-lucide-refresh-cw"
+          size="lg"
+          class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           :loading="conversationsPending"
           @click="refreshConversations()"
         >
-          <RefreshCw class="size-4" />
           Обновить
         </UButton>
       </template>
     </AdminPageHeader>
 
-    <div class="grid gap-4 md:grid-cols-4">
+    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
       <AdminMetricCard
         label="Диалогов"
         :value="formatNumber(conversations.length)"
@@ -67,6 +69,7 @@
       variant="soft"
       title="Не удалось загрузить диалоги"
       :description="getErrorMessage(conversationsError)"
+      class="rounded-2xl"
     />
 
     <div class="grid min-h-[680px] gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
@@ -92,21 +95,25 @@
               {{ socketConnected ? "онлайн" : "история" }}
             </UBadge>
           </div>
-          <UInput
-            v-model="search"
-            icon="i-lucide-search"
-            placeholder="Найти пользователя"
-            size="lg"
-          />
+          <div class="rounded-2xl bg-[#f9fafb] p-1.5 shadow-inner shadow-zinc-950/5">
+            <UInput
+              v-model="search"
+              icon="i-lucide-search"
+              placeholder="Найти пользователя"
+              size="lg"
+              variant="none"
+              :ui="adminInputUi"
+            />
+          </div>
         </div>
 
-        <div class="admin-muted-scroll max-h-[620px] overflow-y-auto">
+        <div class="admin-muted-scroll max-h-[620px] space-y-2 overflow-y-auto bg-[#f9fafb] p-3">
           <button
             v-for="conversation in filteredConversations"
             :key="conversation.user.id"
             type="button"
-            class="flex w-full gap-3 border-b border-[var(--admin-border)] p-3 text-left transition hover:bg-[var(--admin-surface-muted)]/80"
-            :class="selectedUserId === conversation.user.id ? 'bg-[var(--admin-accent-soft)]/80 shadow-[inset_3px_0_0_var(--admin-accent)]' : ''"
+            class="flex w-full gap-3 rounded-2xl bg-white p-3 text-left shadow-sm shadow-zinc-950/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/10"
+            :class="selectedUserId === conversation.user.id ? 'ring-2 ring-emerald-200 shadow-emerald-950/10' : ''"
             @click="selectConversation(conversation.user.id)"
           >
             <img
@@ -133,8 +140,8 @@
                   </p>
                 </div>
                 <span
-                  v-if="conversation.unreadCount"
-                  class="grid min-w-6 place-items-center rounded-md bg-[var(--admin-accent)] px-2 py-0.5 text-xs font-semibold text-white"
+              v-if="conversation.unreadCount"
+                  class="grid min-w-6 place-items-center rounded-full bg-[var(--admin-accent)] px-2 py-0.5 text-xs font-semibold text-white"
                 >
                   {{ conversation.unreadCount }}
                 </span>
@@ -189,10 +196,11 @@
               <UButton
                 color="neutral"
                 variant="outline"
+                icon="i-lucide-refresh-cw"
+                class="rounded-full bg-white"
                 :loading="threadPending"
                 @click="loadThread(selectedUser.id)"
               >
-                <RefreshCw class="size-4" />
                 Обновить
               </UButton>
             </div>
@@ -200,7 +208,7 @@
 
           <div
             ref="messagesContainer"
-            class="admin-muted-scroll min-h-0 flex-1 overflow-y-auto bg-[var(--admin-surface-muted)] p-4"
+            class="admin-muted-scroll min-h-0 flex-1 overflow-y-auto bg-[#f9fafb] p-4"
           >
             <div
               v-if="threadPending"
@@ -225,7 +233,7 @@
                 :class="message.senderRole === 'ADMIN' ? 'justify-end' : 'justify-start'"
               >
                 <div
-                  class="max-w-[min(44rem,84%)] rounded-lg px-4 py-3 shadow-sm"
+                  class="max-w-[min(44rem,84%)] rounded-2xl px-4 py-3 shadow-sm"
                   :class="message.senderRole === 'ADMIN'
                     ? 'bg-[var(--admin-accent)] text-white shadow-green-950/10'
                     : 'bg-[var(--admin-surface)] text-[var(--admin-text)] ring-1 ring-[var(--admin-border)]'"
@@ -261,23 +269,29 @@
           </div>
 
           <form
-            class="border-t border-[var(--admin-border)] bg-white p-4"
+            class="border-t border-zinc-100 bg-white p-4"
             @submit.prevent="sendMessage"
           >
             <UFormField :error="messageError">
               <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-                <UTextarea
-                  v-model="draftMessage"
-                  :disabled="submitting"
-                  :rows="2"
-                  placeholder="Сообщение пользователю"
-                  @keydown.enter.exact.prevent="sendMessage"
-                />
+                <div class="rounded-2xl bg-[#f9fafb] p-1.5 shadow-inner shadow-zinc-950/5">
+                  <UTextarea
+                    v-model="draftMessage"
+                    class="w-full"
+                    :disabled="submitting"
+                    :rows="3"
+                    variant="none"
+                    :ui="adminTextareaUi"
+                    placeholder="Сообщение пользователю"
+                    @keydown.enter.exact.prevent="sendMessage"
+                  />
+                </div>
                 <UButton
                   color="primary"
                   icon="i-lucide-send"
                   size="lg"
                   type="submit"
+                  class="min-h-12 justify-center rounded-full px-5 shadow-lg shadow-emerald-950/10"
                   :disabled="!draftMessage.trim()"
                   :loading="submitting"
                 >
@@ -307,7 +321,7 @@
 </template>
 
 <script setup lang="ts">
-import { BellDot, Inbox, MessageSquare, MessagesSquare, RefreshCw } from "@lucide/vue";
+import { BellDot, Inbox, MessageSquare, MessagesSquare } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { formatDate, formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
@@ -337,8 +351,10 @@ definePageMeta({
 });
 
 const search = ref("");
+const route = useRoute();
 const selectedUserId = ref<string | null>(null);
 const messages = ref<AdminMessage[]>([]);
+const selectedThreadUser = ref<MessageThreadResponse["user"] | null>(null);
 const threadPending = ref(false);
 const draftMessage = ref("");
 const submitting = ref(false);
@@ -346,6 +362,13 @@ const messageError = ref("");
 const socketConnected = ref(false);
 const messagesContainer = ref<HTMLElement | null>(null);
 let socket: WebSocket | null = null;
+
+const adminInputUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700"
+};
+const adminTextareaUi = {
+  base: "min-h-28 resize-y rounded-2xl bg-transparent text-sm leading-6 text-zinc-900"
+};
 
 const {
   data: conversationsData,
@@ -378,11 +401,18 @@ const filteredConversations = computed(() => {
 const selectedConversation = computed<MessageConversation | null>(() =>
   conversations.value.find((conversation) => conversation.user.id === selectedUserId.value) ?? null
 );
-const selectedUser = computed(() => selectedConversation.value?.user ?? null);
+const selectedUser = computed(() => selectedConversation.value?.user ?? selectedThreadUser.value);
+const requestedUserId = computed(() => {
+  const value = route.query.userId;
+
+  return typeof value === "string" && value.trim() ? value : null;
+});
 
 onMounted(async () => {
-  if (!selectedUserId.value && conversations.value.length) {
-    await selectConversation(conversations.value[0]!.user.id);
+  const initialUserId = requestedUserId.value ?? conversations.value[0]?.user.id ?? null;
+
+  if (initialUserId) {
+    await selectConversation(initialUserId);
   }
 
   connectSocket();
@@ -394,8 +424,16 @@ onBeforeUnmount(() => {
 });
 
 watch(conversations, async (next) => {
-  if (!selectedUserId.value && next.length) {
-    await selectConversation(next[0]!.user.id);
+  const nextUserId = requestedUserId.value ?? next[0]?.user.id ?? null;
+
+  if (!selectedUserId.value && nextUserId) {
+    await selectConversation(nextUserId);
+  }
+});
+
+watch(requestedUserId, async (userId) => {
+  if (userId && userId !== selectedUserId.value) {
+    await selectConversation(userId);
   }
 });
 
@@ -410,6 +448,7 @@ async function loadThread(userId: string) {
   try {
     const response = await adminFetch<MessageThreadResponse>(`/api/admin/messages/${userId}`);
     messages.value = response.messages;
+    selectedThreadUser.value = response.user;
     await refreshConversations();
     await scrollToBottom();
   } catch (error) {

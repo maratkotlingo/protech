@@ -1,24 +1,26 @@
 <template>
-  <div class="space-y-5">
+  <div class="users-shop-page space-y-5">
     <AdminPageHeader
       title="Пользователи"
-      kicker="Access"
+      kicker="Доступ"
       description="Роли зарегистрированных аккаунтов, активность покупателей и быстрый доступ к правам администратора."
     >
       <template #actions>
         <UButton
           color="neutral"
-          variant="outline"
+          variant="ghost"
+          icon="i-lucide-refresh-cw"
+          size="lg"
+          class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           :loading="pending"
           @click="refresh()"
         >
-          <RefreshCw class="size-4" />
           Обновить
         </UButton>
       </template>
     </AdminPageHeader>
 
-    <div class="grid gap-4 md:grid-cols-4">
+    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
       <AdminMetricCard
         label="Пользователей"
         :value="formatNumber(usersData?.pagination.total ?? users.length)"
@@ -61,33 +63,39 @@
       </AdminMetricCard>
     </div>
 
-    <UCard
-      class="admin-filter-card"
-      :ui="{ body: 'p-4 sm:p-5' }"
-    >
-      <div class="grid gap-4 lg:grid-cols-[1fr_260px]">
-        <UFormField label="Поиск">
+    <section class="rounded-3xl bg-white/90 p-4 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur sm:p-5">
+      <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(13rem,18rem)]">
+        <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
+          <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Поиск</span>
           <UInput
             v-model="search"
-            class="w-full"
+            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="lg"
+            variant="none"
+            :ui="usersInputUi"
             placeholder="Имя или email"
           >
             <template #leading>
-              <Search class="size-4 text-[var(--admin-text-muted)]" />
+              <Search class="size-4 text-zinc-400" />
             </template>
           </UInput>
-        </UFormField>
-        <UFormField label="Роль">
+        </label>
+        <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
+          <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Роль</span>
           <USelect
             v-model="role"
-            class="w-full"
+            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="lg"
+            color="neutral"
+            variant="none"
+            icon="i-lucide-shield-check"
+            :content="usersSelectContent"
             :items="roleFilterItems"
+            :ui="usersSelectUi"
           />
-        </UFormField>
+        </label>
       </div>
-    </UCard>
+    </section>
 
     <UAlert
       v-if="error"
@@ -95,13 +103,11 @@
       variant="soft"
       title="Не удалось загрузить пользователей"
       :description="getErrorMessage(error)"
+      class="rounded-2xl"
     />
 
-    <UCard
-      class="admin-list-card"
-      :ui="{ body: 'p-0' }"
-    >
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+    <section class="admin-list-card">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4">
         <div>
           <p class="admin-section-heading">
             Аккаунты и роли
@@ -113,7 +119,7 @@
         <UBadge
           color="neutral"
           variant="soft"
-          class="rounded-md"
+          class="rounded-full px-3 py-1"
         >
           {{ users.length }} на странице
         </UBadge>
@@ -121,98 +127,115 @@
 
       <div
         v-if="users.length"
-        class="overflow-x-auto"
+        class="grid gap-3 bg-[#f9fafb] p-3 sm:p-4 xl:grid-cols-2 2xl:grid-cols-3"
       >
-        <table class="w-full min-w-[980px] divide-y divide-[var(--admin-border)] text-sm">
-          <thead class="bg-[#f9fafb]">
-            <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
-              <th class="px-4 py-3 font-medium">Пользователь</th>
-              <th class="px-4 py-3 font-medium">Роль</th>
-              <th class="px-4 py-3 font-medium">Подтверждение</th>
-              <th class="px-4 py-3 font-medium">Активность</th>
-              <th class="px-4 py-3 font-medium">Создан</th>
-              <th class="px-4 py-3 font-medium">Обновлен</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[var(--admin-border)]">
-            <tr
-              v-for="user in users"
-              :key="user.id"
-              class="align-top transition hover:bg-[#f9fafb]"
+        <article
+          v-for="user in users"
+          :key="user.id"
+          class="rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-zinc-950/10"
+        >
+          <div class="flex items-start gap-3">
+            <img
+              v-if="user.image"
+              :src="user.image"
+              alt=""
+              class="size-12 rounded-2xl object-cover"
             >
-              <td class="px-4 py-4">
-                <div class="flex items-center gap-3">
-                  <img
-                    v-if="user.image"
-                    :src="user.image"
-                    alt=""
-                    class="size-11 rounded-lg object-cover"
-                  >
-                  <div
-                    v-else
-                    class="admin-avatar size-11 shrink-0 text-sm"
-                  >
-                    {{ getInitials(user.name || user.email) }}
-                  </div>
-                  <div class="min-w-0">
-                    <p class="truncate font-semibold text-[var(--admin-text)]">
-                      {{ user.name || "Без имени" }}
-                    </p>
-                    <p class="mt-1 truncate text-sm text-[var(--admin-text-muted)]">
-                      {{ user.email }}
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-4">
-                <div class="flex flex-wrap items-center gap-2">
-                  <UBadge
-                    :color="roleColor(user.role)"
-                    variant="soft"
-                    class="rounded-md"
-                  >
-                    {{ roleLabels[user.role] }}
-                  </UBadge>
-                  <USelect
-                    :model-value="user.role"
-                    class="w-48"
-                    size="md"
-                    :items="roleItems"
-                    :disabled="savingUserId === user.id"
-                    @update:model-value="(value) => updateRole(user, value)"
+            <div
+              v-else
+              class="admin-avatar size-12 shrink-0 text-sm"
+            >
+              {{ getInitials(user.name || user.email) }}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="truncate font-semibold text-zinc-950">
+                  {{ user.name || "Без имени" }}
+                </p>
+                <UBadge
+                  :color="roleColor(user.role)"
+                  variant="soft"
+                  class="rounded-full px-3 py-1"
+                >
+                  {{ roleLabels[user.role] }}
+                </UBadge>
+              </div>
+              <p class="mt-1 truncate text-sm text-zinc-500">
+                {{ user.email }}
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-4 grid gap-3">
+            <label class="block rounded-2xl bg-[#f9fafb] p-3">
+              <span class="mb-2 block text-xs font-semibold uppercase text-zinc-400">Роль</span>
+              <USelect
+                :model-value="user.role"
+                class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
+                size="lg"
+                color="neutral"
+                variant="none"
+                :content="usersSelectContent"
+                :items="roleItems"
+                :ui="usersSelectUi"
+                :disabled="savingUserId === user.id"
+                @update:model-value="(value) => updateRole(user, value)"
+              />
+            </label>
+
+            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+              <div class="rounded-2xl bg-[#f9fafb] p-3">
+                <p class="text-xs font-semibold uppercase text-zinc-400">
+                  Подтверждение
+                </p>
+                <div class="mt-2">
+                  <AdminStatusBadge
+                    type="boolean"
+                    :value="user.emailVerified"
+                    true-label="Подтвержден"
+                    false-label="Не подтвержден"
                   />
                 </div>
-              </td>
-              <td class="px-4 py-4">
-                <AdminStatusBadge
-                  type="boolean"
-                  :value="user.emailVerified"
-                  true-label="Подтвержден"
-                  false-label="Не подтвержден"
-                />
-              </td>
-              <td class="px-4 py-4">
-                <div class="flex flex-wrap gap-2">
-                  <span class="rounded-md bg-[var(--admin-surface-muted)] px-2 py-1 text-xs font-medium text-[var(--admin-text-muted)]">
+              </div>
+
+              <div class="rounded-2xl bg-[#f9fafb] p-3">
+                <p class="text-xs font-semibold uppercase text-zinc-400">
+                  Активность
+                </p>
+                <div class="mt-2 flex flex-wrap gap-2">
+                  <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
                     {{ user._count.orders }} заказов
                   </span>
-                  <span class="rounded-md bg-[var(--admin-surface-muted)] px-2 py-1 text-xs font-medium text-[var(--admin-text-muted)]">
+                  <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
                     {{ user._count.message }} сообщений
                   </span>
-                  <span class="rounded-md bg-[var(--admin-surface-muted)] px-2 py-1 text-xs font-medium text-[var(--admin-text-muted)]">
+                  <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
                     {{ user._count.reviews }} отзывов
                   </span>
                 </div>
-              </td>
-              <td class="whitespace-nowrap px-4 py-4 text-[var(--admin-text-muted)]">
-                {{ formatDate(user.createdAt) }}
-              </td>
-              <td class="whitespace-nowrap px-4 py-4 text-[var(--admin-text-muted)]">
-                {{ formatDate(user.updatedAt) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+              <div class="rounded-2xl bg-[#f9fafb] p-3">
+                <p class="text-xs font-semibold uppercase text-zinc-400">
+                  Создан
+                </p>
+                <p class="mt-2 text-sm font-medium text-zinc-700">
+                  {{ formatDate(user.createdAt) }}
+                </p>
+              </div>
+              <div class="rounded-2xl bg-[#f9fafb] p-3">
+                <p class="text-xs font-semibold uppercase text-zinc-400">
+                  Обновлён
+                </p>
+                <p class="mt-2 text-sm font-medium text-zinc-700">
+                  {{ formatDate(user.updatedAt) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
 
       <AdminEmptyState
@@ -231,12 +254,12 @@
         :loading="pending"
         @update:page="page = $event"
       />
-    </UCard>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Activity, MailCheck, RefreshCw, Search, ShieldCheck, Users } from "@lucide/vue";
+import { Activity, MailCheck, Search, ShieldCheck, Users } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
@@ -261,6 +284,22 @@ const search = ref("");
 const debouncedSearch = ref("");
 const role = ref<RoleFilter>("all");
 const savingUserId = ref<string | null>(null);
+
+const usersSelectContent = {
+  bodyLock: false,
+  collisionPadding: 12
+};
+const usersSelectUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700",
+  content: "max-w-[min(28rem,calc(100vw-1rem))] rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0",
+  item: "rounded-xl",
+  itemLabel: "truncate",
+  value: "truncate",
+  viewport: "max-h-72 p-1"
+};
+const usersInputUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700"
+};
 
 watchDebounced(search, (value) => {
   debouncedSearch.value = value;

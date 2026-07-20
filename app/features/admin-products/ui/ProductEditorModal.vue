@@ -1,17 +1,36 @@
 <template>
   <UModal
     v-model:open="open"
-    :title="productId ? 'Редактировать товар' : 'Новый товар'"
-    :description="productId ? 'Обновите карточку товара, цены, изображения и характеристики.' : 'Заполните карточку товара и добавьте медиа.'"
-    scrollable
-    :ui="{ content: 'max-w-6xl', body: 'p-6 sm:p-8' }"
+    :ui="productEditorModalUi"
   >
+    <template #header>
+      <div class="flex min-w-0 items-start gap-4">
+        <div class="grid size-12 shrink-0 place-items-center rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-950/15">
+          <UIcon
+            name="i-lucide-package-plus"
+            class="size-6"
+          />
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs font-semibold uppercase text-emerald-700">
+            Каталог
+          </p>
+          <h2 class="mt-1 truncate text-xl font-semibold tracking-normal text-zinc-950 sm:text-2xl">
+            {{ editorTitle }}
+          </h2>
+          <p class="mt-1 max-w-3xl text-sm leading-6 text-zinc-500">
+            {{ editorDescription }}
+          </p>
+        </div>
+      </div>
+    </template>
+
     <template #body>
       <div
         v-if="loading"
-        class="grid min-h-80 place-items-center"
+        class="grid min-h-96 place-items-center bg-[#f9fafb]"
       >
-        <div class="flex items-center gap-3 text-[var(--admin-text-muted)]">
+        <div class="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-zinc-500 shadow-sm shadow-zinc-950/5">
           <LoaderCircle class="size-5 animate-spin" />
           Загружаю товар
         </div>
@@ -19,16 +38,54 @@
 
       <form
         v-else
-        class="space-y-7"
+        id="product-editor-form"
+        class="space-y-5 bg-[#f9fafb] p-4 sm:p-6"
         @submit.prevent="save"
       >
-        <ProductEditorBasicsSection
-          :category-items="categoryItems"
-          :field-errors="fieldErrors"
-          :form="form"
-          @select-category="handleCategorySelect"
-          @update-field="updateFormField"
-        />
+        <div class="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.75fr)]">
+          <section class="min-w-0 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70 sm:p-5">
+            <div class="flex items-start gap-3">
+              <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
+                <UIcon
+                  name="i-lucide-file-pen-line"
+                  class="size-5"
+                />
+              </span>
+              <div>
+                <h3 class="text-lg font-semibold text-zinc-950">
+                  Данные товара
+                </h3>
+                <p class="mt-1 text-sm leading-6 text-zinc-500">
+                  Название, категория, цены и видимость в публичном каталоге.
+                </p>
+              </div>
+            </div>
+
+            <ProductEditorBasicsSection
+              class="mt-5"
+              :category-items="categoryItems"
+              :field-errors="fieldErrors"
+              :form="form"
+              @select-category="handleCategorySelect"
+              @update-field="updateFormField"
+            />
+          </section>
+
+          <ProductEditorMediaSection
+            class="min-w-0"
+            :field-errors="fieldErrors"
+            :main-image="form.mainImage"
+            :product-images="form.productImages"
+            :uploading-gallery="uploadingGallery"
+            :uploading-main="uploadingMain"
+            @add-gallery-url="addGalleryUrl"
+            @remove-gallery-image="removeGalleryImage"
+            @update-gallery-image="updateGalleryImage"
+            @update-main-image="updateMainImage"
+            @upload-gallery-image="uploadGalleryImage"
+            @upload-main-image="uploadMainImage"
+          />
+        </div>
 
         <ProductEditorAttributesSection
           :attribute-items="attributeItems"
@@ -39,20 +96,6 @@
           @select="handleAttributeSelect"
           @update-value="updateAttributeValue"
         />
-
-        <ProductEditorMediaSection
-          :field-errors="fieldErrors"
-          :main-image="form.mainImage"
-          :product-images="form.productImages"
-          :uploading-gallery="uploadingGallery"
-          :uploading-main="uploadingMain"
-          @add-gallery-url="addGalleryUrl"
-          @remove-gallery-image="removeGalleryImage"
-          @update-gallery-image="updateGalleryImage"
-          @update-main-image="updateMainImage"
-          @upload-gallery-image="uploadGalleryImage"
-          @upload-main-image="uploadMainImage"
-        />
       </form>
     </template>
 
@@ -62,6 +105,7 @@
           color="neutral"
           variant="ghost"
           size="lg"
+          class="min-h-12 justify-center rounded-full px-6"
           @click="closeEditor"
         >
           Отмена
@@ -69,8 +113,10 @@
         <UButton
           color="primary"
           size="lg"
+          type="submit"
+          form="product-editor-form"
+          class="min-h-12 justify-center rounded-full px-6 shadow-lg shadow-emerald-950/10"
           :loading="submitting"
-          @click="save"
         >
           <Save class="size-4" />
           Сохранить товар
@@ -83,24 +129,28 @@
     v-model:open="categoryCreateOpen"
     title="Новая категория"
     description="Категория будет создана и сразу выбрана для товара."
-    :ui="{ content: 'max-w-lg' }"
+    :ui="compactModalUi"
   >
     <template #body>
-      <UFormField
-        label="Название категории"
-        required
-        :error="newCategoryError"
-      >
-        <UInput
-          v-model="newCategoryName"
-          class="w-full"
-          size="xl"
-          autofocus
-          placeholder="Например, Аккумуляторы"
-          :disabled="creatingCategory"
-          @keydown.enter.prevent="createCategory"
-        />
-      </UFormField>
+      <div class="rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
+        <UFormField
+          label="Название категории"
+          required
+          :error="newCategoryError"
+        >
+          <UInput
+            v-model="newCategoryName"
+            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
+            size="xl"
+            variant="none"
+            autofocus
+            placeholder="Например, Аккумуляторы"
+            :disabled="creatingCategory"
+            :ui="modalInputUi"
+            @keydown.enter.prevent="createCategory"
+          />
+        </UFormField>
+      </div>
     </template>
 
     <template #footer>
@@ -109,6 +159,7 @@
           color="neutral"
           variant="ghost"
           size="lg"
+          class="min-h-11 justify-center rounded-full px-5"
           @click="closeCategoryCreator"
         >
           Отмена
@@ -116,6 +167,7 @@
         <UButton
           color="primary"
           size="lg"
+          class="min-h-11 justify-center rounded-full px-5"
           :loading="creatingCategory"
           @click="createCategory"
         >
@@ -130,10 +182,10 @@
     v-model:open="attributeCreateOpen"
     title="Новая характеристика"
     description="Характеристика будет создана и сразу подставлена в выбранную строку."
-    :ui="{ content: 'max-w-2xl' }"
+    :ui="attributeModalUi"
   >
     <template #body>
-      <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_180px]">
+      <div class="grid gap-4 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5 sm:grid-cols-[minmax(0,1fr)_180px]">
         <UFormField
           label="Название"
           required
@@ -141,11 +193,13 @@
         >
           <UInput
             v-model="newAttributeForm.name"
-            class="w-full"
+            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="xl"
+            variant="none"
             autofocus
             placeholder="Например, Ёмкость"
             :disabled="creatingAttribute"
+            :ui="modalInputUi"
             @keydown.enter.prevent="createAttribute"
           />
         </UFormField>
@@ -155,10 +209,12 @@
         >
           <UInput
             v-model="newAttributeForm.unit"
-            class="w-full"
+            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="xl"
+            variant="none"
             placeholder="А·ч"
             :disabled="creatingAttribute"
+            :ui="modalInputUi"
             @keydown.enter.prevent="createAttribute"
           />
         </UFormField>
@@ -171,6 +227,7 @@
           color="neutral"
           variant="ghost"
           size="lg"
+          class="min-h-11 justify-center rounded-full px-5"
           @click="closeAttributeCreator"
         >
           Отмена
@@ -178,6 +235,7 @@
         <UButton
           color="primary"
           size="lg"
+          class="min-h-11 justify-center rounded-full px-5"
           :loading="creatingAttribute"
           @click="createAttribute"
         >
@@ -247,6 +305,37 @@ const newAttributeErrors = reactive<Record<string, string | undefined>>({});
 const localCategories = ref<Category[]>([]);
 const localAttributes = ref<Attribute[]>([]);
 const fieldErrors = reactive<Record<string, string | undefined>>({});
+const productEditorModalUi = {
+  content: "max-h-[calc(100dvh-2rem)] max-w-7xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-zinc-950/20 ring-0 sm:max-h-[calc(100dvh-4rem)]",
+  header: "shrink-0 border-b border-zinc-100 bg-white/95 px-4 py-4 backdrop-blur sm:px-6",
+  body: "min-h-0 flex-1 overflow-y-auto overscroll-contain p-0",
+  footer: "shrink-0 border-t border-zinc-100 bg-white/95 px-4 py-4 sm:px-6"
+};
+const compactModalUi = {
+  content: "max-h-[calc(100dvh-2rem)] max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl shadow-zinc-950/20 ring-0",
+  header: "shrink-0 px-5 pb-3 pt-5 sm:px-6",
+  body: "min-h-0 flex-1 overflow-y-auto px-5 py-4 sm:px-6",
+  footer: "shrink-0 border-t border-zinc-100 bg-[#f9fafb] px-5 py-4 sm:px-6"
+};
+const attributeModalUi = {
+  ...compactModalUi,
+  content: "max-h-[calc(100dvh-2rem)] max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-zinc-950/20 ring-0"
+};
+const modalInputUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-900"
+};
+const editorTitle = computed(() => {
+  if (!props.productId) {
+    return "Новый товар";
+  }
+
+  return form.name ? `Редактировать: ${form.name}` : "Редактировать товар";
+});
+const editorDescription = computed(() =>
+  props.productId
+    ? "Обновите карточку товара, цены, изображения и характеристики."
+    : "Заполните карточку товара, добавьте фото и подготовьте его к публикации."
+);
 
 function createEmptyForm(): ProductFormState {
   return {
@@ -297,16 +386,16 @@ const categoryItems = computed(() => [
 ]);
 
 const attributeItems = computed(() => [
-  ...localAttributes.value.map((attribute) => ({
-    label: attribute.unit ? `${attribute.name}, ${attribute.unit}` : attribute.name,
-    value: attribute.id
-  })),
-  { type: "separator" as const },
   {
     label: "Создать новую характеристику",
     value: CREATE_ATTRIBUTE_VALUE,
     class: "text-[var(--admin-accent)]"
-  }
+  },
+  { type: "separator" as const },
+  ...localAttributes.value.map((attribute) => ({
+    label: attribute.unit ? `${attribute.name}, ${attribute.unit}` : attribute.name,
+    value: attribute.id
+  }))
 ]);
 
 function sortByName<T extends { name: string }>(items: T[]) {

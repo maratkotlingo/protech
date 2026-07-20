@@ -1,109 +1,138 @@
 <template>
-  <div class="space-y-5">
-    <AdminPageHeader
-      title="Товары"
-      kicker="Catalog"
-      description="Создание, редактирование, медиа, цены, категории, характеристики и видимость товаров."
-    >
-      <template #actions>
+  <div class="products-shop-page space-y-5">
+    <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-4xl">
+        <p class="text-sm font-medium uppercase text-emerald-700">
+          Каталог
+        </p>
+        <h1 class="mt-2 text-3xl font-semibold tracking-normal text-zinc-950 sm:text-4xl">
+          Товары
+        </h1>
+        <p class="mt-3 max-w-3xl text-sm leading-6 text-zinc-500 sm:text-base">
+          Создание, редактирование, медиа, цены, категории, характеристики и видимость товаров в магазине.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
         <UButton
           color="neutral"
-          variant="outline"
+          variant="ghost"
+          icon="i-lucide-refresh-cw"
+          size="lg"
+          class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           :loading="pending"
           @click="refresh()"
         >
-          <RefreshCw class="size-4" />
           Обновить
         </UButton>
         <UButton
           color="primary"
+          variant="solid"
+          icon="i-lucide-plus"
+          size="lg"
+          class="h-12 justify-center rounded-full px-4 shadow-lg shadow-emerald-950/10"
           @click="openCreate"
         >
-          <Plus class="size-4" />
           Добавить товар
         </UButton>
-      </template>
-    </AdminPageHeader>
+      </div>
+    </section>
 
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-      <AdminMetricCard
-        label="Всего товаров"
-        :value="formatNumber(totalProducts)"
-        hint="С учетом текущих фильтров каталога"
-        positive
-      >
-        <template #icon>
-          <PackageSearch class="size-7" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Активны на странице"
-        :value="formatNumber(activeProductsOnPage)"
-        hint="Видны покупателям в магазине"
-        positive
-      >
-        <template #icon>
-          <CheckCircle2 class="size-7" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Низкий остаток"
-        :value="formatNumber(lowStockProductsOnPage)"
-        hint="5 штук или меньше в текущей выдаче"
-        :positive="lowStockProductsOnPage === 0"
-      >
-        <template #icon>
-          <PackageX class="size-7" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Средняя цена"
-        :value="formatCurrency(averageVisiblePrice)"
-        hint="По товарам на текущей странице"
-        positive
-      >
-        <template #icon>
-          <Tags class="size-7" />
-        </template>
-      </AdminMetricCard>
-    </div>
-
-    <UCard
-      class="admin-filter-card"
-      :ui="{ body: 'p-4 sm:p-5' }"
-    >
-      <div class="grid gap-4 lg:grid-cols-[1fr_280px_220px]">
-        <UFormField label="Поиск">
+    <section class="rounded-3xl bg-white/90 p-4 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur sm:p-5">
+      <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(13rem,18rem)_minmax(11rem,14rem)]">
+        <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
+          <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Поиск</span>
           <UInput
             v-model="filters.products.search"
-            class="w-full"
+            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="lg"
             placeholder="Название или артикул"
+            variant="none"
+            :ui="productsInputUi"
           >
             <template #leading>
-              <Search class="size-4 text-[var(--admin-text-muted)]" />
+              <Search class="size-4 text-zinc-400" />
             </template>
           </UInput>
-        </UFormField>
-        <UFormField label="Категория">
+        </label>
+        <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
+          <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Категория</span>
           <USelect
             v-model="filters.products.categoryId"
-            class="w-full"
+            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="lg"
+            color="neutral"
+            variant="none"
+            icon="i-lucide-layout-grid"
+            :content="productsSelectContent"
             :items="categoryFilterItems"
             placeholder="Все категории"
+            :ui="productsSelectUi"
           />
-        </UFormField>
-        <UFormField label="Статус">
+        </label>
+        <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
+          <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Статус</span>
           <USelect
             v-model="filters.products.isActive"
-            class="w-full"
+            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="lg"
+            color="neutral"
+            variant="none"
+            icon="i-lucide-circle-check"
+            :content="productsSelectContent"
             :items="statusItems"
+            :ui="productsSelectUi"
           />
-        </UFormField>
+        </label>
       </div>
-    </UCard>
+    </section>
+
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-zinc-500">
+        {{ productsStatusText }}
+      </p>
+
+      <div
+        v-auto-animate
+        class="flex flex-wrap gap-2"
+      >
+        <UButton
+          v-if="hasAnyProductsFilter"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          icon="i-lucide-rotate-ccw"
+          class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
+          @click="resetProductsFilters"
+        >
+          Сбросить
+        </UButton>
+        <UBadge
+          v-if="filters.products.search"
+          color="neutral"
+          variant="soft"
+          class="max-w-full rounded-full px-3 py-1"
+        >
+          <span class="truncate">Поиск: {{ filters.products.search }}</span>
+        </UBadge>
+        <UBadge
+          v-if="selectedCategoryLabel"
+          color="primary"
+          variant="soft"
+          class="max-w-full rounded-full px-3 py-1"
+        >
+          <span class="truncate">{{ selectedCategoryLabel }}</span>
+        </UBadge>
+        <UBadge
+          v-if="selectedStatusFilterLabel"
+          color="neutral"
+          variant="soft"
+          class="rounded-full px-3 py-1"
+        >
+          {{ selectedStatusFilterLabel }}
+        </UBadge>
+      </div>
+    </div>
 
     <UAlert
       v-if="error"
@@ -111,13 +140,42 @@
       variant="soft"
       title="Не удалось загрузить товары"
       :description="getErrorMessage(error)"
+      class="rounded-2xl"
     />
 
-    <UCard
-      class="admin-list-card"
-      :ui="{ body: 'p-0' }"
-    >
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-4 py-3">
+    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
+      <article
+        v-for="metric in productMetricTiles"
+        :key="metric.key"
+        class="rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 sm:p-5"
+      >
+        <div class="flex min-h-32 items-start justify-between gap-4">
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-zinc-500">
+              {{ metric.label }}
+            </p>
+            <p class="mt-3 text-2xl font-semibold tracking-normal text-zinc-950 sm:text-3xl">
+              {{ metric.value }}
+            </p>
+            <p class="mt-3 text-sm leading-5 text-zinc-500">
+              {{ metric.hint }}
+            </p>
+          </div>
+          <div
+            class="grid size-12 shrink-0 place-items-center rounded-2xl"
+            :class="metric.iconClass"
+          >
+            <component
+              :is="metric.icon"
+              class="size-6"
+            />
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <section class="admin-card">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-5 py-4">
         <div>
           <p class="admin-section-heading">
             Список товаров
@@ -126,18 +184,32 @@
             Быстрое редактирование, медиа и массовые операции.
           </p>
         </div>
-        <UBadge
-          color="neutral"
-          variant="soft"
-          class="rounded-md"
-        >
-          {{ productsData?.pagination?.total ?? products.length }} товаров
-        </UBadge>
+        <div class="flex flex-wrap items-center gap-3">
+          <label
+            v-if="products.length"
+            class="inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600"
+          >
+            <input
+              v-model="allProductsOnPageSelected"
+              class="size-4 rounded border-[var(--admin-border)] accent-[var(--admin-accent)]"
+              type="checkbox"
+              aria-label="Выбрать все товары на странице"
+            >
+            Выбрать страницу
+          </label>
+          <UBadge
+            color="neutral"
+            variant="soft"
+            class="rounded-md"
+          >
+            {{ productsData?.pagination?.total ?? products.length }} товаров
+          </UBadge>
+        </div>
       </div>
 
       <div
         v-if="selectedProductIds.length"
-        class="admin-action-bar flex flex-wrap items-end justify-between gap-3 px-4 py-3"
+        class="products-bulk-bar flex flex-wrap items-end justify-between gap-3 px-5 py-4"
       >
         <div>
           <p class="admin-section-heading">
@@ -166,31 +238,6 @@
             <CircleOff class="size-4" />
             Выключить
           </UButton>
-          <USelect
-            v-model="bulkCategoryId"
-            :items="bulkCategoryItems"
-            placeholder="Категория"
-            class="w-full sm:w-64"
-            size="lg"
-          />
-          <UButton
-            color="primary"
-            variant="outline"
-            :disabled="!bulkCategoryId"
-            :loading="bulkLoading === 'changeCategory'"
-            @click="bulkChangeCategory"
-          >
-            <Tags class="size-4" />
-            Сменить категорию
-          </UButton>
-          <UButton
-            color="neutral"
-            variant="outline"
-            @click="exportSelectedProducts"
-          >
-            <Download class="size-4" />
-            Экспорт
-          </UButton>
           <UButton
             color="error"
             variant="soft"
@@ -205,140 +252,139 @@
 
       <div
         v-if="products.length"
-        class="overflow-x-auto"
+        class="grid gap-4 p-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
       >
-        <table class="w-full min-w-[980px] divide-y divide-[var(--admin-border)] text-sm">
-          <thead class="bg-[#f9fafb]">
-            <tr class="text-left text-xs uppercase text-[var(--admin-text-muted)]">
-              <th class="w-12 px-4 py-3">
-                <input
-                  v-model="allProductsOnPageSelected"
-                  class="size-4 rounded border-[var(--admin-border)] accent-[var(--admin-accent)]"
-                  type="checkbox"
-                  aria-label="Выбрать все товары на странице"
-                >
-              </th>
-              <th class="px-4 py-3 font-medium">Товар</th>
-              <th class="px-4 py-3 font-medium">Категория</th>
-              <th class="px-4 py-3 font-medium">Цена</th>
-              <th class="px-4 py-3 font-medium">Остаток</th>
-              <th class="px-4 py-3 font-medium">Статус</th>
-              <th class="px-4 py-3 font-medium">Активность</th>
-              <th class="px-4 py-3 text-right font-medium">Действия</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[var(--admin-border)]">
-            <tr
-              v-for="product in products"
-              :key="product.id"
-              class="align-top transition hover:bg-[#f9fafb]"
+        <article
+          v-for="product in products"
+          :key="product.id"
+          class="admin-product-card group overflow-hidden rounded-2xl bg-white p-2 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10 sm:rounded-3xl sm:p-3"
+        >
+          <div class="relative overflow-hidden rounded-xl bg-zinc-100 sm:rounded-[1.45rem]">
+            <img
+              :src="product.mainImage || '/favicon.ico'"
+              :alt="product.name"
+              class="w-full object-cover transition duration-500 group-hover:scale-105"
+              :class="stockQuantity(product) <= 0 ? 'opacity-60 grayscale' : ''"
+              style="aspect-ratio: 3 / 4;"
+              loading="lazy"
             >
-              <td class="px-4 py-4">
-                <input
-                  :checked="selectedProductIds.includes(product.id)"
-                  class="size-4 rounded border-[var(--admin-border)] accent-[var(--admin-accent)]"
-                  type="checkbox"
-                  :aria-label="`Выбрать товар ${product.name}`"
-                  @change="toggleProductSelection(product.id, $event)"
-                >
-              </td>
-              <td class="px-4 py-4">
-                <div class="flex items-center gap-3">
-                  <img
-                    :src="product.mainImage"
-                    alt=""
-                  class="size-14 rounded-md object-cover"
-                  >
-                  <div class="min-w-0">
-                    <p class="truncate font-medium text-[var(--admin-text)]">
-                      {{ product.name }}
-                    </p>
-                    <p class="mt-1 truncate text-sm text-[var(--admin-text-muted)]">
-                      {{ product.article }}
-                    </p>
-                    <p class="mt-2 line-clamp-2 max-w-md text-sm text-[var(--admin-text-muted)]">
-                      {{ product.description }}
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-4 text-[var(--admin-text)]">
+
+            <div class="absolute left-2 top-2 flex flex-wrap gap-2 sm:left-4 sm:top-4">
+              <UBadge
+                v-if="productDiscountPercent(product)"
+                color="error"
+                variant="solid"
+                class="rounded-full"
+              >
+                -{{ productDiscountPercent(product) }}%
+              </UBadge>
+              <AdminStatusBadge
+                type="stock"
+                :value="stockQuantity(product)"
+              />
+            </div>
+
+            <label class="absolute right-2 top-2 grid size-10 cursor-pointer place-items-center rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 sm:right-4 sm:top-4">
+              <input
+                :checked="selectedProductIds.includes(product.id)"
+                class="size-4 rounded border-[var(--admin-border)] accent-[var(--admin-accent)]"
+                type="checkbox"
+                :aria-label="`Выбрать товар ${product.name}`"
+                @change="toggleProductSelection(product.id, $event)"
+              >
+            </label>
+          </div>
+
+          <div class="px-2 pb-3 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <p class="truncate text-xs font-medium uppercase text-zinc-400">
                 {{ product.category.name }}
-              </td>
-              <td class="px-4 py-4">
-                <p class="font-semibold text-[var(--admin-text)]">
-                  {{ formatCurrency(product.currentPrice) }}
-                </p>
-                <p
-                  v-if="product.oldPrice"
-                  class="text-xs text-[var(--admin-text-muted)] line-through"
-                >
-                  {{ formatCurrency(product.oldPrice) }}
-                </p>
-              </td>
-              <td class="px-4 py-4">
-                <div class="space-y-1">
-                  <p class="font-medium text-[var(--admin-text)]">
-                    {{ stockQuantity(product) }} шт.
-                  </p>
-                  <AdminStatusBadge
-                    type="stock"
-                    :value="stockQuantity(product)"
-                  />
+              </p>
+              <AdminStatusBadge
+                type="boolean"
+                :value="product.isActive"
+              />
+            </div>
+
+            <p class="mt-2 line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-zinc-950 sm:min-h-12 sm:text-base sm:leading-6">
+              {{ product.name }}
+            </p>
+
+            <p class="mt-2 truncate text-sm text-zinc-500">
+              {{ product.article }}
+            </p>
+
+            <div class="mt-4 flex items-end justify-between gap-3">
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-baseline gap-2">
+                  <span
+                    class="font-semibold"
+                    :class="product.oldPrice ? 'text-red-600' : 'text-zinc-950'"
+                  >
+                    {{ formatCurrency(product.currentPrice) }}
+                  </span>
+                  <span
+                    v-if="product.oldPrice"
+                    class="text-sm text-zinc-400 line-through"
+                  >
+                    {{ formatCurrency(product.oldPrice) }}
+                  </span>
                 </div>
-              </td>
-              <td class="px-4 py-4">
-                <AdminStatusBadge
-                  type="boolean"
-                  :value="product.isActive"
-                />
-              </td>
-              <td class="px-4 py-4 text-xs text-[var(--admin-text-muted)]">
-                <p>{{ product._count.reviews }} отзывов</p>
-                <p>{{ product._count.orderItems }} продаж</p>
-                <p>{{ formatDate(product.updatedAt) }}</p>
-              </td>
-              <td class="px-4 py-4">
-                <div class="flex justify-end gap-2">
-                  <UTooltip text="Редактировать">
-                    <UButton
-                      color="neutral"
-                      variant="ghost"
-                      square
-                      aria-label="Редактировать товар"
-                      @click="openEdit(product.id)"
-                    >
-                      <Pencil class="size-4" />
-                    </UButton>
-                  </UTooltip>
-                  <UTooltip text="Изображения">
-                    <UButton
-                      color="neutral"
-                      variant="ghost"
-                      square
-                      aria-label="Редактировать изображения товара"
-                      @click="openMediaEditor(product.id)"
-                    >
-                      <ImageIcon class="size-4" />
-                    </UButton>
-                  </UTooltip>
-                  <UTooltip text="Удалить">
-                    <UButton
-                      color="error"
-                      variant="ghost"
-                      square
-                      aria-label="Удалить товар"
-                      :loading="deletingId === product.id"
-                      @click="deleteProduct(product)"
-                    >
-                      <Trash2 class="size-4" />
-                    </UButton>
-                  </UTooltip>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <p class="mt-1 text-xs text-zinc-500">
+                  Остаток: {{ stockQuantity(product) }} шт.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-3 flex items-center gap-1.5 text-xs text-zinc-500 sm:text-sm">
+              <UIcon
+                name="i-lucide-star"
+                class="size-4 text-zinc-300"
+              />
+              <span>{{ product._count.reviews }} отзывов</span>
+              <span>-</span>
+              <span>{{ product._count.orderItems }} продаж</span>
+            </div>
+
+            <p class="mt-2 text-xs text-zinc-400">
+              Обновлено {{ formatDate(product.updatedAt) }}
+            </p>
+
+            <div class="mt-4 grid grid-cols-3 gap-2">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-pencil"
+                class="min-w-0 justify-center rounded-full bg-zinc-50 px-2 text-xs shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 sm:text-sm"
+                aria-label="Редактировать товар"
+                @click="openEdit(product.id)"
+              >
+                Редакт.
+              </UButton>
+              <UButton
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-image"
+                class="min-w-0 justify-center rounded-full bg-zinc-50 px-2 text-xs shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 sm:text-sm"
+                aria-label="Редактировать изображения товара"
+                @click="openMediaEditor(product.id)"
+              >
+                Фото
+              </UButton>
+              <UButton
+                color="error"
+                variant="soft"
+                icon="i-lucide-trash-2"
+                class="min-w-0 justify-center rounded-full px-2 text-xs sm:text-sm"
+                aria-label="Удалить товар"
+                :loading="deletingId === product.id"
+                @click="deleteProduct(product)"
+              >
+                Удалить
+              </UButton>
+            </div>
+          </div>
+        </article>
       </div>
 
       <AdminEmptyState
@@ -365,7 +411,7 @@
         :loading="pending"
         @update:page="page = $event"
       />
-    </UCard>
+    </section>
 
     <ProductEditorModal
       v-model:open="editorOpen"
@@ -392,7 +438,7 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircle2, CircleOff, Download, ImageIcon, PackageSearch, PackageX, Pencil, Plus, RefreshCw, Search, Tags, Trash2 } from "@lucide/vue";
+import { CheckCircle2, CircleOff, PackageSearch, PackageX, Search, Tags, Trash2 } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import {
@@ -403,7 +449,6 @@ import {
   getErrorMessage
 } from "~~/app/shared/lib/adminFormatters";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
-import { downloadCsv } from "~~/app/shared/lib/csvExport";
 import { useAdminFiltersStore } from "~~/app/stores/adminFilters";
 import type {
   Attribute,
@@ -425,7 +470,6 @@ const mediaEditorOpen = ref(false);
 const selectedMediaProductId = ref<number | null>(null);
 const deletingId = ref<number | null>(null);
 const selectedProductIds = ref<number[]>([]);
-const bulkCategoryId = ref<number | undefined>(undefined);
 const bulkLoading = ref<string | null>(null);
 const confirmOpen = ref(false);
 const confirmLoading = ref(false);
@@ -434,6 +478,9 @@ const confirmOptions = reactive({
   description: "",
   message: "",
   hint: "",
+  verificationLabel: "",
+  verificationPlaceholder: "",
+  verificationText: "",
   confirmLabel: "Подтвердить",
   color: "primary" as "primary" | "error"
 });
@@ -490,6 +537,40 @@ const averageVisiblePrice = computed(() => {
 
   return products.value.reduce((total, product) => total + Number(product.currentPrice ?? 0), 0) / products.value.length;
 });
+const productMetricTiles = computed(() => [
+  {
+    key: "total",
+    label: "Всего товаров",
+    value: formatNumber(totalProducts.value),
+    hint: "С учетом текущих фильтров каталога",
+    icon: PackageSearch,
+    iconClass: "bg-emerald-100 text-emerald-700"
+  },
+  {
+    key: "active",
+    label: "Активны на странице",
+    value: formatNumber(activeProductsOnPage.value),
+    hint: "Видны покупателям в магазине",
+    icon: CheckCircle2,
+    iconClass: "bg-sky-100 text-sky-700"
+  },
+  {
+    key: "stock",
+    label: "Низкий остаток",
+    value: formatNumber(lowStockProductsOnPage.value),
+    hint: "5 штук или меньше в текущей выдаче",
+    icon: PackageX,
+    iconClass: lowStockProductsOnPage.value === 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+  },
+  {
+    key: "price",
+    label: "Средняя цена",
+    value: formatCurrency(averageVisiblePrice.value),
+    hint: "По товарам на текущей странице",
+    icon: Tags,
+    iconClass: "bg-amber-100 text-amber-700"
+  }
+]);
 const categoryFilterItems = computed(() => [
   { label: "Все категории", value: null },
   ...categories.value.map((category) => ({ label: category.name, value: category.id }))
@@ -499,11 +580,56 @@ const statusItems = [
   { label: "Активные", value: "true" },
   { label: "Выключенные", value: "false" }
 ];
-const selectedProducts = computed(() => products.value.filter((product) => selectedProductIds.value.includes(product.id)));
-const bulkCategoryItems = computed(() => categories.value.map((category) => ({
-  label: category.name,
-  value: category.id
-})));
+const productsSelectContent = {
+  bodyLock: false,
+  collisionPadding: 12
+};
+const productsSelectUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700",
+  content: "max-w-[min(28rem,calc(100vw-1rem))] rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0",
+  item: "rounded-xl",
+  itemLabel: "truncate",
+  value: "truncate",
+  viewport: "max-h-72 p-1"
+};
+const productsInputUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700"
+};
+const selectedCategoryLabel = computed(() => {
+  if (!filters.products.categoryId) {
+    return "";
+  }
+
+  return categoryFilterItems.value.find((item) => item.value === filters.products.categoryId)?.label ?? "";
+});
+const selectedStatusFilterLabel = computed(() => {
+  if (filters.products.isActive === "all") {
+    return "";
+  }
+
+  return statusItems.find((item) => item.value === filters.products.isActive)?.label ?? "";
+});
+const hasAnyProductsFilter = computed(() =>
+  filters.products.search.trim() !== "" ||
+  filters.products.categoryId !== null ||
+  filters.products.isActive !== "all"
+);
+const productsStatusText = computed(() => {
+  const pagination = productsData.value?.pagination;
+
+  if (!pagination) {
+    return pending.value ? "Загружаем товары..." : "Нет данных по товарам";
+  }
+
+  if (pagination.total === 0) {
+    return "По текущим фильтрам товары не найдены";
+  }
+
+  const start = (pagination.page - 1) * pagination.limit + 1;
+  const end = Math.min(pagination.page * pagination.limit, pagination.total);
+
+  return `Показаны ${formatNumber(start)}-${formatNumber(end)} из ${formatNumber(pagination.total)} товаров`;
+});
 const allProductsOnPageSelected = computed({
   get: () => products.value.length > 0 && products.value.every((product) => selectedProductIds.value.includes(product.id)),
   set: (checked: boolean) => {
@@ -521,6 +647,25 @@ watch(products, (items) => {
 
 function stockQuantity(product: ProductListItem) {
   return product.productStocks[0]?.quantity ?? 0;
+}
+
+function productDiscountPercent(product: ProductListItem) {
+  const currentPrice = Number(product.currentPrice ?? 0);
+  const oldPrice = Number(product.oldPrice ?? 0);
+
+  if (!oldPrice || !currentPrice || oldPrice <= currentPrice) {
+    return 0;
+  }
+
+  return Math.round(((oldPrice - currentPrice) / oldPrice) * 100);
+}
+
+function resetProductsFilters() {
+  filters.products.search = "";
+  filters.products.categoryId = null;
+  filters.products.isActive = "all";
+  debouncedSearch.value = "";
+  page.value = 1;
 }
 
 function openCreate() {
@@ -559,6 +704,9 @@ function requestConfirm(
     description: "",
     message: "",
     hint: "",
+    verificationLabel: "",
+    verificationPlaceholder: "",
+    verificationText: "",
     confirmLabel: "Подтвердить",
     color: "primary" as "primary" | "error",
     ...options
@@ -585,10 +733,18 @@ async function runConfirmedAction() {
 }
 
 function deleteProduct(product: ProductListItem) {
+  const verificationText = product.article || product.name;
+
   requestConfirm({
     title: "Удалить товар",
-    message: `Удалить товар "${product.name}"?`,
-    hint: "Связанные изображения, цены, характеристики и остатки будут удалены каскадно.",
+    description: "Действие нельзя отменить",
+    message: `Вы удаляете товар "${product.name}".`,
+    hint: product.article
+      ? `Для защиты от случайного удаления введите артикул товара: ${product.article}`
+      : "Для защиты от случайного удаления введите название товара.",
+    verificationLabel: product.article ? "Введите артикул товара" : "Введите название товара",
+    verificationPlaceholder: verificationText,
+    verificationText,
     confirmLabel: "Удалить",
     color: "error"
   }, async () => {
@@ -633,23 +789,16 @@ async function bulkSetActive(isActive: boolean) {
   });
 }
 
-async function bulkChangeCategory() {
-  if (!bulkCategoryId.value) {
-    return;
-  }
-
-  await runBulkProducts("changeCategory", {
-    action: "changeCategory",
-    productIds: selectedProductIds.value,
-    categoryId: bulkCategoryId.value
-  });
-}
-
 function confirmBulkDelete() {
+  const verificationText = `удалить ${selectedProductIds.value.length}`;
+
   requestConfirm({
     title: "Удалить выбранные товары",
     message: `Удалить выбранные товары: ${selectedProductIds.value.length}?`,
     hint: "Если товары связаны с заказами, сервер остановит удаление.",
+    verificationLabel: "Введите фразу для удаления выбранных товаров",
+    verificationPlaceholder: verificationText,
+    verificationText,
     confirmLabel: "Удалить",
     color: "error"
   }, async () => {
@@ -659,20 +808,36 @@ function confirmBulkDelete() {
     });
   });
 }
-
-function exportSelectedProducts() {
-  const rows = selectedProducts.value.map((product) => ({
-    id: product.id,
-    name: product.name,
-    article: product.article,
-    category: product.category.name,
-    price: product.currentPrice,
-    stock: stockQuantity(product),
-    active: product.isActive ? "yes" : "no",
-    updatedAt: product.updatedAt
-  }));
-
-  downloadCsv("products-selected.csv", rows);
-  toast.success(`Экспортировано товаров: ${rows.length}`);
-}
 </script>
+
+<style scoped>
+.products-shop-page :deep(.admin-card) {
+  border: 0;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgb(24 24 27 / 5%);
+}
+
+.products-shop-page :deep(.admin-section-heading) {
+  color: #18181b;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+}
+
+.products-shop-page :deep(.admin-section-copy) {
+  color: #71717a;
+  line-height: 1.5rem;
+}
+
+.products-bulk-bar {
+  border-bottom: 1px solid var(--admin-border);
+  background: color-mix(in srgb, var(--admin-accent-soft) 34%, white);
+}
+
+@media (min-width: 640px) {
+  .products-shop-page :deep(.admin-card) {
+    border-radius: 1.5rem;
+  }
+}
+</style>
