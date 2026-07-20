@@ -6,6 +6,9 @@ export type CheckoutDraft = {
   obtainingMethod: ObtainingMethod;
   paymentMethod: PaymentMethod;
   customerPhone: string;
+  recipientIsAnotherPerson: boolean;
+  recipientName: string;
+  recipientPhone: string;
   city: string;
   street: string;
   house: string;
@@ -21,6 +24,9 @@ function createCheckoutDraft(): CheckoutDraft {
     obtainingMethod: "DELIVERY",
     paymentMethod: "ONLINE",
     customerPhone: "",
+    recipientIsAnotherPerson: false,
+    recipientName: "",
+    recipientPhone: "",
     city: "",
     street: "",
     house: "",

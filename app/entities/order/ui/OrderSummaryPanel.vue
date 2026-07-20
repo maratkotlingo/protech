@@ -72,12 +72,32 @@ const props = defineProps<{
 const rows = computed(() => [
   {
     label: "Получение",
-    value: props.order.obtainingMethod === "DELIVERY" ? "Доставка" : "Самовывоз"
+    value: props.order.obtainingMethod === "DELIVERY" ? "Доставка OZON" : "Самовывоз"
   },
   {
     label: "Телефон",
     value: props.order.customerPhone || "Не указан"
   },
+  ...(props.order.recipientName || props.order.recipientPhone
+    ? [
+      {
+        label: "Получатель",
+        value: [props.order.recipientName, props.order.recipientPhone].filter(Boolean).join(" · ")
+      }
+    ]
+    : []),
+  ...(props.order.obtainingMethod === "PICKUP"
+    ? [
+      {
+        label: "Адрес самовывоза",
+        value: "Ярославль, пр.-т Октября, д. 78д"
+      },
+      {
+        label: "Запись",
+        value: "89201309744"
+      }
+    ]
+    : []),
   {
     label: "Оплата",
     value: props.order.paymentMethod === "ONLINE" ? "Онлайн" : "При получении"

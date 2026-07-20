@@ -20,8 +20,8 @@
           color="primary"
           icon="i-lucide-layout-grid"
           to="/"
-          size="md"
-          class="rounded-full px-4 transition duration-300 hover:scale-[1.02]"
+          size="lg"
+          class="min-h-12 rounded-full px-5 font-semibold shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.02]"
         >
           В каталог
         </UButton>
@@ -81,7 +81,8 @@
           color="neutral"
           variant="soft"
           :icon="showAllOrders ? 'i-lucide-eye-off' : 'i-lucide-list'"
-          class="rounded-full"
+          size="lg"
+          class="min-h-12 rounded-full bg-[#f3f4f6] px-5 font-semibold transition duration-300 hover:scale-[1.02]"
           @click="toggleShowAllOrders"
         >
           {{ showAllOrders ? "Скрыть завершенные" : "Показать все заказы" }}

@@ -7,7 +7,13 @@ import {
 } from "~~/app/shared/lib/catalogProductHelpers";
 import { buildQuery, getErrorMessage } from "~~/app/shared/lib/shopFormatters";
 import { shopFetch } from "~~/app/shared/lib/shopFetch";
-import type { AttributeFilter, Category, ProductCardItem, ProductPriceRange } from "~~/app/shared/types/shop";
+import type {
+  AttributeFilter,
+  Category,
+  ProductCardItem,
+  ProductCatalogResponse,
+  ProductPriceRange
+} from "~~/app/shared/types/shop";
 import { useAuthStore } from "~~/app/stores/auth";
 import { useCartStore } from "~~/app/stores/cart";
 import { useFavoritesStore } from "~~/app/stores/favorites";
@@ -28,6 +34,7 @@ export async function useProductCatalog() {
   const page = ref(1);
   const debouncedSearch = ref(ui.catalog.search);
   const products = ref<ProductCardItem[]>([]);
+  const catalogTotal = ref(0);
   const pending = ref(false);
   const loadingMore = ref(false);
   const reachedEnd = ref(false);
@@ -157,8 +164,15 @@ export async function useProductCatalog() {
       return "Загружаю товары из базы";
     }
 
-    const suffix = reachedEnd.value ? "все найденные" : "загружено";
-    return `${products.value.length} товаров, ${suffix}`;
+    if (!catalogTotal.value) {
+      return "0 товаров, все найденные";
+    }
+
+    const suffix = reachedEnd.value
+      ? "все найденные"
+      : `загружено ${products.value.length}`;
+
+    return `${catalogTotal.value} товаров, ${suffix}`;
   });
   const filterSignature = computed(() => JSON.stringify({
     search: debouncedSearch.value,
@@ -238,7 +252,7 @@ export async function useProductCatalog() {
     }
 
     try {
-      const items = await shopFetch<ProductCardItem[]>(
+      const response = await shopFetch<ProductCatalogResponse>(
         `/api/public/product${buildProductsQuery(nextPage)}`,
         catalogFetchOptions
       );
@@ -247,9 +261,10 @@ export async function useProductCatalog() {
         return;
       }
 
-      products.value = options.reset ? items : [...products.value, ...items];
+      products.value = options.reset ? response.items : [...products.value, ...response.items];
+      catalogTotal.value = response.pagination.total;
       page.value = nextPage;
-      reachedEnd.value = items.length < PRODUCT_CATALOG_PAGE_SIZE;
+      reachedEnd.value = products.value.length >= response.pagination.total || response.items.length < PRODUCT_CATALOG_PAGE_SIZE;
       error.value = null;
     } catch (err) {
       if (requestVersion.value === currentVersion) {
@@ -381,6 +396,7 @@ export async function useProductCatalog() {
     attributes,
     attributesPending,
     cart,
+    catalogTotal,
     catalogStatusText,
     categoryItems,
     clearAllFilters,

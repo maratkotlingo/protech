@@ -34,6 +34,8 @@ export default defineEventHandler(async (event) => {
         paymentMethod: true,
         obtainingMethod: true,
         customerPhone: true,
+        recipientName: true,
+        recipientPhone: true,
         createdAt: true,
         updatedAt: true,
         user: { select: { id: true, name: true, email: true } },
@@ -46,6 +48,7 @@ export default defineEventHandler(async (event) => {
             floor: true,
             intercom: true,
             comment: true,
+            deliveryMethod: true,
           },
         },
         orderItems: {

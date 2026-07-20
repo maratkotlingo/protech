@@ -54,52 +54,55 @@ export default defineEventHandler(async (event) => {
 
     const where = buildPublicProductWhere(query);
 
-    const products = await prisma.product.findMany({
-      skip: (currentPage - 1) * limit,
-      take: limit,
-      orderBy,
-      where,
-      select: {
-        id: true,
-        name: true,
-        article: true,
-        description: true,
-        currentPrice: true,
-        oldPrice: true,
-        mainImage: true,
-        category: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        productStocks: {
-          select: {
-            quantity: true
-          }
-        },
-        productAttributes: {
-          select: {
-            id: true,
-            value: true,
-            attributeId: true,
-            attribute: {
-              select: {
-                id: true,
-                name: true,
-                unit: true
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        skip: (currentPage - 1) * limit,
+        take: limit,
+        orderBy,
+        where,
+        select: {
+          id: true,
+          name: true,
+          article: true,
+          description: true,
+          currentPrice: true,
+          oldPrice: true,
+          mainImage: true,
+          category: {
+            select: {
+              id: true,
+              name: true
+            }
+          },
+          productStocks: {
+            select: {
+              quantity: true
+            }
+          },
+          productAttributes: {
+            select: {
+              id: true,
+              value: true,
+              attributeId: true,
+              attribute: {
+                select: {
+                  id: true,
+                  name: true,
+                  unit: true
+                }
               }
             }
-          }
-        },
+          },
 
-        _count: {
-          select: {
-            reviews: true
+          _count: {
+            select: {
+              reviews: true
+            }
           }
         }
-      }
-    });
+      }),
+      prisma.product.count({ where })
+    ]);
 
     const productIds = products.map((product) => product.id);
 
@@ -122,20 +125,28 @@ export default defineEventHandler(async (event) => {
       ])
     );
 
-    return products.map((product) => ({
-      id: product.id,
-      name: product.name,
-      article: product.article,
-      description: product.description,
-      currentPrice: product.currentPrice,
-      oldPrice: product.oldPrice,
-      mainImage: product.mainImage,
-      category: product.category,
-      stockQuantity: product.productStocks[0]?.quantity ?? 0,
-      reviewsCount: product._count.reviews,
-      averageRating: ratingByProductId.get(product.id) ?? null,
-      productAttributes: product.productAttributes
-    }));
+    return {
+      items: products.map((product) => ({
+        id: product.id,
+        name: product.name,
+        article: product.article,
+        description: product.description,
+        currentPrice: product.currentPrice,
+        oldPrice: product.oldPrice,
+        mainImage: product.mainImage,
+        category: product.category,
+        stockQuantity: product.productStocks[0]?.quantity ?? 0,
+        reviewsCount: product._count.reviews,
+        averageRating: ratingByProductId.get(product.id) ?? null,
+        productAttributes: product.productAttributes
+      })),
+      pagination: {
+        page: currentPage,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    };
   } catch {
     throw createError({
       statusCode: 500,

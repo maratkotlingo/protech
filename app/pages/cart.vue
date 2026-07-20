@@ -24,8 +24,8 @@
           color="primary"
           icon="i-lucide-layout-grid"
           to="/"
-          size="md"
-          class="rounded-full px-4 transition duration-300 hover:scale-[1.02]"
+          size="lg"
+          class="min-h-12 rounded-full px-5 font-semibold shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.02]"
         >
           Продолжить покупки
         </UButton>
@@ -98,12 +98,14 @@
                 color="error"
                 variant="soft"
                 icon="i-lucide-trash-2"
-                square
-                class="rounded-full bg-red-50/80 transition duration-300 hover:scale-[1.02]"
+                size="md"
+                class="min-h-11 rounded-full bg-red-50/80 px-4 font-semibold transition duration-300 hover:scale-[1.02]"
                 :loading="cart.pending"
                 aria-label="Очистить корзину"
                 @click="clearCart"
-              />
+              >
+                Очистить
+              </UButton>
             </UTooltip>
           </div>
 
@@ -147,7 +149,7 @@
                 block
                 icon="i-lucide-credit-card"
                 to="/checkout"
-                class="rounded-full transition duration-300 hover:scale-[1.01]"
+                class="min-h-12 rounded-full font-semibold shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.01]"
                 :disabled="hasBlockingItems"
               >
                 Оформить заказ
@@ -158,7 +160,8 @@
                 block
                 icon="i-lucide-heart"
                 to="/favorites"
-                class="rounded-full bg-[#f3f4f6] transition duration-300 hover:scale-[1.01]"
+                size="lg"
+                class="min-h-12 rounded-full bg-[#f3f4f6] font-semibold transition duration-300 hover:scale-[1.01]"
               >
                 Смотреть избранное
               </UButton>

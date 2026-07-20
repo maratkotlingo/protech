@@ -12,17 +12,17 @@
           />
         </span>
         <div>
-          <h2 class="text-base font-semibold tracking-normal text-zinc-950">Адрес доставки</h2>
-          <p class="mt-0.5 text-xs text-zinc-500">Карта обновится справа.</p>
+          <h2 class="text-base font-semibold tracking-normal text-zinc-950">Адрес доставки OZON</h2>
+          <p class="mt-0.5 text-xs text-zinc-500">Служба доставки OZON привезет заказ по этому адресу.</p>
         </div>
       </div>
 
       <UBadge
         color="neutral"
         variant="soft"
-        class="rounded-full"
+        class="rounded-full bg-sky-50 px-3 py-1 text-sky-700"
       >
-        OZON
+        Служба доставки OZON
       </UBadge>
     </div>
 
@@ -143,9 +143,22 @@
       </span>
       <div>
         <h2 class="text-base font-semibold tracking-normal text-zinc-950">Самовывоз</h2>
-        <p class="mt-0.5 text-xs text-zinc-500">Мы подтвердим готовность заказа и точку выдачи.</p>
+        <p class="mt-0.5 text-xs text-zinc-500">Самовывоз производится по предварительной записи.</p>
       </div>
     </div>
+
+    <div class="mt-4">
+      <div class="rounded-[1.25rem] bg-[#f9fafb] p-4 shadow-inner shadow-zinc-950/5">
+        <p class="text-xs font-semibold uppercase text-zinc-400">Адрес самовывоза</p>
+        <p class="mt-1 text-base font-semibold leading-6 text-zinc-950">
+          Ярославль, пр.-т Октября, д. 78д
+        </p>
+      </div>
+    </div>
+
+    <p class="mt-3 rounded-[1.25rem] bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-800">
+      Самовывоз производится по предварительной записи по номеру: 89201309744.
+    </p>
   </section>
 </template>
 

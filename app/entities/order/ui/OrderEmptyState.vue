@@ -18,8 +18,9 @@
       </p>
       <UButton
         v-if="actionLabel && actionTo"
-        class="mt-6 rounded-full px-5"
+        class="mt-6 min-h-12 rounded-full px-6 text-base font-semibold shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.02]"
         color="primary"
+        size="lg"
         :to="actionTo"
         :icon="actionIcon"
       >

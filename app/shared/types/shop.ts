@@ -42,6 +42,18 @@ export type ProductPriceRange = {
   maxPrice: number;
 };
 
+export type Pagination = {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+};
+
+export type ProductCatalogResponse = {
+  items: ProductCardItem[];
+  pagination: Pagination;
+};
+
 export type ProductDetails = {
   id: number;
   name: string;
@@ -167,6 +179,8 @@ export type ShopOrder = {
   orderStatus: OrderStatus;
   paymentMethod: PaymentMethod;
   customerPhone: string | null;
+  recipientName: string | null;
+  recipientPhone: string | null;
   createdAt: string;
   updatedAt: string;
   statusHistory?: OrderStatusHistoryItem[];

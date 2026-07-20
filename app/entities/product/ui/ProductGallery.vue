@@ -1,6 +1,32 @@
 <template>
-  <div class="space-y-3">
-    <div class="group relative overflow-hidden rounded-2xl bg-[#f9fafb] p-1.5 shadow-[0_16px_50px_rgba(15,23,42,0.07)]">
+  <div
+    class="grid gap-3"
+    :class="imageItems.length > 1 ? 'sm:grid-cols-[76px_minmax(0,1fr)]' : ''"
+  >
+    <div
+      v-if="imageItems.length > 1"
+      v-auto-animate
+      class="order-2 flex gap-2 overflow-x-auto px-1 pb-1.5 sm:order-1 sm:max-h-[640px] sm:flex-col sm:overflow-y-auto sm:px-0 sm:pb-0 sm:pr-1"
+    >
+      <button
+        v-for="(image, index) in imageItems"
+        :key="image.url"
+        class="shrink-0 rounded-xl bg-[#f9fafb] p-1 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10"
+        :class="index === selectedIndex ? 'scale-[1.03] bg-emerald-50 ring-2 ring-emerald-200' : 'ring-2 ring-transparent'"
+        type="button"
+        :aria-label="`Открыть фото ${index + 1}`"
+        @click="selectedIndex = index"
+      >
+        <img
+          :src="image.url"
+          :alt="alt"
+          class="aspect-[3/4] w-16 rounded-lg bg-white object-contain sm:w-[66px]"
+          loading="lazy"
+        >
+      </button>
+    </div>
+
+    <div class="group relative order-1 overflow-hidden rounded-2xl bg-[#f9fafb] p-1.5 shadow-[0_16px_50px_rgba(15,23,42,0.07)] sm:order-2">
       <div class="relative overflow-hidden rounded-xl bg-white">
         <Transition
           mode="out-in"
@@ -69,29 +95,6 @@
           </UTooltip>
         </div>
       </div>
-    </div>
-
-    <div
-      v-if="imageItems.length > 1"
-      v-auto-animate
-      class="flex gap-2 overflow-x-auto px-1 pb-1.5"
-    >
-      <button
-        v-for="(image, index) in imageItems"
-        :key="image.url"
-        class="shrink-0 rounded-xl bg-[#f9fafb] p-1 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10"
-        :class="index === selectedIndex ? 'scale-[1.03] bg-emerald-50 ring-2 ring-emerald-200' : 'ring-2 ring-transparent'"
-        type="button"
-        :aria-label="`Открыть фото ${index + 1}`"
-        @click="selectedIndex = index"
-      >
-        <img
-          :src="image.url"
-          :alt="alt"
-          class="aspect-[3/4] w-16 rounded-lg bg-white object-contain sm:w-[72px]"
-          loading="lazy"
-        >
-      </button>
     </div>
 
     <UModal

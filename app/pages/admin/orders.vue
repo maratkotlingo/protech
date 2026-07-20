@@ -253,10 +253,23 @@
                   <dd class="text-right font-medium text-[var(--admin-text)]">{{ order.customerPhone || "Не указан" }}</dd>
                 </div>
                 <div
+                  v-if="order.recipientName || order.recipientPhone"
+                  class="flex justify-between gap-4"
+                >
+                  <dt class="text-[var(--admin-text-muted)]">Получатель</dt>
+                  <dd class="text-right font-medium text-[var(--admin-text)]">
+                    {{ recipientLabel(order) }}
+                  </dd>
+                </div>
+                <div
                   v-if="order.delivery"
                   class="border-t border-[var(--admin-border)] pt-3"
                 >
-                  <dt class="text-[var(--admin-text-muted)]">Адрес</dt>
+                  <dt class="text-[var(--admin-text-muted)]">Служба доставки</dt>
+                  <dd class="mt-1 font-medium text-[var(--admin-text)]">
+                    {{ deliveryServiceLabel(order) }}
+                  </dd>
+                  <dt class="mt-3 text-[var(--admin-text-muted)]">Адрес</dt>
                   <dd class="mt-1 text-[var(--admin-text)]">
                     {{ order.delivery.address }}
                   </dd>
@@ -265,6 +278,18 @@
                     class="mt-1 text-xs text-[var(--admin-text-muted)]"
                   >
                     {{ deliveryDetails(order) }}
+                  </dd>
+                </div>
+                <div
+                  v-else
+                  class="border-t border-[var(--admin-border)] pt-3"
+                >
+                  <dt class="text-[var(--admin-text-muted)]">Адрес самовывоза</dt>
+                  <dd class="mt-1 font-medium text-[var(--admin-text)]">
+                    Ярославль, пр.-т Октября, д. 78д
+                  </dd>
+                  <dd class="mt-1 text-xs text-[var(--admin-text-muted)]">
+                    По предварительной записи 89201309744.
                   </dd>
                 </div>
               </dl>
@@ -416,6 +441,16 @@ function deliveryDetails(order: OrderListItem) {
     order.delivery.floor ? `этаж ${order.delivery.floor}` : "",
     order.delivery.intercom ? `домофон ${order.delivery.intercom}` : ""
   ].filter(Boolean).join(", ");
+}
+
+function deliveryServiceLabel(order: OrderListItem) {
+  return order.delivery?.deliveryMethod === "OZON"
+    ? "Служба доставки OZON"
+    : "Не указана";
+}
+
+function recipientLabel(order: OrderListItem) {
+  return [order.recipientName, order.recipientPhone].filter(Boolean).join(" · ");
 }
 
 async function updateOrderStatus(order: OrderListItem, value: unknown) {

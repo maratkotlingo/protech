@@ -14,13 +14,11 @@
 
       <div
         v-if="pending"
-        class="grid items-start gap-5 lg:grid-cols-[minmax(0,640px)_minmax(0,1fr)] xl:gap-7"
+        class="grid items-start gap-5 xl:grid-cols-[minmax(0,620px)_minmax(0,1fr)_340px] xl:gap-6"
       >
         <USkeleton class="aspect-[3/4] rounded-2xl" />
-        <div class="space-y-3">
-          <USkeleton class="h-[34rem] rounded-2xl" />
-          <USkeleton class="h-52 rounded-2xl" />
-        </div>
+        <USkeleton class="h-80 rounded-2xl" />
+        <USkeleton class="h-72 rounded-2xl" />
       </div>
 
       <UAlert
@@ -36,46 +34,44 @@
         v-else
         class="space-y-8 lg:space-y-10"
       >
-        <section class="grid items-start gap-5 lg:grid-cols-[minmax(0,640px)_minmax(0,1fr)] xl:gap-7">
+        <section class="grid items-start gap-5 xl:grid-cols-[minmax(0,620px)_minmax(0,1fr)_340px] xl:gap-6">
           <ProductGallery
             :main-image="product.mainImage"
             :images="product.productImages"
             :alt="product.name"
           />
 
-          <div class="space-y-3">
-            <ProductPurchasePanel
-              v-model:quantity="quantity"
-              v-model:selected-size="selectedSize"
-              v-model:selected-color="selectedColor"
-              :product="product"
-              :stock-quantity="stockQuantity"
-              :stock-status="stockStatus"
-              :brand-name="brandName"
-              :average-rating="averageRating"
-              :average-rating-label="averageRatingLabel"
-              :discount-value="discountValue"
-              :selected-quantity-total="selectedQuantityTotal"
-              :size-options="sizeOptions"
-              :selected-size-label="selectedSizeLabel"
-              :color-options="colorOptions"
-              :max-quantity="maxQuantity"
-              :is-favorite="isFavorite"
-              :is-in-cart="isInCart"
-              :cart-syncing="cartSyncing"
-              :favorite-syncing="favoriteSyncing"
-              :cart-button-icon="cartButtonIcon"
-              :cart-button-label="cartButtonLabel"
-              @add-to-cart="addToCart"
-              @toggle-favorite="toggleFavorite"
-              @update-cart-quantity="updateCartQuantity"
-            />
+          <ProductDetailsSummary
+            :product="product"
+            :brand-name="brandName"
+            :average-rating="averageRating"
+            :average-rating-label="averageRatingLabel"
+            :stock-quantity="stockQuantity"
+            @open-details="detailsOpen = true"
+          />
 
-            <ProductDetailsContent :product="product" />
-          </div>
+          <ProductPurchasePanel
+            v-model:quantity="quantity"
+            :product="product"
+            :stock-quantity="stockQuantity"
+            :stock-status="stockStatus"
+            :discount-value="discountValue"
+            :max-quantity="maxQuantity"
+            :is-favorite="isFavorite"
+            :is-in-cart="isInCart"
+            :cart-syncing="cartSyncing"
+            :favorite-syncing="favoriteSyncing"
+            @add-to-cart="addToCart"
+            @toggle-favorite="toggleFavorite"
+            @update-cart-quantity="updateCartQuantity"
+          />
         </section>
 
-        <ProductSpecsGrid :attributes="product.productAttributes" />
+        <ProductDetailsDrawer
+          v-model:open="detailsOpen"
+          :product="product"
+          :attributes="product.productAttributes"
+        />
 
         <ProductPriceChart v-if="product.productPrices.length" :prices="product.productPrices" />
 
@@ -93,10 +89,7 @@ const {
   averageRating,
   averageRatingLabel,
   brandName,
-  cartButtonIcon,
-  cartButtonLabel,
   cartSyncing,
-  colorOptions,
   discountValue,
   error,
   favoriteSyncing,
@@ -108,14 +101,11 @@ const {
   productErrorDescription,
   quantity,
   refresh,
-  selectedColor,
-  selectedQuantityTotal,
-  selectedSize,
-  selectedSizeLabel,
-  sizeOptions,
   stockQuantity,
   stockStatus,
   toggleFavorite,
   updateCartQuantity
 } = useProductPdp();
+
+const detailsOpen = ref(false);
 </script>

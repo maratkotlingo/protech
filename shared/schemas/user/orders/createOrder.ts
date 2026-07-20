@@ -39,6 +39,16 @@ const customerPhoneSchema = z
 	.max(30, "Телефон должен быть не длиннее 30 символов")
 	.regex(/^\+?[0-9\s().-]+$/, "Введите корректный номер телефона");
 
+const recipientSchema = z.strictObject({
+	name: z
+		.string("Имя получателя необходимо")
+		.trim()
+		.min(2, "Имя получателя должно содержать не менее 2 символов")
+		.max(120, "Имя получателя должно быть не длиннее 120 символов"),
+
+	phone: customerPhoneSchema
+});
+
 const deliveryDetailsSchema = z.strictObject({
 	address: z
 		.string("Адрес доставки необходим")
@@ -60,6 +70,7 @@ export const createOrderSchema = z.discriminatedUnion("obtainingMethod", [
 		obtainingMethod: z.literal("PICKUP"),
 		paymentMethod: z.enum(["OFFLINE", "ONLINE"], "Способ оплаты необходим"),
 		customerPhone: customerPhoneSchema,
+		recipient: recipientSchema.optional(),
 		orderItems: orderItemsSchema,
 
 		delivery: z.never("Данные доставки не нужны для самовывоза").optional()
@@ -69,6 +80,7 @@ export const createOrderSchema = z.discriminatedUnion("obtainingMethod", [
 		obtainingMethod: z.literal("DELIVERY"),
 		paymentMethod: z.literal("ONLINE", "При доставке доступна только онлайн-оплата"),
 		customerPhone: customerPhoneSchema,
+		recipient: recipientSchema.optional(),
 		orderItems: orderItemsSchema,
 
 		delivery: deliveryDetailsSchema

@@ -76,7 +76,7 @@
             </div>
           </div>
 
-          <div class="mt-8 grid gap-3 md:grid-cols-4">
+          <div class="mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             <div
               v-for="metric in detailMetrics"
               :key="metric.label"
@@ -185,7 +185,7 @@ useSeoMeta({
 const detailMetrics = computed(() => {
   if (!order.value) return [];
 
-  return [
+  const metrics = [
     {
       icon: "i-lucide-package",
       label: "Позиций",
@@ -194,19 +194,32 @@ const detailMetrics = computed(() => {
     {
       icon: "i-lucide-truck",
       label: "Получение",
-      value: order.value.obtainingMethod === "DELIVERY" ? "Доставка" : "Самовывоз"
+      value: order.value.obtainingMethod === "DELIVERY" ? "Доставка OZON" : "Самовывоз"
     },
     {
       icon: "i-lucide-phone",
       label: "Телефон",
       value: order.value.customerPhone || "Не указан"
-    },
+    }
+  ];
+
+  if (order.value.recipientName || order.value.recipientPhone) {
+    metrics.push({
+      icon: "i-lucide-user-round-check",
+      label: "Получатель",
+      value: [order.value.recipientName, order.value.recipientPhone].filter(Boolean).join(" · ")
+    });
+  }
+
+  metrics.push(
     {
       icon: "i-lucide-badge-russian-ruble",
       label: "Сумма",
       value: formatCurrency(order.value.payment?.amount)
     }
-  ];
+  );
+
+  return metrics;
 });
 const timelineSteps = computed(() => {
   const status = order.value?.orderStatus;

@@ -84,6 +84,7 @@
             <USelect
               v-model="reviewSort"
               :items="reviewSortOptions"
+              :content="reviewSelectContent"
               value-key="value"
               label-key="label"
               color="neutral"
@@ -219,18 +220,30 @@
               </div>
             </div>
 
-            <div class="mt-6 grid gap-4 text-sm leading-7 text-zinc-600 md:grid-cols-3 ">
-              <div v-if="review.advantages">
+            <div
+              v-if="review.advantages || review.disadvantages || review.comment"
+              class="mt-6 divide-y divide-zinc-200/80 text-sm leading-7 text-zinc-600"
+            >
+              <div
+                v-if="review.advantages"
+                class="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4"
+              >
                 <p class="font-semibold text-zinc-950">Плюсы</p>
-                <p class="mt-1">{{ review.advantages }}</p>
+                <p>{{ review.advantages }}</p>
               </div>
-              <div v-if="review.disadvantages">
+              <div
+                v-if="review.disadvantages"
+                class="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4"
+              >
                 <p class="font-semibold text-zinc-950">Минусы</p>
-                <p class="mt-1">{{ review.disadvantages }}</p>
+                <p>{{ review.disadvantages }}</p>
               </div>
-              <div v-if="review.comment">
+              <div
+                v-if="review.comment"
+                class="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4"
+              >
                 <p class="font-semibold text-zinc-950">Комментарий</p>
-                <p class="mt-1">{{ review.comment }}</p>
+                <p>{{ review.comment }}</p>
               </div>
             </div>
 
@@ -238,14 +251,27 @@
               v-if="review.reviewPhotos.length"
               class="mt-5 flex gap-3 overflow-x-auto pb-1"
             >
-              <img
-                v-for="photo in review.reviewPhotos"
+              <button
+                v-for="(photo, photoIndex) in review.reviewPhotos"
                 :key="photo.id"
-                :src="photo.url"
-                :alt="`Фото отзыва ${review.id}`"
-                class="size-20 rounded-2xl object-cover shadow-sm shadow-zinc-950/10"
-                loading="lazy"
+                type="button"
+                class="group relative size-20 shrink-0 overflow-hidden rounded-2xl bg-white shadow-sm shadow-zinc-950/10 ring-1 ring-transparent transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-zinc-950/15 hover:ring-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                :aria-label="`Открыть фото отзыва ${photoIndex + 1}`"
+                @click="openReviewPhoto(review, photoIndex)"
               >
+                <img
+                  :src="photo.url"
+                  :alt="`Фото отзыва ${review.id}`"
+                  class="size-full object-cover transition duration-300 group-hover:scale-105"
+                  loading="lazy"
+                >
+                <span class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
+                  <UIcon
+                    name="i-lucide-expand"
+                    class="size-5 drop-shadow"
+                  />
+                </span>
+              </button>
             </div>
 
             <div
@@ -290,6 +316,53 @@
         </div>
       </div>
     </div>
+
+    <UModal
+      v-model:open="reviewPhotoOpen"
+      title="Фото отзыва"
+      :ui="reviewPhotoModalUi"
+    >
+      <template #body>
+        <div
+          v-if="activeReviewPhoto"
+          class="relative overflow-hidden rounded-2xl bg-[#f9fafb]"
+        >
+          <img
+            :src="activeReviewPhoto.url"
+            :alt="activeReviewPhotoAlt"
+            class="mx-auto block max-h-[82dvh] max-w-full object-contain"
+          >
+          <div class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
+            {{ activeReviewPhotoIndex + 1 }} / {{ activeReviewPhotos.length }}
+          </div>
+          <div
+            v-if="activeReviewPhotos.length > 1"
+            class="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4"
+          >
+            <UButton
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-chevron-left"
+              size="xl"
+              square
+              class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
+              aria-label="Предыдущее фото"
+              @click="previousReviewPhoto"
+            />
+            <UButton
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-chevron-right"
+              size="xl"
+              square
+              class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
+              aria-label="Следующее фото"
+              @click="nextReviewPhoto"
+            />
+          </div>
+        </div>
+      </template>
+    </UModal>
   </section>
 </template>
 
@@ -302,6 +375,7 @@ import { useAuthStore } from "~~/app/stores/auth";
 
 type ReviewSort = "newest" | "highest" | "lowest";
 type RatingFilter = "all" | 1 | 2 | 3 | 4 | 5;
+type ReviewPhoto = ReviewItem["reviewPhotos"][number];
 
 const props = defineProps<{
   productId: number;
@@ -319,6 +393,9 @@ const submitting = ref(false);
 const reviewSort = ref<ReviewSort>("newest");
 const ratingFilter = ref<RatingFilter>("all");
 const visibleCount = ref(3);
+const reviewPhotoOpen = ref(false);
+const activeReviewPhotos = ref<ReviewPhoto[]>([]);
+const activeReviewPhotoIndex = ref(0);
 const form = reactive({
   rating: 5,
   advantages: "",
@@ -330,11 +407,19 @@ const reviewSortOptions: Array<{ label: string; value: ReviewSort }> = [
   { label: "Сначала высокие", value: "highest" },
   { label: "Сначала низкие", value: "lowest" }
 ];
+const reviewSelectContent = {
+  bodyLock: false
+};
 const reviewSelectUi = {
   base: "h-11 rounded-full bg-transparent font-medium text-zinc-700 ",
   content: "rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0 ",
   item: "rounded-xl",
   viewport: "p-1"
+};
+const reviewPhotoModalUi = {
+  overlay: "bg-zinc-950/35 backdrop-blur-sm",
+  content: "max-h-[calc(100dvh-2rem)] max-w-5xl overflow-hidden rounded-[2rem] bg-white shadow-2xl shadow-zinc-950/20 ring-0",
+  body: "overflow-hidden p-3 sm:p-4"
 };
 const reviewTextareaUi = { base: "rounded-3xl bg-transparent" };
 const reviewSummaryText = computed(() => props.reviews.length ? `${props.reviews.length} отзывов о товаре` : "Пока отзывов нет");
@@ -385,6 +470,8 @@ const filteredReviews = computed(() => {
 const visibleReviews = computed(() => filteredReviews.value.slice(0, visibleCount.value));
 const hasMoreReviews = computed(() => filteredReviews.value.length > visibleReviews.value.length);
 const remainingReviewsCount = computed(() => filteredReviews.value.length - visibleReviews.value.length);
+const activeReviewPhoto = computed(() => activeReviewPhotos.value[activeReviewPhotoIndex.value] ?? null);
+const activeReviewPhotoAlt = computed(() => activeReviewPhoto.value ? `Фото отзыва ${activeReviewPhotoIndex.value + 1}` : "Фото отзыва");
 
 watch(() => props.reviews.length, () => {
   visibleCount.value = 3;
@@ -401,6 +488,24 @@ function selectRatingFilter(value: RatingFilter) {
 
 function loadMoreReviews() {
   visibleCount.value += 3;
+}
+
+function openReviewPhoto(review: ReviewItem, photoIndex: number) {
+  activeReviewPhotos.value = review.reviewPhotos;
+  activeReviewPhotoIndex.value = photoIndex;
+  reviewPhotoOpen.value = true;
+}
+
+function previousReviewPhoto() {
+  activeReviewPhotoIndex.value = activeReviewPhotoIndex.value === 0
+    ? activeReviewPhotos.value.length - 1
+    : activeReviewPhotoIndex.value - 1;
+}
+
+function nextReviewPhoto() {
+  activeReviewPhotoIndex.value = activeReviewPhotoIndex.value === activeReviewPhotos.value.length - 1
+    ? 0
+    : activeReviewPhotoIndex.value + 1;
 }
 
 async function requireAuth() {

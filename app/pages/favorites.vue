@@ -22,8 +22,8 @@
             color="primary"
             icon="i-lucide-layout-grid"
             to="/"
-            size="md"
-            class="rounded-full px-4 transition duration-300 hover:scale-[1.02]"
+            size="lg"
+            class="min-h-12 rounded-full px-5 font-semibold shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.02]"
           >
             В каталог
           </UButton>
@@ -32,8 +32,8 @@
             variant="soft"
             icon="i-lucide-shopping-bag"
             to="/cart"
-            size="md"
-            class="rounded-full bg-[#f3f4f6] px-4 transition duration-300 hover:scale-[1.02]"
+            size="lg"
+            class="min-h-12 rounded-full bg-[#f3f4f6] px-5 font-semibold transition duration-300 hover:scale-[1.02]"
           >
             Корзина
           </UButton>
@@ -60,7 +60,7 @@
 
     <section
       v-if="loading"
-      class="mx-auto mt-5 max-w-5xl rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 sm:p-4"
+      class="mt-5 rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 sm:p-4"
     >
       <div class="grid gap-3 md:grid-cols-2">
         <USkeleton
@@ -95,7 +95,7 @@
 
     <section
       v-else
-      class="mx-auto mt-5 max-w-5xl overflow-hidden rounded-2xl bg-white/90 shadow-sm shadow-zinc-950/5"
+      class="mt-5 overflow-hidden rounded-2xl bg-white/90 shadow-sm shadow-zinc-950/5"
     >
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-4 py-3 sm:px-5">
         <div>
@@ -110,8 +110,8 @@
           variant="soft"
           icon="i-lucide-layout-grid"
           to="/"
-          size="sm"
-          class="rounded-full bg-[#f3f4f6] transition duration-300 hover:scale-[1.02]"
+          size="md"
+          class="min-h-11 rounded-full bg-[#f3f4f6] px-4 font-semibold transition duration-300 hover:scale-[1.02]"
         >
           В каталог
         </UButton>
@@ -180,33 +180,35 @@
             </p>
           </div>
 
-          <div class="col-span-2 flex items-center justify-between gap-3 rounded-xl bg-white px-3 py-2 sm:col-span-1 sm:col-start-2">
-            <div>
+          <div class="col-span-2 grid gap-3 rounded-xl bg-white px-3 py-3 sm:col-span-1 sm:col-start-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+            <div class="min-w-[112px]">
               <p class="text-xs uppercase text-zinc-400">Цена</p>
-              <p class="mt-0.5 text-lg font-semibold text-zinc-950">
-                {{ formatCurrency(row.product.currentPrice) }}
-              </p>
-              <p
-                v-if="row.discount"
-                class="mt-0.5 text-xs text-zinc-400 line-through"
-              >
-                {{ formatCurrency(row.product.oldPrice) }}
-              </p>
+              <div class="mt-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                <p class="text-lg font-semibold text-zinc-950">
+                  {{ formatCurrency(row.product.currentPrice) }}
+                </p>
+                <p
+                  v-if="row.discount"
+                  class="text-xs text-zinc-400 line-through"
+                >
+                  {{ formatCurrency(row.product.oldPrice) }}
+                </p>
+              </div>
               <p
                 v-if="row.cartQuantity"
-                class="mt-1 text-xs text-zinc-500"
+                class="mt-1 inline-flex whitespace-nowrap rounded-full bg-[#f3f4f6] px-2 py-0.5 text-xs font-medium text-zinc-500"
               >
                 В корзине {{ row.cartQuantity }} шт.
               </p>
             </div>
 
-            <div class="flex shrink-0 items-center gap-2 lg:w-full lg:justify-end">
+            <div class="grid gap-2 sm:grid-cols-2 lg:flex lg:shrink-0 lg:justify-end">
               <UButton
                 :color="cartButtonColor(row.product, row.inCart)"
                 :variant="row.inCart || isOutOfStock(row.product) ? 'soft' : 'solid'"
                 :icon="cartButtonIcon(row.inCart)"
-                size="sm"
-                class="rounded-full transition duration-300 hover:scale-[1.02]"
+                size="md"
+                class="min-h-11 justify-center rounded-full px-4 font-semibold transition duration-300 hover:scale-[1.02]"
                 :class="cartButtonClass(row.product, row.inCart)"
                 :disabled="!row.inCart && isOutOfStock(row.product)"
                 :loading="cart.syncingProductId === row.product.id"
@@ -220,13 +222,14 @@
                   color="error"
                   variant="soft"
                   icon="i-lucide-heart-off"
-                  square
-                  size="sm"
-                  class="rounded-full bg-red-50/80 transition duration-300 hover:scale-[1.02]"
+                  size="md"
+                  class="min-h-11 justify-center rounded-full bg-red-50/80 px-4 font-semibold transition duration-300 hover:scale-[1.02]"
                   :loading="favorites.syncingProductId === row.product.id"
                   :aria-label="`Убрать ${row.product.name} из избранного`"
                   @click="toggleFavorite(row.product)"
-                />
+                >
+                  Убрать
+                </UButton>
               </UTooltip>
             </div>
           </div>

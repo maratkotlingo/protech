@@ -12,6 +12,16 @@
           />
           {{ order.customerPhone || "Телефон не указан" }}
         </p>
+        <p
+          v-if="order.recipientName || order.recipientPhone"
+          class="mt-1 inline-flex items-center gap-2 text-sm font-medium text-zinc-700 "
+        >
+          <UIcon
+            name="i-lucide-user-round-check"
+            class="size-4 text-zinc-400"
+          />
+          {{ recipientLabel }}
+        </p>
         <div class="mt-2 flex flex-wrap items-center gap-2">
           <OrderStatusPill
             type="order"
@@ -39,8 +49,13 @@
 import { formatCurrency, formatDateTime } from "~~/app/shared/lib/shopFormatters";
 import type { MoneyLike, ShopOrder } from "~~/app/shared/types/shop";
 
-defineProps<{
+const props = defineProps<{
   order: ShopOrder;
   orderTotal: MoneyLike;
 }>();
+
+const recipientLabel = computed(() => [
+  props.order.recipientName,
+  props.order.recipientPhone
+].filter(Boolean).join(" · "));
 </script>

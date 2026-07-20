@@ -41,9 +41,9 @@
 
       <UButton
         color="primary"
-        size="lg"
+        size="xl"
         icon="i-lucide-check-circle-2"
-        class="min-w-52 rounded-full transition duration-300 hover:scale-[1.01]"
+        class="min-h-14 w-full justify-center rounded-full px-8 text-base font-semibold transition duration-300 hover:scale-[1.01] sm:w-auto sm:min-w-72"
         :loading="submitting"
         @click="emit('submit')"
       >

@@ -198,6 +198,8 @@ export type OrderListItem = {
   paymentMethod: PaymentMethod;
   obtainingMethod: ObtainingMethod;
   customerPhone: string | null;
+  recipientName: string | null;
+  recipientPhone: string | null;
   createdAt: string;
   updatedAt: string;
   user: Pick<AdminUser, "id" | "email" | "name"> | null;
@@ -213,6 +215,7 @@ export type OrderListItem = {
     floor: string | null;
     intercom: string | null;
     comment: string | null;
+    deliveryMethod?: "OZON";
   } | null;
   orderItems: Array<{
     quantity: number;

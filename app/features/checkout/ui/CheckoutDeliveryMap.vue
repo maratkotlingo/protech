@@ -1,5 +1,5 @@
 <template>
-  <section class="relative min-h-[520px] overflow-hidden rounded-[2rem] bg-zinc-900 shadow-[0_28px_90px_rgba(15,23,42,0.16)] ">
+  <section class="relative min-h-[760px] overflow-hidden rounded-[2rem] bg-zinc-900 shadow-[0_28px_90px_rgba(15,23,42,0.16)] ">
     <iframe
       :src="mapSrc"
       class="absolute inset-0 size-full border-0"
@@ -11,17 +11,17 @@
     <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(9,9,11,0.34),rgba(9,9,11,0.02)_38%,rgba(9,9,11,0.48))]" />
 
     <div class="absolute left-4 right-4 top-4 flex flex-wrap items-start justify-between gap-3">
-      <div class="max-w-sm rounded-[1.5rem] bg-white/90 px-4 py-3 shadow-xl shadow-zinc-950/15 backdrop-blur-xl ">
-        <div class="flex items-center gap-2">
-          <span class="grid size-9 place-items-center rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-950/20">
+      <div class="w-full max-w-md rounded-[1.5rem] bg-white/90 px-4 py-3 shadow-xl shadow-zinc-950/15 backdrop-blur-xl ">
+        <div class="flex items-center gap-3">
+          <span class="grid size-10 shrink-0 place-items-center rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-950/20">
             <UIcon
               :name="isPickup ? 'i-lucide-store' : 'i-lucide-map-pin'"
-              class="size-4.5"
+              class="size-5 shrink-0"
             />
           </span>
-          <div>
+          <div class="min-w-0">
             <p class="text-sm font-semibold text-zinc-950">{{ panelTitle }}</p>
-            <p class="mt-0.5 text-xs text-zinc-500">{{ statusText }}</p>
+            <p class="mt-0.5 line-clamp-2 text-xs leading-5 text-zinc-500">{{ statusText }}</p>
           </div>
         </div>
       </div>
@@ -86,9 +86,9 @@ const deliveryFallbackPosition = {
   label: "Москва"
 };
 const pickupPosition = {
-  lat: 57.626074,
-  lon: 39.88447,
-  label: "Пункт самовывоза ProTech, Ярославль"
+  lat: 57.650391,
+  lon: 39.858221,
+  label: "Ярославль, пр.-т Октября, д. 78д"
 };
 const position = ref({
   ...deliveryFallbackPosition
@@ -101,7 +101,7 @@ const addressQuery = computed(() => [props.city, props.street, props.house]
   .join(", "));
 
 const statusText = computed(() => {
-  if (isPickup.value) return "Самовывоз после подтверждения заказа";
+  if (isPickup.value) return "По предварительной записи 89201309744";
   if (!props.city.trim()) return "Введите город, затем улицу и дом";
   if (!props.street.trim()) return "Город найден, добавьте улицу";
   if (!props.house.trim()) return "Улица найдена, добавьте номер дома";
@@ -117,8 +117,8 @@ const badgeColor = computed(() => {
   return "neutral";
 });
 const badgeText = computed(() => {
-  if (isPickup.value) return "Пункт выдачи";
-  return props.house.trim() ? "Дом отмечен" : "Уточняется";
+  if (isPickup.value) return "Самовывоз";
+  return props.house.trim() ? "Доставка OZON" : "Уточняется";
 });
 const mapTitle = computed(() => isPickup.value ? "Карта пункта самовывоза" : "Карта адреса доставки");
 

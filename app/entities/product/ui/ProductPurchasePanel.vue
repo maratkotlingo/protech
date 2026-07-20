@@ -1,282 +1,143 @@
 <template>
-  <aside class="lg:sticky lg:top-6">
-    <div class="rounded-2xl bg-[#f9fafb] p-4 shadow-[0_16px_50px_rgba(15,23,42,0.07)] sm:p-5">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div
-          class="inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-medium"
-          :class="stockStatus.shellClass"
-        >
-          <span class="relative flex size-2">
-            <span
-              v-if="stockQuantity > 0"
-              class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
-              :class="stockStatus.pulseClass"
-            />
-            <span
-              class="relative inline-flex size-2 rounded-full"
-              :class="stockStatus.dotClass"
-            />
-          </span>
-          {{ stockStatus.label }}
-        </div>
-
-        <UBadge
-          color="neutral"
-          variant="soft"
-          class="rounded-full bg-white px-2.5 py-1 text-zinc-500 shadow-sm shadow-zinc-950/5"
-        >
-          Арт. {{ product.article }}
-        </UBadge>
+  <aside class="lg:sticky lg:top-24 lg:self-start">
+    <div class="rounded-2xl bg-white p-4 shadow-[0_16px_50px_rgba(15,23,42,0.09)] ring-1 ring-zinc-100 sm:p-5">
+      <div
+        class="inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-medium"
+        :class="stockStatus.shellClass"
+      >
+        <span class="relative flex size-2">
+          <span
+            v-if="stockQuantity > 0"
+            class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
+            :class="stockStatus.pulseClass"
+          />
+          <span
+            class="relative inline-flex size-2 rounded-full"
+            :class="stockStatus.dotClass"
+          />
+        </span>
+        {{ stockBadgeLabel }}
       </div>
 
       <div class="mt-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-600">
-            {{ brandName }}
-          </p>
-          <span class="size-1 rounded-full bg-zinc-300" />
-          <p class="text-sm text-zinc-400">
-            {{ product.category.name }}
-          </p>
-        </div>
-
-        <h1 class="mt-2 text-2xl font-semibold leading-snug tracking-normal text-zinc-950 sm:text-3xl">
-          {{ product.name }}
-        </h1>
-
-        <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-zinc-500">
-          <span class="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 shadow-sm shadow-zinc-950/5">
-            <UIcon
-              name="i-lucide-star"
-              class="size-4 text-amber-400"
-              :class="averageRating ? 'fill-amber-400' : ''"
-            />
-            <span class="font-semibold text-zinc-950">{{ averageRatingLabel }}</span>
-          </span>
-          <span class="rounded-full bg-white px-2.5 py-1 shadow-sm shadow-zinc-950/5">
-            {{ product.reviews.length }} отзывов
-          </span>
-          <span class="rounded-full bg-white px-2.5 py-1 shadow-sm shadow-zinc-950/5">
-            {{ formatDate(product.updatedAt) }}
-          </span>
-        </div>
-      </div>
-
-      <div class="mt-4 rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5">
-        <div class="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p class="text-xs font-medium uppercase text-zinc-400">Цена</p>
-            <div class="mt-1 flex flex-wrap items-end gap-2">
-              <p
-                class="text-3xl font-semibold tracking-normal"
-                :class="discountValue ? 'text-red-600' : 'text-zinc-950'"
-              >
-                {{ formatCurrency(product.currentPrice) }}
-              </p>
-              <p
-                v-if="product.oldPrice"
-                class="pb-0.5 text-base text-zinc-400 line-through"
-              >
-                {{ formatCurrency(product.oldPrice) }}
-              </p>
-            </div>
-          </div>
-
-          <UBadge
-            v-if="discountValue"
-            color="error"
-            variant="soft"
-            class="rounded-full px-2.5 py-1"
+        <p class="text-xs font-medium uppercase text-zinc-400">Цена</p>
+        <div class="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <p
+            class="min-w-0 text-3xl font-semibold tracking-normal"
+            :class="discountValue ? 'text-red-600' : 'text-zinc-950'"
           >
-            -{{ discountValue }}%
-          </UBadge>
+            {{ formatCurrency(product.currentPrice) }}
+          </p>
+          <p
+            v-if="product.oldPrice"
+            class="shrink-0 text-base text-zinc-400 line-through"
+          >
+            {{ formatCurrency(product.oldPrice) }}
+          </p>
         </div>
 
-        <div class="mt-3 grid gap-2 text-sm text-zinc-500 sm:grid-cols-3">
-          <div class="rounded-xl bg-[#f9fafb] px-3 py-2.5">
-            <p class="font-medium text-zinc-950">{{ stockQuantity }} шт.</p>
-            <p class="mt-1">На складе</p>
-          </div>
-          <div class="rounded-xl bg-[#f9fafb] px-3 py-2.5">
-            <p class="font-medium text-zinc-950">Самовывоз</p>
-            <p class="mt-1">или доставка</p>
-          </div>
-          <div class="rounded-xl bg-[#f9fafb] px-3 py-2.5">
-            <p class="font-medium text-zinc-950">{{ selectedQuantityTotal }}</p>
-            <p class="mt-1">Итого</p>
-          </div>
-        </div>
-      </div>
-
-      <div
-        v-if="sizeOptions.length || colorOptions.length"
-        class="mt-4 grid gap-3"
-      >
-        <div v-if="sizeOptions.length">
-          <div class="mb-2 flex items-center justify-between gap-3">
-            <p class="text-sm font-semibold text-zinc-950">Вариант</p>
-            <p class="text-xs text-zinc-400">{{ selectedSizeLabel }}</p>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <button
-              v-for="option in sizeOptions"
-              :key="option.value"
-              type="button"
-              class="rounded-full px-3 py-1.5 text-sm font-medium transition duration-300 hover:scale-[1.03]"
-              :class="selectedSize === option.value ? 'bg-zinc-950 text-white shadow-lg shadow-zinc-950/20' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:text-zinc-950'"
-              :title="option.caption"
-              @click="selectedSize = option.value"
-            >
-              {{ option.label }}
-            </button>
-          </div>
-        </div>
-
-        <div v-if="colorOptions.length">
-          <p class="mb-2 text-sm font-semibold text-zinc-950">Цвет</p>
-          <div class="flex flex-wrap gap-2">
-            <button
-              v-for="color in colorOptions"
-              :key="color"
-              type="button"
-              class="inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-medium transition duration-300 hover:scale-[1.03]"
-              :class="selectedColor === color ? 'bg-zinc-950 text-white shadow-lg shadow-zinc-950/20' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:text-zinc-950'"
-              @click="selectedColor = color"
-            >
-              <span
-                class="size-3 rounded-full border border-white/80 shadow-sm shadow-zinc-950/10"
-                :style="{ backgroundColor: colorToCss(color) }"
-              />
-              {{ color }}
-            </button>
-          </div>
-        </div>
+        <UBadge
+          v-if="discountValue"
+          color="primary"
+          variant="soft"
+          class="mt-2 rounded-full px-2.5 py-1"
+        >
+          Хорошая цена
+        </UBadge>
       </div>
 
       <div
         v-if="isInCart"
-        class="mt-4"
+        class="mt-5 grid gap-2 sm:grid-cols-[minmax(0,1fr)_7rem]"
       >
-        <div>
-          <div class="mb-2 flex items-center justify-between gap-3">
-            <p class="text-sm font-semibold text-zinc-950">Количество</p>
-            <p class="text-sm text-zinc-400">
-              В корзине {{ quantity }} шт.
-            </p>
-          </div>
-          <div class="flex items-center justify-between gap-2 rounded-full bg-white p-1.5 shadow-sm shadow-zinc-950/5">
-            <UButton
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-minus"
-              size="md"
-              square
-              class="rounded-full transition hover:scale-105"
-              :disabled="quantity <= 1"
-              aria-label="Уменьшить количество"
-              @click="decrementQuantity"
-            />
-            <div
-              v-auto-animate
-              class="min-w-16 text-center text-lg font-semibold"
-            >
-              {{ quantity }}
-            </div>
-            <UButton
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-plus"
-              size="md"
-              square
-              class="rounded-full transition hover:scale-105"
-              :disabled="quantity >= maxQuantity || stockQuantity <= 0"
-              aria-label="Увеличить количество"
-              @click="incrementQuantity"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div
-        v-auto-animate
-        class="mt-4 grid grid-cols-[auto_minmax(0,1fr)] gap-2"
-      >
-        <UTooltip :text="isFavorite ? 'Убрать из избранного' : 'В избранное'">
+        <div class="grid grid-cols-[2.5rem_minmax(2.5rem,1fr)_2.5rem] items-center rounded-full bg-[#f3f4f6] p-1.5">
           <UButton
             color="neutral"
-            variant="soft"
-            size="lg"
+            variant="ghost"
+            icon="i-lucide-minus"
+            size="md"
             square
-            class="inline-flex size-11 items-center justify-center rounded-full bg-white p-0 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-105 [&>span]:mx-auto [&>span]:flex [&>span]:items-center [&>span]:justify-center"
-            :class="isFavorite ? 'scale-[1.03] text-red-500' : 'text-zinc-700'"
-            :loading="favoriteSyncing"
-            :aria-label="isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'"
-            @click="$emit('toggleFavorite')"
+            class="size-10 justify-self-center rounded-full text-zinc-700 transition hover:scale-105 hover:bg-white"
+            :disabled="quantity <= 1"
+            aria-label="Уменьшить количество"
+            @click="decrementQuantity"
+          />
+          <div
+            v-auto-animate
+            class="grid h-10 min-w-0 place-items-center text-center text-base font-semibold text-zinc-950"
           >
-            <UIcon
-              name="i-lucide-heart"
-              class="mx-auto block size-5 transition duration-300"
-              :class="isFavorite ? 'scale-110 fill-red-500 text-red-500' : ''"
-            />
-          </UButton>
-        </UTooltip>
+            {{ quantity }}
+          </div>
+          <UButton
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-plus"
+            size="md"
+            square
+            class="size-10 justify-self-center rounded-full text-zinc-700 transition hover:scale-105 hover:bg-white"
+            :disabled="quantity >= maxQuantity || stockQuantity <= 0"
+            aria-label="Увеличить количество"
+            @click="incrementQuantity"
+          />
+        </div>
 
         <UButton
-          :color="isInCart ? 'error' : 'primary'"
+          color="error"
+          variant="soft"
           size="lg"
           block
-          :icon="cartButtonIcon"
-          class="min-h-11 rounded-full shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.01]"
-          :class="isInCart ? 'bg-red-600 text-white shadow-red-700/15 hover:bg-red-600' : ''"
-          :disabled="!isInCart && stockQuantity <= 0"
+          class="min-h-12 whitespace-nowrap rounded-full bg-red-50 px-3 text-red-600 transition duration-300 hover:scale-[1.01] hover:bg-red-100"
+          aria-label="Удалить товар из корзины"
           :loading="cartSyncing"
           @click="$emit('addToCart')"
         >
-          {{ cartButtonLabel }}
+          Удалить
         </UButton>
       </div>
 
       <UButton
-        v-if="product.ozonLink"
-        color="neutral"
-        variant="ghost"
-        icon="i-lucide-external-link"
-        size="md"
+        v-else
+        color="primary"
+        size="lg"
         block
-        class="mt-2 rounded-full text-zinc-500 transition duration-300 hover:scale-[1.01] hover:bg-white"
-        :to="product.ozonLink"
-        target="_blank"
+        class="mt-5 min-h-12 rounded-full shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.01]"
+        :disabled="stockQuantity <= 0"
+        :loading="cartSyncing"
+        @click="$emit('addToCart')"
       >
-        Посмотреть на Ozon
+        {{ stockQuantity <= 0 ? "Нет в наличии" : "Добавить в корзину" }}
+      </UButton>
+
+      <UButton
+        color="neutral"
+        variant="soft"
+        size="lg"
+        block
+        :icon="isFavorite ? 'i-lucide-heart-off' : 'i-lucide-heart'"
+        class="mt-2 min-h-12 rounded-full bg-[#f3f4f6] text-zinc-800 transition duration-300 hover:scale-[1.01] hover:bg-zinc-100"
+        :class="isFavorite ? 'text-red-500' : ''"
+        :loading="favoriteSyncing"
+        @click="$emit('toggleFavorite')"
+      >
+        {{ isFavorite ? "Убрать из избранного" : "Добавить в избранное" }}
       </UButton>
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
-import { formatCurrency, formatDate } from "~~/app/shared/lib/shopFormatters";
-import { colorToCss } from "~~/app/shared/lib/catalogProductHelpers";
+import { formatCurrency } from "~~/app/shared/lib/shopFormatters";
 import type { ProductDetails } from "~~/app/shared/types/shop";
-import type { ProductSizeOption } from "~~/app/entities/product/lib/productDetails";
 import type { ProductStockStatus } from "~~/app/entities/product/model/useProductPdp";
 
 const props = defineProps<{
-  averageRating: number | null;
-  averageRatingLabel: string;
-  brandName: string;
-  cartButtonIcon: string;
-  cartButtonLabel: string;
   cartSyncing: boolean;
-  colorOptions: string[];
   discountValue: number;
   favoriteSyncing: boolean;
   isFavorite: boolean;
   isInCart: boolean;
   maxQuantity: number;
   product: ProductDetails;
-  selectedQuantityTotal: string;
-  selectedSizeLabel: string;
-  sizeOptions: ProductSizeOption[];
   stockQuantity: number;
   stockStatus: ProductStockStatus;
 }>();
@@ -288,8 +149,7 @@ const emit = defineEmits<{
 }>();
 
 const quantity = defineModel<number>("quantity", { required: true });
-const selectedSize = defineModel<string>("selectedSize", { required: true });
-const selectedColor = defineModel<string>("selectedColor", { required: true });
+const stockBadgeLabel = computed(() => props.stockQuantity > 0 ? `Осталось ${props.stockQuantity} шт.` : "Нет в наличии");
 
 function decrementQuantity() {
   const nextQuantity = Math.max(quantity.value - 1, 1);

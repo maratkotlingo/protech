@@ -114,6 +114,8 @@ export default defineEventHandler(async (event) => {
         obtainingMethod: body.obtainingMethod,
         paymentMethod: body.paymentMethod,
         customerPhone: body.customerPhone,
+        recipientName: body.recipient?.name,
+        recipientPhone: body.recipient?.phone,
         stockReserved: true,
 
         orderStatus:

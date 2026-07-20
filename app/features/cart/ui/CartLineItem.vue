@@ -56,11 +56,11 @@
         {{ item.product.description }}
       </p>
 
-      <div class="mt-3 flex flex-wrap items-center gap-2">
-        <div class="inline-flex items-center gap-1.5 rounded-xl bg-[#f3f4f6] p-1 shadow-sm shadow-zinc-950/5">
+      <div class="mt-3 flex flex-wrap items-center gap-3">
+        <div class="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-sm shadow-zinc-950/5">
           <button
             type="button"
-            class="grid size-8 place-items-center rounded-lg bg-white text-zinc-700 shadow-sm shadow-zinc-950/5 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:text-emerald-700 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-100 disabled:text-zinc-300"
+            class="grid size-10 place-items-center rounded-xl bg-white text-zinc-700 shadow-sm shadow-zinc-950/5 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:text-emerald-700 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-100 disabled:text-zinc-300"
             :disabled="loading || normalizedLocalQuantity <= 1"
             aria-label="Уменьшить количество"
             @click="changeQuantity(normalizedLocalQuantity - 1)"
@@ -71,10 +71,10 @@
             />
           </button>
 
-          <div class="grid min-w-12 place-items-center px-1">
+          <div class="grid min-w-16 place-items-center px-1">
             <input
               v-model="localQuantity"
-              class="h-5 w-10 bg-transparent text-center text-sm font-semibold text-zinc-950 outline-none"
+              class="h-7 w-14 bg-transparent text-center text-lg font-semibold text-zinc-950 outline-none"
               type="text"
               inputmode="numeric"
               pattern="[0-9]*"
@@ -87,7 +87,7 @@
 
           <button
             type="button"
-            class="grid size-8 place-items-center rounded-lg bg-emerald-600 text-white shadow-sm shadow-emerald-950/15 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:bg-emerald-500 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-200 disabled:text-zinc-400"
+            class="grid size-10 place-items-center rounded-xl bg-emerald-600 text-white shadow-sm shadow-emerald-950/15 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:bg-emerald-500 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-200 disabled:text-zinc-400"
             :disabled="loading || normalizedLocalQuantity >= maxQuantity"
             aria-label="Увеличить количество"
             @click="changeQuantity(normalizedLocalQuantity + 1)"
@@ -104,12 +104,14 @@
             color="error"
             variant="soft"
             icon="i-lucide-trash-2"
-            square
-            class="rounded-full bg-red-50/80 transition duration-300 hover:scale-[1.02]"
+            size="md"
+            class="min-h-12 rounded-full bg-red-50/80 px-4 font-semibold transition duration-300 hover:scale-[1.02]"
             :loading="loading"
             aria-label="Удалить из корзины"
             @click="$emit('remove', item.product.id)"
-          />
+          >
+            Удалить
+          </UButton>
         </UTooltip>
       </div>
     </div>

@@ -1,12 +1,7 @@
 <template>
   <article
-    role="button"
-    tabindex="0"
-    class="group cursor-pointer rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:p-4"
-    :aria-label="`Открыть детали заказа №${order.id}`"
+    class="group cursor-pointer rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/10 sm:p-4"
     @click="openDetails"
-    @keydown.enter="openDetails"
-    @keydown.space.prevent="openDetails"
   >
     <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:justify-between">
       <div class="min-w-0">
@@ -38,6 +33,16 @@
             />
             {{ order.customerPhone }}
           </span>
+          <span
+            v-if="order.recipientName || order.recipientPhone"
+            class="inline-flex items-center gap-1.5 font-medium text-zinc-600"
+          >
+            <UIcon
+              name="i-lucide-user-round-check"
+              class="size-3.5 text-zinc-400"
+            />
+            {{ recipientLabel }}
+          </span>
         </div>
 
         <div class="mt-3 flex flex-wrap gap-2">
@@ -56,7 +61,7 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-between gap-3 sm:justify-start lg:justify-end">
+      <div class="flex flex-wrap items-center justify-between gap-3 sm:justify-start lg:justify-end">
         <div class="flex -space-x-3">
           <img
             v-for="item in order.orderItems.slice(0, 4)"
@@ -79,6 +84,18 @@
             {{ formatCurrency(order.payment?.amount) }}
           </p>
         </div>
+
+        <UButton
+          color="primary"
+          variant="soft"
+          icon="i-lucide-eye"
+          size="lg"
+          class="min-h-12 rounded-full px-5 font-semibold transition duration-300 hover:scale-[1.02]"
+          :aria-label="`Открыть детали заказа №${order.id}`"
+          @click.stop="openDetails"
+        >
+          Подробнее
+        </UButton>
       </div>
     </div>
   </article>
@@ -97,6 +114,10 @@ const emit = defineEmits<{
 }>();
 
 const hiddenItemsCount = computed(() => Math.max(props.order.orderItems.length - 4, 0));
+const recipientLabel = computed(() => [
+  props.order.recipientName,
+  props.order.recipientPhone
+].filter(Boolean).join(" · "));
 const metrics = computed(() => [
   {
     icon: props.order.obtainingMethod === "DELIVERY" ? "i-lucide-truck" : "i-lucide-store",

@@ -279,10 +279,29 @@ const receivingRows = computed<InfoRow[]>(() => {
     }
   ];
 
+  if (order.value.recipientName || order.value.recipientPhone) {
+    rows.push(
+      {
+        label: "Получатель",
+        value: order.value.recipientName || "Не указан"
+      },
+      {
+        label: "Телефон получателя",
+        value: order.value.recipientPhone || "Не указан"
+      }
+    );
+  }
+
   if (!order.value.delivery) {
     rows.push({
       label: "Самовывоз",
       value: getPickupHint(order.value.orderStatus)
+    }, {
+      label: "Адрес",
+      value: "Ярославль, пр.-т Октября, д. 78д"
+    }, {
+      label: "Запись",
+      value: "89201309744"
     });
 
     return rows;
@@ -291,7 +310,7 @@ const receivingRows = computed<InfoRow[]>(() => {
   rows.push(
     {
       label: "Служба",
-      value: order.value.delivery.deliveryMethod
+      value: order.value.delivery.deliveryMethod === "OZON" ? "Служба доставки OZON" : order.value.delivery.deliveryMethod
     },
     {
       label: "Адрес",
@@ -392,7 +411,7 @@ function getOrderStatusDate(status: OrderStatus) {
 
 function getPickupHint(status: OrderStatus) {
   if (status === "SHIPPED") {
-    return "Заказ готов к выдаче. Дождитесь подтверждения точки получения.";
+    return "Заказ готов к выдаче по предварительной записи.";
   }
 
   if (status === "COMPLETED") {
@@ -403,7 +422,7 @@ function getPickupHint(status: OrderStatus) {
     return "Самовывоз отменён вместе с заказом.";
   }
 
-  return "Точку и время выдачи подтвердит менеджер.";
+  return "Самовывоз производится по предварительной записи.";
 }
 
 function getTime(value: string) {
