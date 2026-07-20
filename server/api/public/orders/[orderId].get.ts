@@ -1,4 +1,5 @@
 import { PaymentStatus, type Prisma } from "@prisma/client";
+import { attachOrderPaymentMeta } from "~~/server/utils/orderPaymentMeta";
 import { attachOrderStatusHistory, getOrderStatusHistoryAuditLogs } from "~~/server/utils/orderStatusHistory";
 import { syncYooKassaPaymentStatus } from "~~/server/utils/yookassaPaymentStatus";
 
@@ -63,5 +64,5 @@ export default defineEventHandler(async (event) => {
 
   const statusAuditLogs = await getOrderStatusHistoryAuditLogs([order]);
 
-  return attachOrderStatusHistory([order], statusAuditLogs)[0];
+  return attachOrderPaymentMeta(attachOrderStatusHistory([order], statusAuditLogs)[0]!);
 });

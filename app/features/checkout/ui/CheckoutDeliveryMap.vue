@@ -1,5 +1,5 @@
 <template>
-  <section class="relative min-h-[760px] overflow-hidden rounded-[2rem] bg-zinc-900 shadow-[0_28px_90px_rgba(15,23,42,0.16)] ">
+  <section class="relative min-h-[380px] overflow-hidden rounded-[2rem] bg-zinc-900 shadow-[0_28px_90px_rgba(15,23,42,0.16)] sm:min-h-[760px] ">
     <iframe
       :src="mapSrc"
       class="absolute inset-0 size-full border-0"

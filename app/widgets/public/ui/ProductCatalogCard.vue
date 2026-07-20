@@ -30,14 +30,6 @@
         >
           -{{ discountPercent(product) }}%
         </UBadge>
-        <UBadge
-          v-if="isOutOfStock(product)"
-          color="error"
-          variant="solid"
-          class="rounded-full shadow-sm shadow-red-950/15"
-        >
-          Нет в наличии
-        </UBadge>
       </div>
 
       <UTooltip :text="favorite ? 'Убрать из избранного' : 'В избранное'">
@@ -81,14 +73,6 @@
         <p class="truncate text-xs font-medium uppercase text-zinc-400">
           {{ productBrand(product) }}
         </p>
-        <div class="flex items-center gap-1 text-sm text-zinc-500 ">
-          <UIcon
-            name="i-lucide-star"
-            class="size-4"
-            :class="product.averageRating ? 'fill-amber-400 text-amber-400' : 'text-zinc-300'"
-          />
-          {{ product.averageRating ?? "—" }}
-        </div>
       </div>
 
       <NuxtLink
@@ -120,26 +104,20 @@
             {{ formatCurrency(product.oldPrice) }}
           </span>
         </div>
-
-        <div
-          v-if="productColorValues(product).length"
-          class="flex -space-x-1"
-        >
-          <span
-            v-for="color in productColorValues(product).slice(0, 3)"
-            :key="`${product.id}-${color}`"
-            class="size-4 rounded-full ring-2 ring-white "
-            :style="{ backgroundColor: colorToCss(color) }"
-          />
-        </div>
       </div>
 
       <div
-        class="flex items-center justify-between gap-2 text-[11px] text-zinc-400 sm:gap-3 sm:text-xs"
-        :class="compact ? 'mt-2' : 'mt-4'"
+        class="flex items-center gap-1.5 text-xs text-zinc-500"
+        :class="compact ? 'mt-2' : 'mt-3 sm:text-sm'"
       >
-        <span v-if="product.article">Арт. {{ product.article }}</span>
-        <span class="ml-auto">{{ inCart ? `В корзине ${cartQuantity} шт.` : stockLabel(product) }}</span>
+        <UIcon
+          name="i-lucide-star"
+          class="size-4"
+          :class="product.averageRating ? 'fill-amber-400 text-amber-400' : 'text-zinc-300'"
+        />
+        <span class="font-medium text-zinc-700">{{ product.averageRating ?? "—" }}</span>
+        <span>-</span>
+        <span>{{ reviewCountLabel(product.reviewsCount ?? 0) }}</span>
       </div>
     </div>
   </article>
@@ -147,12 +125,9 @@
 
 <script setup lang="ts">
 import {
-  colorToCss,
   discountPercent,
   isOutOfStock,
-  productBrand,
-  productColorValues,
-  stockLabel
+  productBrand
 } from "~~/app/shared/lib/catalogProductHelpers";
 import { formatCurrency } from "~~/app/shared/lib/shopFormatters";
 import type { ProductCardItem } from "~~/app/shared/types/shop";
@@ -172,10 +147,20 @@ const emit = defineEmits<{
   toggleFavorite: [product: ProductCardItem];
 }>();
 
-const cartButtonIcon = computed(() => props.inCart ? "i-lucide-trash-2" : "i-lucide-shopping-bag");
+const cartButtonIcon = computed(() => {
+  if (props.inCart) {
+    return "i-lucide-trash-2";
+  }
+
+  if (isOutOfStock(props.product)) {
+    return undefined;
+  }
+
+  return "i-lucide-shopping-bag";
+});
 const cartButtonLabel = computed(() => {
   if (props.inCart) {
-    return props.compact ? "Убрать" : "Удалить из корзины";
+    return "Удалить";
   }
 
   if (isOutOfStock(props.product)) {
@@ -202,5 +187,20 @@ function onToggleCart() {
 
 function onToggleFavorite() {
   emit("toggleFavorite", props.product);
+}
+
+function reviewCountLabel(count: number) {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+
+  if (mod10 === 1 && mod100 !== 11) {
+    return `${count} отзыв`;
+  }
+
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+    return `${count} отзыва`;
+  }
+
+  return `${count} отзывов`;
 }
 </script>

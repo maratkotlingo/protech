@@ -241,7 +241,8 @@ export default defineEventHandler(async (event) => {
       orderId: order.id
     },
     data: {
-      transactionId: yookassaPayment.id
+      transactionId: yookassaPayment.id,
+      confirmationUrl: yookassaPayment.confirmation?.confirmation_url ?? null
     }
   });
 

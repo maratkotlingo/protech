@@ -28,6 +28,7 @@
             </div>
 
             <OrderDetailsInfoSidebar
+              :order="order"
               :payment-rows="paymentRows"
               :receiving-rows="receivingRows"
             />

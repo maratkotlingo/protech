@@ -22,14 +22,26 @@ export type ExpireUnpaidOrdersResult = {
   orderIds: number[];
 };
 
-function getPositiveIntegerEnv(name: string, fallback: number) {
+export function getPositiveIntegerEnv(name: string, fallback: number) {
   const value = Number(process.env[name]);
 
   return Number.isInteger(value) && value > 0 ? value : fallback;
 }
 
+export function getOrderPaymentExpiryMinutes() {
+  return getPositiveIntegerEnv("ORDER_PAYMENT_EXPIRY_MINUTES", 10);
+}
+
+export function getOrderPaymentExpiresAt(createdAt: Date) {
+  return new Date(createdAt.getTime() + getOrderPaymentExpiryMinutes() * 60_000);
+}
+
+export function getOrderPaymentRemainingSeconds(createdAt: Date, now = new Date()) {
+  return Math.max(0, Math.ceil((getOrderPaymentExpiresAt(createdAt).getTime() - now.getTime()) / 1000));
+}
+
 function getDefaultExpiresBefore(now: Date) {
-  const ttlMinutes = getPositiveIntegerEnv("ORDER_PAYMENT_EXPIRY_MINUTES", 30);
+  const ttlMinutes = getOrderPaymentExpiryMinutes();
 
   return new Date(now.getTime() - ttlMinutes * 60_000);
 }

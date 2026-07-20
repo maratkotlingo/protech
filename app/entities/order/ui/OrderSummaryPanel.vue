@@ -25,6 +25,8 @@
       </div>
     </section>
 
+    <OrderPaymentResumeCard :order="order" />
+
     <section
       v-if="order.delivery"
       class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  "

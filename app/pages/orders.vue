@@ -197,7 +197,7 @@ function isActiveOrder(order: ShopOrder) {
 
 function getOrderCardClass(order: ShopOrder) {
   return isActiveOrder(order)
-    ? "!bg-emerald-50/75 ring-1 ring-emerald-200/80 shadow-sm shadow-emerald-950/10"
+    ? "!bg-white/90 ring-1 ring-zinc-200/80 shadow-sm shadow-zinc-950/5"
     : "!bg-white/70 opacity-70 grayscale-[0.15]";
 }
 </script>

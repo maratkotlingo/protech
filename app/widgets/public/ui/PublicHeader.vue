@@ -10,9 +10,9 @@
             class="grid size-11 place-items-center rounded-[1.35rem] bg-emerald-600 text-white shadow-xl shadow-emerald-900/20 transition duration-300 group-hover:rotate-3 group-hover:scale-105">
             <UIcon name="i-lucide-zap" class="size-6" />
           </span>
-          <span class="hidden leading-tight sm:block">
-            <span class="block text-lg font-semibold tracking-normal text-zinc-950">ProTech</span>
-            <span class="block text-xs text-zinc-500">Техника и аксессуары</span>
+          <span class="min-w-0 leading-tight">
+            <span class="block truncate text-base font-semibold tracking-normal text-zinc-950 sm:text-lg">ProTech</span>
+            <span class="hidden text-xs text-zinc-500 sm:block">Техника и аксессуары</span>
           </span>
         </NuxtLink>
 

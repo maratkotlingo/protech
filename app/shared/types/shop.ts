@@ -184,6 +184,8 @@ export type ShopOrder = {
   createdAt: string;
   updatedAt: string;
   statusHistory?: OrderStatusHistoryItem[];
+  paymentExpiresAt: string | null;
+  paymentRemainingSeconds: number | null;
   delivery: {
     address: string;
     apartment: string | null;
@@ -195,6 +197,7 @@ export type ShopOrder = {
   } | null;
   payment: {
     amount: MoneyLike;
+    confirmationUrl: string | null;
     paymentStatus: PaymentStatus;
     paidAt: string | null;
   } | null;

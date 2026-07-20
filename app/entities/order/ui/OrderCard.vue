@@ -59,6 +59,11 @@
             <span class="text-zinc-700">{{ metric.value }}</span>
           </span>
         </div>
+
+        <OrderPaymentResumeCard
+          :order="order"
+          compact
+        />
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-3 sm:justify-start lg:justify-end">
@@ -85,17 +90,6 @@
           </p>
         </div>
 
-        <UButton
-          color="primary"
-          variant="soft"
-          icon="i-lucide-eye"
-          size="lg"
-          class="min-h-12 rounded-full px-5 font-semibold transition duration-300 hover:scale-[1.02]"
-          :aria-label="`Открыть детали заказа №${order.id}`"
-          @click.stop="openDetails"
-        >
-          Подробнее
-        </UButton>
       </div>
     </div>
   </article>

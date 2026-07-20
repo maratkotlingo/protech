@@ -1,12 +1,12 @@
 <template>
   <div
-    class="grid gap-3"
-    :class="imageItems.length > 1 ? 'sm:grid-cols-[76px_minmax(0,1fr)]' : ''"
+    class="-mx-4 grid gap-0 sm:mx-0 sm:gap-4 xl:gap-3"
+    :class="imageItems.length > 1 ? 'xl:grid-cols-[76px_minmax(0,1fr)]' : ''"
   >
     <div
       v-if="imageItems.length > 1"
       v-auto-animate
-      class="order-2 flex gap-2 overflow-x-auto px-1 pb-1.5 sm:order-1 sm:max-h-[640px] sm:flex-col sm:overflow-y-auto sm:px-0 sm:pb-0 sm:pr-1"
+      class="hidden gap-2 xl:order-1 xl:flex xl:max-h-[640px] xl:flex-col xl:overflow-y-auto xl:pr-1"
     >
       <button
         v-for="(image, index) in imageItems"
@@ -15,7 +15,7 @@
         :class="index === selectedIndex ? 'scale-[1.03] bg-emerald-50 ring-2 ring-emerald-200' : 'ring-2 ring-transparent'"
         type="button"
         :aria-label="`Открыть фото ${index + 1}`"
-        @click="selectedIndex = index"
+        @click="selectImage(index)"
       >
         <img
           :src="image.url"
@@ -26,8 +26,59 @@
       </button>
     </div>
 
-    <div class="group relative order-1 overflow-hidden rounded-2xl bg-[#f9fafb] p-1.5 shadow-[0_16px_50px_rgba(15,23,42,0.07)] sm:order-2">
-      <div class="relative overflow-hidden rounded-xl bg-white">
+    <div class="group relative order-1 overflow-hidden bg-white xl:order-2 xl:rounded-2xl xl:bg-[#f9fafb] xl:p-1.5 xl:shadow-[0_16px_50px_rgba(15,23,42,0.07)]">
+      <div
+        ref="mobileGallery"
+        class="mobile-gallery-scrollbar flex aspect-[3/4] max-h-[calc(100svh-7rem)] w-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth bg-white sm:hidden"
+        @scroll.passive="syncMobileSelection"
+      >
+        <div
+          v-for="(image, index) in imageItems"
+          :key="`mobile-${image.url}`"
+          class="h-full w-full shrink-0 snap-center snap-always"
+        >
+          <img
+            :src="image.url"
+            :alt="alt"
+            class="size-full object-contain"
+            :loading="index === 0 ? 'eager' : 'lazy'"
+          >
+        </div>
+      </div>
+
+      <div
+        v-if="imageItems.length > 1"
+        class="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center gap-1.5 sm:hidden"
+      >
+        <span
+          v-for="(image, index) in imageItems"
+          :key="`dot-${image.url}`"
+          class="h-1.5 rounded-full bg-white/80 shadow-sm shadow-zinc-950/20 transition-all duration-300"
+          :class="index === selectedIndex ? 'w-6' : 'w-1.5 opacity-70'"
+        />
+      </div>
+
+      <div
+        ref="tabletGallery"
+        class="tablet-gallery-scrollbar hidden h-[min(58vw,560px)] min-h-[420px] snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-smooth sm:flex xl:hidden"
+        @scroll.passive="syncTabletSelection"
+      >
+        <div
+          v-for="(image, index) in imageItems"
+          :key="`tablet-${image.url}`"
+          class="h-full shrink-0 snap-start snap-always overflow-hidden rounded-2xl bg-white ring-1 ring-zinc-200/70"
+          :class="imageItems.length > 1 ? 'basis-[calc((100%_-_0.75rem)_/_2)]' : 'basis-full'"
+        >
+          <img
+            :src="image.url"
+            :alt="alt"
+            class="size-full object-contain"
+            :loading="index < 2 ? 'eager' : 'lazy'"
+          >
+        </div>
+      </div>
+
+      <div class="relative hidden overflow-hidden rounded-xl bg-white xl:block">
         <Transition
           mode="out-in"
           enter-active-class="transition duration-300 ease-out"
@@ -149,6 +200,8 @@ const props = defineProps<{
 
 const selectedIndex = ref(0);
 const zoomOpen = ref(false);
+const mobileGallery = ref<HTMLElement | null>(null);
+const tabletGallery = ref<HTMLElement | null>(null);
 const fallbackImage = "/favicon.ico";
 
 const imageItems = computed(() => {
@@ -177,17 +230,83 @@ const modalUi = {
 
 watch(imageSignature, () => {
   selectedIndex.value = 0;
+  nextTick(() => {
+    scrollGalleryTo(mobileGallery.value, 0, "auto");
+    scrollGalleryTo(tabletGallery.value, 0, "auto");
+  });
 });
 
 function previous() {
-  selectedIndex.value = selectedIndex.value === 0 ? imageItems.value.length - 1 : selectedIndex.value - 1;
+  selectImage(selectedIndex.value === 0 ? imageItems.value.length - 1 : selectedIndex.value - 1);
 }
 
 function next() {
-  selectedIndex.value = selectedIndex.value === imageItems.value.length - 1 ? 0 : selectedIndex.value + 1;
+  selectImage(selectedIndex.value === imageItems.value.length - 1 ? 0 : selectedIndex.value + 1);
 }
 
 function openZoom() {
   zoomOpen.value = true;
 }
+
+function selectImage(index: number) {
+  selectedIndex.value = index;
+  nextTick(() => {
+    scrollGalleryTo(mobileGallery.value, index);
+    scrollGalleryTo(tabletGallery.value, index);
+  });
+}
+
+function scrollGalleryTo(gallery: HTMLElement | null, index: number, behavior: ScrollBehavior = "smooth") {
+  if (!gallery) {
+    return;
+  }
+
+  const targetSlide = gallery.children.item(index) as HTMLElement | null;
+
+  gallery.scrollTo({
+    left: targetSlide?.offsetLeft ?? gallery.clientWidth * index,
+    behavior
+  });
+}
+
+function syncMobileSelection() {
+  syncSelectionFromScroll(mobileGallery.value);
+}
+
+function syncTabletSelection() {
+  syncSelectionFromScroll(tabletGallery.value);
+}
+
+function syncSelectionFromScroll(gallery: HTMLElement | null) {
+  if (!gallery || gallery.clientWidth === 0) {
+    return;
+  }
+
+  const slides = Array.from(gallery.children) as HTMLElement[];
+  const nextIndex = slides.reduce((closestIndex, slide, index) => {
+    const closestSlide = slides[closestIndex];
+
+    if (!closestSlide) {
+      return index;
+    }
+
+    return Math.abs(slide.offsetLeft - gallery.scrollLeft) < Math.abs(closestSlide.offsetLeft - gallery.scrollLeft)
+      ? index
+      : closestIndex;
+  }, 0);
+
+  selectedIndex.value = Math.min(imageItems.value.length - 1, Math.max(0, nextIndex));
+}
 </script>
+
+<style scoped>
+.mobile-gallery-scrollbar,
+.tablet-gallery-scrollbar {
+  scrollbar-width: none;
+}
+
+.mobile-gallery-scrollbar::-webkit-scrollbar,
+.tablet-gallery-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+</style>

@@ -1,13 +1,13 @@
 <template>
   <div class="bg-white text-zinc-950">
-    <div class="mx-auto w-full max-w-370 px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
+    <div class="mx-auto w-full max-w-370 px-4 pb-4 pt-0 sm:px-6 sm:py-4 lg:px-8 lg:py-6">
       <UButton
         color="neutral"
         variant="ghost"
         icon="i-lucide-arrow-left"
         to="/"
         size="sm"
-        class="mb-4 rounded-full bg-[#f9fafb] px-3 text-zinc-600 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-[1.02] hover:bg-zinc-100"
+        class="mb-4 hidden rounded-full bg-[#f9fafb] px-3 text-zinc-600 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-[1.02] hover:bg-zinc-100 sm:inline-flex"
       >
         В каталог
       </UButton>

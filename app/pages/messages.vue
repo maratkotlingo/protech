@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto w-full max-w-330 px-4 py-4 sm:px-6 lg:px-8 lg:py-5">
     <section
-      class="flex min-h-[calc(100dvh-8rem)] flex-col rounded-2xl border border-zinc-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
+      class="flex h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
     >
       <header class="shrink-0 border-b border-zinc-100 px-3 py-3 sm:px-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
@@ -41,7 +41,10 @@
         </div>
       </header>
 
-      <div class="flex-1 bg-[#f8faf9] px-3 py-4 sm:px-4">
+      <div
+        ref="messagesViewport"
+        class="min-h-0 flex-1 overflow-y-auto bg-[#f8faf9] px-3 py-4 sm:px-4"
+      >
         <div
           v-if="loading"
           class="space-y-3"
@@ -105,7 +108,7 @@
       </div>
 
       <form
-        class="sticky bottom-0 z-20 rounded-b-2xl border-t border-zinc-100 bg-white/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-18px_44px_rgba(15,23,42,0.08)] backdrop-blur sm:p-3 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
+        class="shrink-0 rounded-b-2xl border-t border-zinc-100 bg-white/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-18px_44px_rgba(15,23,42,0.08)] backdrop-blur sm:p-3 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
         @submit.prevent="sendMessage"
       >
         <UFormField :error="messageError">
@@ -175,6 +178,7 @@ const submitting = ref(false);
 const draftMessage = ref("");
 const messageError = ref("");
 const socketConnected = ref(false);
+const messagesViewport = ref<HTMLElement | null>(null);
 const messagesEnd = ref<HTMLElement | null>(null);
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 let socket: WebSocket | null = null;
@@ -371,6 +375,11 @@ function resizeMessageInput() {
 
 async function scrollToBottom() {
   await nextTick();
+
+  if (messagesViewport.value) {
+    messagesViewport.value.scrollTop = messagesViewport.value.scrollHeight;
+    return;
+  }
 
   messagesEnd.value?.scrollIntoView({ block: "end" });
 }

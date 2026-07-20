@@ -62,12 +62,12 @@
             >
               <stop
                 offset="0%"
-                :stop-color="trendMeta.stroke"
+                :stop-color.attr="trendMeta.stroke"
                 stop-opacity="0.22"
               />
               <stop
                 offset="100%"
-                :stop-color="trendMeta.stroke"
+                :stop-color.attr="trendMeta.stroke"
                 stop-opacity="0"
               />
             </linearGradient>
@@ -79,8 +79,8 @@
               :key="line.key"
               x1="72"
               x2="724"
-              :y1="line.y"
-              :y2="line.y"
+              :y1.attr="svgNumber(line.y)"
+              :y2.attr="svgNumber(line.y)"
               stroke="#e4e4e7"
               stroke-dasharray="4 8"
             />
@@ -88,7 +88,7 @@
               v-for="line in gridLines"
               :key="`${line.key}-label`"
               x="18"
-              :y="line.y + 5"
+              :y.attr="svgNumber(line.y + 5)"
               fill="#71717a"
               font-size="13"
             >
@@ -97,13 +97,13 @@
           </g>
 
           <path
-            :d="areaPath"
+            :d.attr="areaPath"
             fill="url(#price-area-gradient)"
           />
           <polyline
-            :points="linePoints"
+            :points.attr="linePoints"
             fill="none"
-            :stroke="trendMeta.stroke"
+            :stroke.attr="trendMeta.stroke"
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="5"
@@ -114,17 +114,17 @@
             :key="point.key"
           >
             <circle
-              :cx="point.x"
-              :cy="point.y"
+              :cx.attr="svgNumber(point.x)"
+              :cy.attr="svgNumber(point.y)"
               r="6"
               fill="white"
-              :stroke="trendMeta.stroke"
+              :stroke.attr="trendMeta.stroke"
               stroke-width="4"
             />
             <text
               v-if="point.showValue"
-              :x="point.x"
-              :y="point.y - 14"
+              :x.attr="svgNumber(point.x)"
+              :y.attr="svgNumber(point.y - 14)"
               text-anchor="middle"
               fill="#18181b"
               font-size="13"
@@ -138,7 +138,7 @@
             <text
               v-for="label in xAxisLabels"
               :key="label.key"
-              :x="label.x"
+              :x.attr="svgNumber(label.x)"
               y="300"
               text-anchor="middle"
               fill="#71717a"
@@ -327,5 +327,9 @@ function shortDate(value: string) {
     day: "2-digit",
     month: "short"
   }).format(date);
+}
+
+function svgNumber(value: number) {
+  return Number.isFinite(value) ? String(Math.round(value * 100) / 100) : "0";
 }
 </script>
