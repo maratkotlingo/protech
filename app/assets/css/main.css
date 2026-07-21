@@ -53,6 +53,12 @@ html {
   scrollbar-gutter: stable;
 }
 
+html:has([role="dialog"][data-state="open"]),
+html:has([data-vaul-drawer-wrapper][data-state="open"]),
+html:has([data-vaul-overlay][data-state="open"]) {
+  overflow: hidden;
+}
+
 body {
   overflow-x: hidden;
   background:

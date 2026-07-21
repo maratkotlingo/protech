@@ -257,7 +257,7 @@
         <article
           v-for="product in products"
           :key="product.id"
-          class="admin-product-card group overflow-hidden rounded-2xl bg-white p-2 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10 sm:rounded-3xl sm:p-3"
+          class="admin-product-card group overflow-hidden rounded-[1.5rem] bg-white p-2 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)] sm:p-3"
         >
           <div class="relative overflow-hidden rounded-xl bg-zinc-100 sm:rounded-[1.45rem]">
             <img

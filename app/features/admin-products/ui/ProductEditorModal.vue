@@ -42,50 +42,47 @@
         class="space-y-5 bg-[#f9fafb] p-4 sm:p-6"
         @submit.prevent="save"
       >
-        <div class="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.75fr)]">
-          <section class="min-w-0 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70 sm:p-5">
-            <div class="flex items-start gap-3">
-              <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
-                <UIcon
-                  name="i-lucide-file-pen-line"
-                  class="size-5"
-                />
-              </span>
-              <div>
-                <h3 class="text-lg font-semibold text-zinc-950">
-                  Данные товара
-                </h3>
-                <p class="mt-1 text-sm leading-6 text-zinc-500">
-                  Название, категория, цены и видимость в публичном каталоге.
-                </p>
-              </div>
+        <section class="rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70 sm:p-5">
+          <div class="flex items-start gap-3">
+            <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
+              <UIcon
+                name="i-lucide-file-pen-line"
+                class="size-5"
+              />
+            </span>
+            <div>
+              <h3 class="text-lg font-semibold text-zinc-950">
+                Данные товара
+              </h3>
+              <p class="mt-1 text-sm leading-6 text-zinc-500">
+                Название, категория, цены и видимость в публичном каталоге.
+              </p>
             </div>
+          </div>
 
-            <ProductEditorBasicsSection
-              class="mt-5"
-              :category-items="categoryItems"
-              :field-errors="fieldErrors"
-              :form="form"
-              @select-category="handleCategorySelect"
-              @update-field="updateFormField"
-            />
-          </section>
-
-          <ProductEditorMediaSection
-            class="min-w-0"
+          <ProductEditorBasicsSection
+            class="mt-5"
+            :category-items="categoryItems"
             :field-errors="fieldErrors"
-            :main-image="form.mainImage"
-            :product-images="form.productImages"
-            :uploading-gallery="uploadingGallery"
-            :uploading-main="uploadingMain"
-            @add-gallery-url="addGalleryUrl"
-            @remove-gallery-image="removeGalleryImage"
-            @update-gallery-image="updateGalleryImage"
-            @update-main-image="updateMainImage"
-            @upload-gallery-image="uploadGalleryImage"
-            @upload-main-image="uploadMainImage"
+            :form="form"
+            @select-category="handleCategorySelect"
+            @update-field="updateFormField"
           />
-        </div>
+        </section>
+
+        <ProductEditorMediaSection
+          :field-errors="fieldErrors"
+          :main-image="form.mainImage"
+          :product-images="form.productImages"
+          :uploading-gallery="uploadingGallery"
+          :uploading-main="uploadingMain"
+          @add-gallery-url="addGalleryUrl"
+          @remove-gallery-image="removeGalleryImage"
+          @update-gallery-image="updateGalleryImage"
+          @update-main-image="updateMainImage"
+          @upload-gallery-image="uploadGalleryImage"
+          @upload-main-image="uploadMainImage"
+        />
 
         <ProductEditorAttributesSection
           :attribute-items="attributeItems"
@@ -372,31 +369,47 @@ watch(
   { immediate: true }
 );
 
+const attributeOrderBoost = ref<Map<number, number>>(new Map());
+let attributeBoostCounter = 0;
+
 const categoryItems = computed(() => [
-  ...localCategories.value.map((category) => ({
-    label: category.name,
-    value: category.id
-  })),
-  { type: "separator" as const },
   {
     label: "Создать новую категорию",
     value: CREATE_CATEGORY_VALUE,
     class: "text-[var(--admin-accent)]"
-  }
-]);
-
-const attributeItems = computed(() => [
-  {
-    label: "Создать новую характеристику",
-    value: CREATE_ATTRIBUTE_VALUE,
-    class: "text-[var(--admin-accent)]"
   },
   { type: "separator" as const },
-  ...localAttributes.value.map((attribute) => ({
-    label: attribute.unit ? `${attribute.name}, ${attribute.unit}` : attribute.name,
-    value: attribute.id
+  ...localCategories.value.map((category) => ({
+    label: category.name,
+    value: category.id
   }))
 ]);
+
+const attributeItems = computed(() => {
+  const sortedAttributes = [...localAttributes.value].sort((first, second) => {
+    const firstBoost = attributeOrderBoost.value.get(first.id) ?? 0;
+    const secondBoost = attributeOrderBoost.value.get(second.id) ?? 0;
+
+    if (firstBoost !== secondBoost) {
+      return secondBoost - firstBoost;
+    }
+
+    return first.name.localeCompare(second.name, "ru");
+  });
+
+  return [
+    {
+      label: "Создать новую характеристику",
+      value: CREATE_ATTRIBUTE_VALUE,
+      class: "text-[var(--admin-accent)]"
+    },
+    { type: "separator" as const },
+    ...sortedAttributes.map((attribute) => ({
+      label: attribute.unit ? `${attribute.name}, ${attribute.unit}` : attribute.name,
+      value: attribute.id
+    }))
+  ];
+});
 
 function sortByName<T extends { name: string }>(items: T[]) {
   return [...items].sort((first, second) => first.name.localeCompare(second.name, "ru"));
@@ -414,6 +427,7 @@ function upsertAttribute(attribute: Attribute) {
     ...localAttributes.value.filter((item) => item.id !== attribute.id),
     attribute
   ]);
+  attributeOrderBoost.value.set(attribute.id, ++attributeBoostCounter);
 }
 
 function toPositiveInt(value: SelectValue) {
@@ -591,7 +605,7 @@ async function createAttribute() {
     if (targetAttribute) {
       targetAttribute.attributeId = result.attribute.id;
     } else {
-      form.productAttributes.push({
+      form.productAttributes.unshift({
         attributeId: result.attribute.id,
         value: ""
       });
@@ -612,7 +626,7 @@ async function createAttribute() {
 }
 
 function addAttribute() {
-  form.productAttributes.push({
+  form.productAttributes.unshift({
     attributeId: undefined,
     value: ""
   });

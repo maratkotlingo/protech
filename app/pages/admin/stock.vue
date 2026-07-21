@@ -86,23 +86,7 @@
       </div>
 
       <div class="space-y-5 bg-[#f9fafb] p-4 sm:p-5">
-        <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px_auto] xl:items-end">
-          <UFormField label="Добавить товар в приход">
-            <div class="rounded-2xl bg-white p-1.5 shadow-sm shadow-zinc-950/5">
-              <UInput
-                v-model="arrivalSearch"
-                class="w-full"
-                size="lg"
-                variant="none"
-                :ui="stockInputUi"
-                placeholder="Название или артикул"
-              >
-                <template #leading>
-                  <Search class="size-4 text-zinc-400" />
-                </template>
-              </UInput>
-            </div>
-          </UFormField>
+        <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
           <UFormField label="Комментарий">
             <div class="rounded-2xl bg-white p-1.5 shadow-sm shadow-zinc-950/5">
               <UInput
@@ -115,116 +99,95 @@
               />
             </div>
           </UFormField>
-          <UButton
-            color="primary"
-            size="lg"
-            class="h-12 justify-center rounded-full px-5 shadow-lg shadow-emerald-950/10"
-            :disabled="!arrivalItems.length"
-            :loading="arrivalSubmitting"
-            @click="submitArrival"
-          >
-            <PackagePlus class="size-4" />
-            Принять приход
-          </UButton>
-        </div>
-
-        <div
-          v-if="arrivalSearch.trim()"
-          class="overflow-hidden rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-        >
-          <button
-            v-for="stock in arrivalSearchResults"
-            :key="stock.product.id"
-            type="button"
-            class="flex w-full items-center justify-between gap-4 border-b border-zinc-100 px-4 py-3 text-left last:border-b-0 transition hover:bg-[#f9fafb]"
-            @click="addArrivalItem(stock)"
-          >
-            <span class="min-w-0">
-              <span class="block truncate font-medium text-[var(--admin-text)]">
-                {{ stock.product.name }}
-              </span>
-              <span class="mt-0.5 block truncate text-xs text-[var(--admin-text-muted)]">
-                {{ stock.product.article }} · сейчас {{ stock.quantity }} шт.
-              </span>
-            </span>
-            <span class="inline-flex shrink-0 items-center gap-2 text-sm font-medium text-[var(--admin-accent)]">
+          <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-end">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              size="lg"
+              class="h-12 justify-center rounded-full bg-white px-5 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
+              @click="addArrivalItem"
+            >
               <Plus class="size-4" />
-              Добавить
-            </span>
-          </button>
-
-          <div
-            v-if="!arrivalSearchResults.length"
-            class="px-4 py-3 text-sm text-[var(--admin-text-muted)]"
-          >
-            Подходящие товары не найдены или уже добавлены в приход.
+              Добавить товар
+            </UButton>
+            <UButton
+              color="primary"
+              size="lg"
+              class="h-12 justify-center rounded-full px-5 shadow-lg shadow-emerald-950/10"
+              :disabled="!arrivalItems.length"
+              :loading="arrivalSubmitting"
+              @click="submitArrival"
+            >
+              <PackagePlus class="size-4" />
+              Принять приход
+            </UButton>
           </div>
         </div>
 
         <div
           v-if="arrivalItems.length"
-          class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3"
+          class="space-y-3"
         >
-          <article
+          <div
             v-for="item in arrivalItems"
-            :key="item.productId"
-            class="rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70"
+            :key="item.id"
+            class="grid gap-3 rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)] lg:grid-cols-[minmax(0,1fr)_160px_180px_auto] lg:items-end"
           >
-            <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
-                <p class="line-clamp-2 font-semibold leading-6 text-zinc-950">
-                  {{ item.name }}
-                </p>
-                <p class="mt-1 truncate text-xs font-medium uppercase text-zinc-400">
-                  {{ item.article }}
-                </p>
-              </div>
-              <UTooltip text="Убрать из прихода">
-                <UButton
-                  color="error"
-                  variant="ghost"
-                  class="rounded-full bg-[#f9fafb]"
-                  type="button"
-                  square
-                  aria-label="Убрать товар из прихода"
-                  @click="removeArrivalItem(item.productId)"
-                >
-                  <Trash2 class="size-4" />
-                </UButton>
-              </UTooltip>
+            <UFormField label="Товар">
+              <USelect
+                :model-value="item.productId"
+                class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
+                size="lg"
+                color="neutral"
+                variant="none"
+                icon="i-lucide-package-search"
+                :content="stockSelectContent"
+                :items="arrivalProductItems"
+                placeholder="Выберите товар"
+                :ui="stockSelectUi"
+                @update:model-value="(value) => updateArrivalProduct(item.id, value)"
+              />
+            </UFormField>
+            <UFormField label="Количество">
+              <UInput
+                v-model.number="item.quantityDelta"
+                size="lg"
+                type="number"
+                min="1"
+                class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
+                variant="none"
+                :ui="stockInputUi"
+              />
+            </UFormField>
+            <div class="rounded-2xl bg-[#f9fafb] p-3">
+              <p class="text-xs font-semibold uppercase text-zinc-400">
+                Сейчас / будет
+              </p>
+              <p class="mt-2 truncate text-sm font-semibold text-zinc-950">
+                {{ getArrivalCurrentQuantity(item.productId) }} / {{ getArrivalNextQuantity(item) }} шт.
+              </p>
             </div>
+            <UTooltip text="Убрать из прихода">
+              <UButton
+                color="error"
+                variant="ghost"
+                class="rounded-full bg-[#f9fafb]"
+                type="button"
+                square
+                aria-label="Убрать товар из прихода"
+                @click="removeArrivalItem(item.id)"
+              >
+                <Trash2 class="size-4" />
+              </UButton>
+            </UTooltip>
+          </div>
+        </div>
 
-            <div class="mt-4 grid gap-3">
-              <div class="rounded-2xl bg-[#f9fafb] p-3">
-                <p class="text-xs font-semibold uppercase text-zinc-400">
-                  Сейчас
-                </p>
-                <p class="mt-2 text-sm font-semibold text-zinc-950">
-                  {{ item.currentQuantity }} шт.
-                </p>
-              </div>
-              <label class="block rounded-2xl bg-[#f9fafb] p-3">
-                <span class="mb-2 block text-xs font-semibold uppercase text-zinc-400">Приход</span>
-                <UInput
-                  v-model.number="item.quantityDelta"
-                  size="lg"
-                  type="number"
-                  min="1"
-                  class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-                  variant="none"
-                  :ui="stockInputUi"
-                />
-              </label>
-              <div class="rounded-2xl bg-emerald-50 p-3 text-emerald-700">
-                <p class="text-xs font-semibold uppercase">
-                  Будет
-                </p>
-                <p class="mt-2 text-sm font-semibold">
-                  {{ item.currentQuantity + Number(item.quantityDelta ?? 0) }} шт.
-                </p>
-              </div>
-            </div>
-          </article>
+        <div
+          v-else
+          class="grid min-h-24 place-items-center rounded-2xl bg-white px-4 text-center text-sm leading-6 text-[var(--admin-text-muted)] shadow-sm shadow-zinc-950/5"
+        >
+          Нажмите «Добавить товар», чтобы создать строку прихода.
         </div>
 
         <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--admin-text-muted)]">
@@ -290,7 +253,7 @@
         <article
           v-for="stock in filteredStocks"
           :key="stock.product.id"
-          class="rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-zinc-950/10"
+          class="rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]"
         >
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
@@ -379,10 +342,8 @@ import { bulkStockArrivalSchema } from "~~/shared/schemas/admin/products/bulkSto
 import { updateProductStockSchema } from "~~/shared/schemas/admin/products/updateProductStock";
 
 type ArrivalDraftItem = {
-  productId: number;
-  name: string;
-  article: string;
-  currentQuantity: number;
+  id: number;
+  productId: number | undefined;
   quantityDelta: number | null;
 };
 
@@ -391,15 +352,27 @@ definePageMeta({
 });
 
 const search = ref("");
-const arrivalSearch = ref("");
 const arrivalReason = ref("");
 const arrivalSubmitting = ref(false);
 const arrivalItems = ref<ArrivalDraftItem[]>([]);
 const savingId = ref<number | null>(null);
 const draftQuantities = reactive<Record<number, number>>({});
+let arrivalDraftId = 0;
 
 const stockInputUi = {
   base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700"
+};
+const stockSelectContent = {
+  bodyLock: false,
+  collisionPadding: 12
+};
+const stockSelectUi = {
+  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700",
+  content: "max-w-[min(34rem,calc(100vw-1rem))] rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0",
+  item: "rounded-xl",
+  itemLabel: "truncate",
+  value: "truncate",
+  viewport: "max-h-80 p-1"
 };
 
 const { data, pending, error, refresh } = await useAsyncData("admin-product-stocks", () => adminFetch<ProductStock[]>("/api/admin/products/stock"));
@@ -420,74 +393,82 @@ const filteredStocks = computed(() => {
     stock.product.article.toLowerCase().includes(query)
   );
 });
-const arrivalSearchResults = computed(() => {
-  const query = arrivalSearch.value.trim().toLowerCase();
-  const selectedIds = new Set(arrivalItems.value.map((item) => item.productId));
-
-  if (!query) {
-    return [];
-  }
-
-  return stocks.value
-    .filter((stock) =>
-      !selectedIds.has(stock.product.id) &&
-      (
-        stock.product.name.toLowerCase().includes(query) ||
-        stock.product.article.toLowerCase().includes(query)
-      )
-    )
-    .slice(0, 8);
-});
+const arrivalProductItems = computed(() =>
+  stocks.value.map((stock) => ({
+    label: `${stock.product.name} · ${stock.product.article}`,
+    value: stock.product.id
+  }))
+);
+const stockByProductId = computed(() => new Map(stocks.value.map((stock) => [stock.product.id, stock])));
 const arrivalTotalQuantity = computed(() =>
   arrivalItems.value.reduce((total, item) => total + Math.max(0, Number(item.quantityDelta ?? 0)), 0)
 );
 
 watch(stocks, (items) => {
-  const stockByProductId = new Map(items.map((stock) => [stock.product.id, stock]));
+  const nextStockByProductId = new Map(items.map((stock) => [stock.product.id, stock]));
 
   for (const stock of items) {
     draftQuantities[stock.product.id] = stock.quantity;
   }
 
-  arrivalItems.value = arrivalItems.value
-    .filter((item) => stockByProductId.has(item.productId))
-    .map((item) => {
-      const stock = stockByProductId.get(item.productId)!;
-
-      return {
-        ...item,
-        name: stock.product.name,
-        article: stock.product.article,
-        currentQuantity: stock.quantity
-      };
-    });
+  arrivalItems.value = arrivalItems.value.filter((item) =>
+    !item.productId || nextStockByProductId.has(item.productId)
+  );
 }, { immediate: true });
 
-function addArrivalItem(stock: ProductStock) {
-  if (arrivalItems.value.some((item) => item.productId === stock.product.id)) {
+function toPositiveInt(value: unknown) {
+  const numericValue = Number(value);
+  return Number.isInteger(numericValue) && numericValue > 0 ? numericValue : undefined;
+}
+
+function addArrivalItem() {
+  arrivalItems.value.push({
+    id: ++arrivalDraftId,
+    productId: undefined,
+    quantityDelta: 1
+  });
+}
+
+function updateArrivalProduct(itemId: number, value: unknown) {
+  const productId = toPositiveInt(value);
+  const target = arrivalItems.value.find((item) => item.id === itemId);
+
+  if (!target) {
     return;
   }
 
-  arrivalItems.value.push({
-    productId: stock.product.id,
-    name: stock.product.name,
-    article: stock.product.article,
-    currentQuantity: stock.quantity,
-    quantityDelta: 1
-  });
-  arrivalSearch.value = "";
+  if (productId && arrivalItems.value.some((item) => item.id !== itemId && item.productId === productId)) {
+    toast.error("Этот товар уже добавлен в приход");
+    return;
+  }
+
+  target.productId = productId;
 }
 
-function removeArrivalItem(productId: number) {
-  arrivalItems.value = arrivalItems.value.filter((item) => item.productId !== productId);
+function removeArrivalItem(itemId: number) {
+  arrivalItems.value = arrivalItems.value.filter((item) => item.id !== itemId);
+}
+
+function getArrivalCurrentQuantity(productId: number | undefined) {
+  return productId ? stockByProductId.value.get(productId)?.quantity ?? 0 : 0;
+}
+
+function getArrivalNextQuantity(item: ArrivalDraftItem) {
+  return getArrivalCurrentQuantity(item.productId) + Math.max(0, Number(item.quantityDelta ?? 0));
 }
 
 async function submitArrival() {
+  if (arrivalItems.value.some((item) => !item.productId)) {
+    toast.error("Выберите товар в каждой строке прихода");
+    return;
+  }
+
+  const arrivals = arrivalItems.value.map((item) => ({
+    productId: item.productId,
+    quantityDelta: item.quantityDelta
+  }));
   const parsed = bulkStockArrivalSchema.safeParse({
-    arrivals: arrivalItems.value.map((item) => ({
-      productId: item.productId,
-      quantityDelta: item.quantityDelta
-    })),
+    arrivals,
     reason: arrivalReason.value.trim() || undefined
   });
 

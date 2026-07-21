@@ -64,8 +64,8 @@
         size="xl"
         variant="none"
         autoresize
-        :rows="8"
-        :maxrows="18"
+        :rows="5"
+        :maxrows="14"
         :ui="textareaUi"
         placeholder="Коротко опишите свойства, комплектацию и назначение товара"
         @update:model-value="emit('updateField', 'description', String($event ?? ''))"
@@ -186,7 +186,7 @@ const inputUi = {
   base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-900"
 };
 const textareaUi = {
-  base: "min-h-48 rounded-2xl bg-transparent text-base leading-7 text-zinc-900"
+  base: "min-h-32 rounded-2xl bg-transparent text-base leading-7 text-zinc-900"
 };
 const selectContent = {
   bodyLock: false,

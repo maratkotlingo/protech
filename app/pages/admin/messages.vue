@@ -1,5 +1,5 @@
 <template>
-  <div class="messages-shop-page space-y-5">
+  <div class="messages-shop-page space-y-5 xl:flex xl:h-[calc(100dvh-8.25rem)] xl:min-h-0 xl:flex-col xl:gap-5 xl:space-y-0">
     <AdminPageHeader
       title="Сообщения"
       kicker="Поддержка"
@@ -72,12 +72,12 @@
       class="rounded-2xl"
     />
 
-    <div class="grid min-h-[680px] gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
+    <div class="grid min-h-[520px] gap-4 xl:min-h-0 xl:flex-1 xl:grid-cols-[360px_minmax(0,1fr)]">
       <UCard
-        class="admin-list-card"
-        :ui="{ body: 'p-0' }"
+        class="admin-list-card min-h-0"
+        :ui="{ body: 'flex h-full min-h-0 flex-col p-0' }"
       >
-        <div class="border-b border-[var(--admin-border)] p-4">
+        <div class="shrink-0 border-b border-[var(--admin-border)] p-4">
           <div class="mb-3 flex items-center justify-between gap-3">
             <div>
               <p class="admin-section-heading">
@@ -107,7 +107,7 @@
           </div>
         </div>
 
-        <div class="admin-muted-scroll max-h-[620px] space-y-2 overflow-y-auto bg-[#f9fafb] p-3">
+        <div class="admin-muted-scroll min-h-0 space-y-2 overflow-y-auto bg-[#f9fafb] p-3 xl:flex-1">
           <button
             v-for="conversation in filteredConversations"
             :key="conversation.user.id"
@@ -173,11 +173,11 @@
       </UCard>
 
       <UCard
-        class="admin-list-card"
-        :ui="{ body: 'flex h-full min-h-[680px] flex-col p-0' }"
+        class="admin-list-card min-h-0"
+        :ui="{ body: 'flex h-full min-h-0 flex-col p-0' }"
       >
         <template v-if="selectedUser">
-          <header class="border-b border-[var(--admin-border)] bg-white p-4">
+          <header class="shrink-0 border-b border-[var(--admin-border)] bg-white p-4">
             <div class="flex flex-wrap items-center justify-between gap-4">
               <div class="flex min-w-0 items-center gap-3">
                 <div class="admin-avatar size-11 shrink-0 text-sm">
@@ -269,34 +269,35 @@
           </div>
 
           <form
-            class="border-t border-zinc-100 bg-white p-4"
+            class="shrink-0 rounded-b-2xl border-t border-zinc-100 bg-white/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-18px_44px_rgba(15,23,42,0.08)] backdrop-blur sm:p-3 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
             @submit.prevent="sendMessage"
           >
             <UFormField :error="messageError">
-              <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-                <div class="rounded-2xl bg-[#f9fafb] p-1.5 shadow-inner shadow-zinc-950/5">
-                  <UTextarea
-                    v-model="draftMessage"
-                    class="w-full"
-                    :disabled="submitting"
-                    :rows="3"
-                    variant="none"
-                    :ui="adminTextareaUi"
-                    placeholder="Сообщение пользователю"
-                    @keydown.enter.exact.prevent="sendMessage"
-                  />
-                </div>
-                <UButton
-                  color="primary"
-                  icon="i-lucide-send"
-                  size="lg"
+              <div
+                class="flex items-end gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45"
+              >
+                <textarea
+                  ref="messageInput"
+                  v-model="draftMessage"
+                  class="h-12 min-h-12 max-h-36 flex-1 resize-none overflow-y-hidden rounded-xl bg-transparent px-3 py-3 text-sm leading-5 text-zinc-950 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  :disabled="submitting"
+                  placeholder="Сообщение"
+                  rows="1"
+                  @input="resizeMessageInput"
+                  @keydown.enter.exact.prevent="sendMessage"
+                />
+                <button
                   type="submit"
-                  class="min-h-12 justify-center rounded-full px-5 shadow-lg shadow-emerald-950/10"
-                  :disabled="!draftMessage.trim()"
-                  :loading="submitting"
+                  class="mb-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-950/15 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+                  :disabled="!draftMessage.trim() || submitting"
+                  aria-label="Отправить сообщение"
                 >
-                  Отправить
-                </UButton>
+                  <UIcon
+                    :name="submitting ? 'i-lucide-loader-circle' : 'i-lucide-send'"
+                    class="size-4"
+                    :class="submitting ? 'animate-spin' : ''"
+                  />
+                </button>
               </div>
             </UFormField>
           </form>
@@ -304,7 +305,7 @@
 
         <div
           v-else
-          class="grid min-h-[680px] place-items-center p-6"
+          class="grid min-h-[520px] place-items-center p-6 xl:min-h-0 xl:flex-1"
         >
           <AdminEmptyState
             title="Выберите диалог"
@@ -361,13 +362,13 @@ const submitting = ref(false);
 const messageError = ref("");
 const socketConnected = ref(false);
 const messagesContainer = ref<HTMLElement | null>(null);
+const messageInput = ref<HTMLTextAreaElement | null>(null);
 let socket: WebSocket | null = null;
+const messageInputMinHeight = 48;
+const messageInputMaxHeight = messageInputMinHeight * 3;
 
 const adminInputUi = {
   base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700"
-};
-const adminTextareaUi = {
-  base: "min-h-28 resize-y rounded-2xl bg-transparent text-sm leading-6 text-zinc-900"
 };
 
 const {
@@ -416,6 +417,7 @@ onMounted(async () => {
   }
 
   connectSocket();
+  resizeMessageInput();
 });
 
 onBeforeUnmount(() => {
@@ -485,6 +487,7 @@ async function sendMessage() {
 
     upsertMessage(response.message);
     draftMessage.value = "";
+    resizeMessageInput();
     await refreshConversations();
     await scrollToBottom();
   } catch (error) {
@@ -589,6 +592,19 @@ function getInitials(value: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
+}
+
+function resizeMessageInput() {
+  const input = messageInput.value;
+
+  if (!input) {
+    return;
+  }
+
+  input.style.height = `${messageInputMinHeight}px`;
+  const nextHeight = Math.min(input.scrollHeight, messageInputMaxHeight);
+  input.style.height = `${Math.max(messageInputMinHeight, nextHeight)}px`;
+  input.style.overflowY = input.scrollHeight > messageInputMaxHeight ? "auto" : "hidden";
 }
 
 async function scrollToBottom() {

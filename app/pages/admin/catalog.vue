@@ -105,7 +105,7 @@
           <div
             v-for="category in categories"
             :key="category.id"
-            class="flex items-center justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/10"
+            class="flex items-center justify-between gap-4 rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]"
           >
             <div class="min-w-0">
               <p class="truncate font-medium text-[var(--admin-text)]">
@@ -195,7 +195,7 @@
           <div
             v-for="attribute in attributes"
             :key="attribute.id"
-            class="flex items-center justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/10"
+            class="flex items-center justify-between gap-4 rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]"
           >
             <div class="min-w-0">
               <p class="truncate font-medium text-[var(--admin-text)]">
