@@ -1,153 +1,74 @@
 <template>
-  <div class="admin-card h-full min-h-[24rem] p-5">
+  <div class="admin-card h-full min-h-96 p-5">
     <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
       <div>
         <p class="admin-section-heading">
           {{ title }}
         </p>
-        <p
-          v-if="description"
-          class="admin-section-copy"
-        >
+        <p v-if="description" class="admin-section-copy">
           {{ description }}
         </p>
       </div>
-      <div class="flex items-center gap-4 text-sm text-[var(--admin-text-muted)]">
+      <div class="flex items-center gap-4 text-sm text-(--admin-text-muted)">
         <span class="inline-flex items-center gap-1.5">
-          <span class="size-3 rounded-full bg-[var(--admin-chart-green)]" />
+          <span class="size-3 rounded-full bg-(--admin-chart-green)" />
           {{ valueLabel }}
         </span>
-        <span
-          v-if="secondaryLabel"
-          class="inline-flex items-center gap-1.5"
-        >
-          <span class="size-3 rounded-full bg-[var(--admin-chart-blue)]" />
+        <span v-if="secondaryLabel" class="inline-flex items-center gap-1.5">
+          <span class="size-3 rounded-full bg-(--admin-chart-blue)" />
           {{ secondaryLabel }}
         </span>
       </div>
     </div>
 
     <div class="-mx-2 overflow-x-auto px-2 pb-2">
-      <svg
-        :viewBox="`0 0 ${width} ${height}`"
-        class="admin-line-chart-svg h-88 overflow-visible"
-        role="img"
-        :aria-label="title"
-      >
-        <g class="text-[var(--admin-border)]">
-          <line
-            v-for="tick in yAxisTicks"
-            :key="tick.key"
-            :x1="leftPadding"
-            :x2="width - rightPadding"
-            :y1="tick.y"
-            :y2="tick.y"
-            stroke="currentColor"
-            stroke-width="1"
-          />
+      <svg :viewBox="`0 0 ${width} ${height}`" class="admin-line-chart-svg h-88 overflow-visible" role="img"
+        :aria-label="title">
+        <g class="text-(--admin-border)">
+          <line v-for="tick in yAxisTicks" :key="tick.key" :x1="leftPadding" :x2="width - rightPadding" :y1="tick.y"
+            :y2="tick.y" stroke="currentColor" stroke-width="1" />
         </g>
 
-        <g class="fill-[var(--admin-text-muted)] text-[0.65rem]">
-          <text
-            v-for="tick in yAxisTicks"
-            :key="`${tick.key}-label`"
-            :x="leftPadding - 10"
-            :y="tick.y + 4"
-            text-anchor="end"
-          >
+        <g class="fill-(--admin-text-muted) text-[0.65rem]">
+          <text v-for="tick in yAxisTicks" :key="`${tick.key}-label`" :x="leftPadding - 10" :y="tick.y + 4"
+            text-anchor="end">
             {{ formatValue(tick.value) }}
           </text>
         </g>
 
-        <path
-          v-if="areaPath"
-          :d="areaPath"
-          fill="url(#line-area)"
-          opacity="0.26"
-        />
-        <path
-          v-if="linePath"
-          :d="linePath"
-          fill="none"
-          stroke="var(--admin-chart-green)"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="3"
-        />
-        <path
-          v-if="secondaryPath"
-          :d="secondaryPath"
-          fill="none"
-          stroke="var(--admin-chart-blue)"
-          stroke-dasharray="6 6"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="3"
-        />
+        <path v-if="areaPath" :d="areaPath" fill="url(#line-area)" opacity="0.26" />
+        <path v-if="linePath" :d="linePath" fill="none" stroke="var(--admin-chart-green)" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="3" />
+        <path v-if="secondaryPath" :d="secondaryPath" fill="none" stroke="var(--admin-chart-blue)"
+          stroke-dasharray="6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" />
 
         <g>
-          <circle
-            v-for="point in primaryPoints"
-            :key="`${point.x}-${point.y}`"
-            :cx="point.x"
-            :cy="point.y"
-            r="4"
-            fill="var(--admin-chart-green)"
-          />
+          <circle v-for="point in primaryPoints" :key="`${point.x}-${point.y}`" :cx="point.x" :cy="point.y" r="4"
+            fill="var(--admin-chart-green)" />
         </g>
 
-        <g class="fill-[var(--admin-text)] text-[0.65rem] font-semibold">
-          <template
-            v-for="annotation in purchaseAnnotations"
-            :key="annotation.key"
-          >
-            <text
-              :x="annotation.amountX"
-              :y="annotation.amountY"
-              :text-anchor="annotation.amountAnchor"
-            >
+        <g class="fill-(--admin-text) text-[0.65rem] font-semibold">
+          <template v-for="annotation in purchaseAnnotations" :key="annotation.key">
+            <text :x="annotation.amountX" :y="annotation.amountY" :text-anchor="annotation.amountAnchor">
               {{ annotation.amount }}
             </text>
-            <text
-              class="fill-[var(--admin-text-muted)] font-medium"
-              :x="annotation.dateX"
-              :y="annotation.dateY"
-              text-anchor="middle"
-            >
+            <text class="fill-(--admin-text-muted) font-medium" :x="annotation.dateX" :y="annotation.dateY"
+              text-anchor="middle">
               {{ annotation.date }}
             </text>
           </template>
         </g>
 
-        <g class="text-xs fill-[var(--admin-text-muted)]">
-          <text
-            v-for="label in visibleLabels"
-            :key="label.text"
-            :x="label.x"
-            :y="height - 16"
-            text-anchor="middle"
-          >
+        <g class="text-xs fill-(--admin-text-muted)">
+          <text v-for="label in visibleLabels" :key="label.text" :x="label.x" :y="height - 16" text-anchor="middle">
             {{ label.text }}
           </text>
         </g>
 
         <defs>
-          <linearGradient
-            id="line-area"
-            x1="0"
-            x2="0"
-            y1="0"
-            y2="1"
-          >
-            <stop
-              offset="0%"
-              stop-color="var(--admin-chart-green)"
-            />
-            <stop
-              offset="100%"
-              stop-color="var(--admin-chart-green)"
-              stop-opacity="0"
-            />
+          <linearGradient id="line-area" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="var(--admin-chart-green)" />
+            <stop offset="100%" stop-color="var(--admin-chart-green)" stop-opacity="0" />
           </linearGradient>
         </defs>
       </svg>

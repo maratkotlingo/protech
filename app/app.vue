@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 useHead({
-  title: "ProTech",
+  title: "Административная панель",
   titleTemplate: (title) => title ? `${title} · ПроТех76` : "ПроТех76",
 });
 </script>

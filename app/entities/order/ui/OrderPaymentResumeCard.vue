@@ -1,16 +1,11 @@
 <template>
-  <section
-    v-if="isPendingPayment"
+  <section v-if="isPendingPayment"
     class="rounded-[1.35rem] bg-emerald-50 p-4 text-emerald-900 ring-1 ring-emerald-200/80"
-    :class="compact ? 'mt-3' : ''"
-  >
+    :class="compact ? 'mt-3' : ''">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div class="min-w-0">
         <p class="inline-flex items-center gap-2 text-sm font-semibold">
-          <UIcon
-            name="i-lucide-clock-3"
-            class="size-4 shrink-0"
-          />
+          <UIcon name="i-lucide-clock-3" class="size-4 shrink-0" />
           Ожидает оплаты
         </p>
         <p class="mt-1 text-sm leading-6 text-emerald-800/80">
@@ -18,24 +13,16 @@
         </p>
       </div>
 
-      <UButton
-        color="primary"
-        icon="i-lucide-credit-card"
-        :loading="submitting"
-        :disabled="remainingSeconds <= 0"
+      <UButton color="primary" icon="i-lucide-credit-card" :loading="submitting" :disabled="remainingSeconds <= 0"
         class="min-h-11 justify-center rounded-full px-5 font-semibold"
-        :class="compact ? 'w-full sm:w-auto' : 'w-full sm:min-w-48 sm:w-auto'"
-        @click.stop="resumePayment"
-      >
+        :class="compact ? 'w-full sm:w-auto' : 'w-full sm:min-w-48 sm:w-auto'" @click.stop="resumePayment">
         {{ remainingSeconds > 0 ? "Перейти к оплате" : "Время истекло" }}
       </UButton>
     </div>
 
     <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-emerald-200/70">
-      <div
-        class="h-full rounded-full bg-emerald-500 transition-[width] duration-500"
-        :style="{ width: `${progressPercent}%` }"
-      />
+      <div class="h-full rounded-full bg-emerald-500 transition-[width] duration-500"
+        :style="{ width: `${progressPercent}%` }" />
     </div>
   </section>
 </template>

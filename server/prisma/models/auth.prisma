@@ -14,18 +14,15 @@ model User {
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
 
-    sessions             Session[]
-    accounts             Account[]
-    carts                Cart[]
-    productSubscriptions ProductSubscription[]
-    favoriteProducts     FavoriteProduct[]
-    reviews              Review[]
-    shopQuestions        ShopQuestion[]
-    orders               Order[]
-    shopAnswers          ShopAnswer[]
-    reviewAnswers        ReviewAnswer[]
-    message              Message[]
-    auditLogs            AuditLog[]
+    sessions         Session[]
+    accounts         Account[]
+    carts            Cart[]
+    favoriteProducts FavoriteProduct[]
+    reviews          Review[]
+    orders           Order[]
+    reviewAnswers    ReviewAnswer[]
+    message          Message[]
+    auditLogs        AuditLog[]
 
     @@map("user")
 }

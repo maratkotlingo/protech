@@ -2,17 +2,23 @@
   <header class="sticky top-0 z-40 px-3 py-3 sm:px-4">
     <div class="mx-auto w-full max-w-370">
       <div
-        class="relative flex min-h-18 items-center gap-3 rounded-[2rem] bg-white/90 p-2 shadow-[0_18px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl  ">
+        class="relative flex min-h-18 items-center gap-3 rounded-4xl bg-white/90 p-2 shadow-[0_18px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl  ">
         <NuxtLink to="/"
-          class="group flex shrink-0 items-center gap-3 rounded-[1.5rem] px-2 py-1.5 transition duration-300 hover:scale-[1.01] hover:bg-[#f9fafb] "
-          aria-label="На главную ProTech">
+          class="group flex shrink-0 items-center gap-3 rounded-[1.5rem] px-2 py-1.5 transition duration-300 hover:scale-[1.01] hover:bg-[#f9fafb]"
+          aria-label="На главную ПроТех76">
           <span
-            class="grid size-11 place-items-center rounded-[1.35rem] bg-emerald-600 text-white shadow-xl shadow-emerald-900/20 transition duration-300 group-hover:rotate-3 group-hover:scale-105">
-            <UIcon name="i-lucide-zap" class="size-6" />
+            class="grid size-11 place-items-center overflow-hidden rounded-[1.35rem] shadow-xl shadow-emerald-900/20 transition duration-300 group-hover:rotate-3 group-hover:scale-105">
+            <img src="/logo.png" alt="Логотип ПроТех76" class="size-full object-contain">
           </span>
+
           <span class="min-w-0 leading-tight">
-            <span class="block truncate text-base font-semibold tracking-normal text-zinc-950 sm:text-lg">ProTech</span>
-            <span class="hidden text-xs text-zinc-500 sm:block">Техника и аксессуары</span>
+            <span class="block truncate text-base font-semibold tracking-normal text-zinc-950 sm:text-lg">
+              ПроТех76
+            </span>
+
+            <span class="hidden text-xs text-zinc-500 sm:block">
+              Запчасти и навесное оборудование
+            </span>
           </span>
         </NuxtLink>
 
@@ -77,16 +83,17 @@
           @click="closeMobileMenu" />
 
         <aside
-          class="absolute inset-y-3 right-3 flex w-[min(390px,calc(100vw-1.5rem))] flex-col rounded-[2rem] bg-white p-4 shadow-2xl shadow-zinc-950/25 ">
+          class="absolute inset-y-3 right-3 flex w-[min(390px,calc(100vw-1.5rem))] flex-col rounded-4xl bg-white p-4 shadow-2xl shadow-zinc-950/25 ">
           <div class="flex items-center justify-between gap-4">
-            <NuxtLink to="/" class="flex items-center gap-3 rounded-3xl" aria-label="На главную ProTech"
+            <NuxtLink to="/" class="flex items-center gap-3 rounded-3xl" aria-label="На главную ПроТех76"
               @click="closeMobileMenu">
-              <span class="grid size-11 place-items-center rounded-[1.35rem] bg-emerald-600 text-white">
-                <UIcon name="i-lucide-zap" class="size-6" />
+              <span
+                class="grid size-11 place-items-center overflow-hidden rounded-[1.35rem] shadow-xl shadow-emerald-900/20 transition duration-300 group-hover:rotate-3 group-hover:scale-105">
+                <img src="/logo.png" alt="Логотип ПроТех76" class="size-full object-contain">
               </span>
               <span>
-                <span class="block font-semibold text-zinc-950">ProTech</span>
-                <span class="block text-xs text-zinc-500">Магазин техники</span>
+                <span class="block font-semibold text-zinc-950">ПроТех76</span>
+                <span class="block text-xs text-zinc-500">Магазин запчастей и навесного оборудования</span>
               </span>
             </NuxtLink>
 

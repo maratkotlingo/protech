@@ -1,65 +1,42 @@
 <template>
-  <aside
-    :class="[
-      'admin-sidebar flex flex-col overflow-hidden transition-[width] duration-200',
-      fluid
-        ? 'h-full w-full'
-        : collapsed
-          ? 'fixed inset-y-0 left-0 z-40 hidden w-[var(--admin-sidebar-collapsed-width)] lg:flex'
-          : 'fixed inset-y-0 left-0 z-40 hidden w-[var(--admin-sidebar-width)] lg:flex'
-    ]"
-  >
-    <div
-      :class="[
-        'flex min-h-20 items-center gap-3 border-b border-zinc-100 px-3 py-3',
-        collapsed ? 'justify-center' : 'justify-between'
-      ]"
-    >
-      <NuxtLink
-        to="/admin"
-        :class="[
-          'group flex min-w-0 items-center gap-3 rounded-2xl p-1.5 transition hover:bg-emerald-50',
-          collapsed ? 'justify-center' : ''
-        ]"
-        aria-label="ProTech Admin"
-        @click="$emit('navigate')"
-      >
-        <span class="admin-icon-tile size-11 shrink-0 rounded-2xl transition group-hover:scale-[1.03]">
-          <Zap class="size-6" />
-        </span>
+  <aside :class="[
+    'admin-sidebar flex flex-col overflow-hidden transition-[width] duration-200',
+    fluid
+      ? 'h-full w-full'
+      : collapsed
+        ? 'fixed inset-y-0 left-0 z-40 hidden w-(--admin-sidebar-collapsed-width) lg:flex'
+        : 'fixed inset-y-0 left-0 z-40 hidden w-(--admin-sidebar-width) lg:flex'
+  ]">
+    <div :class="[
+      'flex min-h-20 items-center gap-3 border-b border-zinc-100 px-3 py-3',
+      collapsed ? 'justify-center' : 'justify-between'
+    ]">
+      <NuxtLink to="/admin" :class="[
+        'group flex min-w-0 items-center gap-3 rounded-2xl p-1.5 transition hover:bg-emerald-50',
+        collapsed ? 'justify-center' : ''
+      ]" aria-label="ПроТех76 - Панель администратора" @click="$emit('navigate')">
         <span
-          v-if="!collapsed"
-          class="min-w-0 leading-tight"
-        >
-          <span class="block truncate text-base font-semibold tracking-normal text-[var(--admin-text)]">
-            ProTech
+          class="grid size-11 place-items-center overflow-hidden rounded-[1.35rem] shadow-xl shadow-emerald-900/20 transition duration-300 group-hover:rotate-3 group-hover:scale-105">
+          <img src="/logo.png" alt="Логотип ПроТех76" class="size-full object-contain">
+        </span>
+        <span v-if="!collapsed" class="min-w-0 leading-tight">
+          <span class="block truncate text-base font-semibold tracking-normal text-(--admin-text)">
+            ПроТех76
           </span>
-          <span class="block truncate text-[0.7rem] uppercase text-[var(--admin-text-muted)]">
-            Admin console
+          <span class="block truncate text-[0.7rem] uppercase text-(--admin-text-muted)">
+            Панель администратора
           </span>
         </span>
       </NuxtLink>
 
-      <UTooltip
-        v-if="!collapsed && showCollapse"
-        text="Свернуть меню"
-      >
-        <UButton
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-panel-left-close"
-          square
+      <UTooltip v-if="!collapsed && showCollapse" text="Свернуть меню">
+        <UButton color="neutral" variant="ghost" icon="i-lucide-panel-left-close" square
           class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
-          aria-label="Свернуть навигацию"
-          @click="ui.toggleSidebar()"
-        />
+          aria-label="Свернуть навигацию" @click="ui.toggleSidebar()" />
       </UTooltip>
     </div>
 
-    <div
-      v-if="!collapsed"
-      class="px-3 py-3"
-    >
+    <div v-if="!collapsed" class="px-3 py-3">
       <div class="rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
         <p class="text-xs font-semibold uppercase text-emerald-700">
           Рабочее пространство
@@ -70,60 +47,35 @@
       </div>
     </div>
 
-    <nav
-      :class="[
-        'admin-muted-scroll flex-1 overflow-y-auto',
-        collapsed ? 'px-2 py-3' : 'px-3 pb-4'
-      ]"
-    >
-      <div
-        v-for="group in navGroups"
-        :key="group.label"
-        :class="[
-          'mb-3 last:mb-0',
-          collapsed ? '' : 'rounded-2xl bg-[#f9fafb]/70 p-2'
-        ]"
-      >
-        <p
-          v-if="!collapsed"
-          class="mb-1 px-2 text-[0.68rem] font-semibold uppercase text-zinc-400"
-        >
+    <nav :class="[
+      'admin-muted-scroll flex-1 overflow-y-auto',
+      collapsed ? 'px-2 py-3' : 'px-3 pb-4'
+    ]">
+      <div v-for="group in navGroups" :key="group.label" :class="[
+        'mb-3 last:mb-0',
+        collapsed ? '' : 'rounded-2xl bg-[#f9fafb]/70 p-2'
+      ]">
+        <p v-if="!collapsed" class="mb-1 px-2 text-[0.68rem] font-semibold uppercase text-zinc-400">
           {{ group.label }}
         </p>
 
         <div class="space-y-1.5">
-          <UTooltip
-            v-for="item in group.items"
-            :key="item.to"
-            :text="collapsed ? item.label : undefined"
-            :content="{ side: 'right' }"
-          >
-            <NuxtLink
-              :to="item.to"
-              :class="[
-                'admin-sidebar-link group',
-                isActive(item.to) ? 'is-active' : '',
-                collapsed ? 'justify-center px-2' : ''
-              ]"
-              @click="$emit('navigate')"
-            >
-              <span
-                :class="[
-                  'grid size-9 shrink-0 place-items-center rounded-xl transition',
-                  isActive(item.to)
-                    ? 'bg-[var(--admin-accent)] text-white shadow-lg shadow-emerald-950/15'
-                    : 'bg-white text-zinc-400 shadow-sm shadow-zinc-950/5 group-hover:text-emerald-700'
-                ]"
-              >
-                <component
-                  :is="item.icon"
-                  class="size-4"
-                />
+          <UTooltip v-for="item in group.items" :key="item.to" :text="collapsed ? item.label : undefined"
+            :content="{ side: 'right' }">
+            <NuxtLink :to="item.to" :class="[
+              'admin-sidebar-link group',
+              isActive(item.to) ? 'is-active' : '',
+              collapsed ? 'justify-center px-2' : ''
+            ]" @click="$emit('navigate')">
+              <span :class="[
+                'grid size-9 shrink-0 place-items-center rounded-xl transition',
+                isActive(item.to)
+                  ? 'bg-(--admin-accent) text-white shadow-lg shadow-emerald-950/15'
+                  : 'bg-white text-zinc-400 shadow-sm shadow-zinc-950/5 group-hover:text-emerald-700'
+              ]">
+                <component :is="item.icon" class="size-4" />
               </span>
-              <span
-                v-if="!collapsed"
-                class="truncate"
-              >
+              <span v-if="!collapsed" class="truncate">
                 {{ item.label }}
               </span>
             </NuxtLink>
@@ -132,20 +84,15 @@
       </div>
     </nav>
 
-    <div
-      v-if="showCollapse"
-      :class="[
-        'border-t border-zinc-100 p-3',
-        collapsed ? 'space-y-2' : 'space-y-3'
-      ]"
-    >
-      <NuxtLink
-        v-if="!collapsed"
-        to="/"
+    <div v-if="showCollapse" :class="[
+      'border-t border-zinc-100 p-3',
+      collapsed ? 'space-y-2' : 'space-y-3'
+    ]">
+      <NuxtLink v-if="!collapsed" to="/"
         class="flex items-center gap-3 rounded-2xl bg-[#f9fafb] p-3 text-sm font-semibold text-zinc-700 shadow-inner shadow-zinc-950/5 transition hover:bg-emerald-50 hover:text-emerald-700"
-        @click="$emit('navigate')"
-      >
-        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-emerald-700 shadow-sm shadow-zinc-950/5">
+        @click="$emit('navigate')">
+        <span
+          class="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-emerald-700 shadow-sm shadow-zinc-950/5">
           <Store class="size-5" />
         </span>
         <span class="min-w-0">
@@ -154,42 +101,23 @@
         </span>
       </NuxtLink>
 
-      <div
-        v-if="collapsed"
-        class="flex flex-col items-center gap-2"
-      >
+      <div v-if="collapsed" class="flex flex-col items-center gap-2">
         <UTooltip text="В магазин">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-store"
-            to="/"
-            square
+          <UButton color="neutral" variant="ghost" icon="i-lucide-store" to="/" square
             class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-emerald-700"
-            aria-label="В магазин"
-            @click="$emit('navigate')"
-          />
+            aria-label="В магазин" @click="$emit('navigate')" />
         </UTooltip>
 
         <UTooltip text="Развернуть меню">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-panel-left-open"
-            square
+          <UButton color="neutral" variant="ghost" icon="i-lucide-panel-left-open" square
             class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
-            aria-label="Развернуть навигацию"
-            @click="ui.toggleSidebar()"
-          />
+            aria-label="Развернуть навигацию" @click="ui.toggleSidebar()" />
         </UTooltip>
       </div>
 
-      <button
-        v-if="!collapsed"
-        type="button"
+      <button v-if="!collapsed" type="button"
         class="flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left text-xs font-medium text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-950"
-        @click="ui.toggleSidebar()"
-      >
+        @click="ui.toggleSidebar()">
         <PanelLeftClose class="size-4" />
         <span>Свернуть навигацию</span>
       </button>
@@ -209,7 +137,6 @@ import {
   Store,
   Users,
   Warehouse,
-  Zap
 } from "@lucide/vue";
 import { useAdminUiStore } from "~~/app/stores/adminUi";
 

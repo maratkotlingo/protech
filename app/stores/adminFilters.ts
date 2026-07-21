@@ -7,10 +7,8 @@ export const useAdminFiltersStore = defineStore("admin-filters", {
       preset: "30",
       startDate: shiftDateKey(-29),
       endDate: todayDateKey(),
-      granularity: "day" as "day" | "week" | "month",
       productId: null as number | null,
       categoryId: null as number | null,
-      sortBy: "revenue" as "revenue" | "quantity" | "orders" | "profit",
       limit: 12
     },
     products: {
@@ -24,12 +22,9 @@ export const useAdminFiltersStore = defineStore("admin-filters", {
     reviews: {
       pendingOnly: true
     },
-    faq: {
-      pendingOnly: true
-    }
   }),
   actions: {
-    setAnalyticsPreset(value: "7" | "30" | "90" | "custom") {
+    setAnalyticsPreset(value: "7" | "30" | "custom") {
       this.analytics.preset = value;
 
       if (value !== "custom") {
@@ -42,14 +37,9 @@ export const useAdminFiltersStore = defineStore("admin-filters", {
       this.analytics.preset = "30";
       this.analytics.startDate = shiftDateKey(-29);
       this.analytics.endDate = todayDateKey();
-      this.analytics.granularity = "day";
       this.analytics.productId = null;
       this.analytics.categoryId = null;
-      this.analytics.sortBy = "revenue";
       this.analytics.limit = 12;
     }
-  },
-  persist: {
-    storage: piniaPluginPersistedstate.localStorage()
   }
 });

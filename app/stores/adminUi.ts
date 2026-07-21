@@ -9,8 +9,5 @@ export const useAdminUiStore = defineStore("admin-ui", {
     setSidebarCollapsed(value: boolean) {
       this.sidebarCollapsed = value;
     }
-  },
-  persist: {
-    storage: piniaPluginPersistedstate.localStorage()
   }
 });

@@ -1,82 +1,21 @@
 ﻿<template>
   <div class="catalog-shop-page space-y-5">
-    <AdminPageHeader
-      title="Справочники"
-      kicker="Каталог"
-      description="Категории товаров и характеристики, которые используются в карточках каталога."
-    >
+    <AdminPageHeader title="Справочники" kicker="Каталог"
+      description="Категории товаров и характеристики, которые используются в карточках каталога.">
       <template #actions>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-refresh-cw"
-          size="lg"
+        <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" size="lg"
           class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-          :loading="pending"
-          @click="refresh()"
-        >
+          :loading="pending" @click="refresh()">
           Обновить
         </UButton>
       </template>
     </AdminPageHeader>
 
-    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-      <AdminMetricCard
-        label="Категории"
-        :value="formatNumber(categories.length)"
-        hint="Основная навигация каталога"
-        positive
-      >
-        <template #icon>
-          <FolderTree class="size-7" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Характеристики"
-        :value="formatNumber(attributes.length)"
-        hint="Поля, доступные в карточках товаров"
-        positive
-      >
-        <template #icon>
-          <ListChecks class="size-7" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Используются"
-        :value="formatNumber(usedAttributesCount)"
-        hint="Уже привязаны хотя бы к одному товару"
-        positive
-      >
-        <template #icon>
-          <Pencil class="size-7" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Без единиц"
-        :value="formatNumber(attributesWithoutUnitCount)"
-        hint="Можно уточнить для лучшего сравнения"
-        :positive="attributesWithoutUnitCount === 0"
-      >
-        <template #icon>
-          <Tags class="size-7" />
-        </template>
-      </AdminMetricCard>
-    </div>
-
-    <UAlert
-      v-if="error"
-      color="error"
-      variant="soft"
-      title="Не удалось загрузить справочники"
-      :description="getErrorMessage(error)"
-      class="rounded-2xl"
-    />
+    <UAlert v-if="error" color="error" variant="soft" title="Не удалось загрузить справочники"
+      :description="getErrorMessage(error)" class="rounded-2xl" />
 
     <div class="grid gap-4 xl:grid-cols-2">
-      <UCard
-        class="admin-list-card"
-        :ui="{ body: 'p-0' }"
-      >
+      <UCard class="admin-list-card" :ui="{ body: 'p-0' }">
         <template #header>
           <div class="flex items-center justify-between gap-4">
             <div>
@@ -87,26 +26,16 @@
                 Основная группировка товаров.
               </p>
             </div>
-            <UButton
-              color="primary"
-              icon="i-lucide-plus"
-              class="rounded-full shadow-lg shadow-emerald-950/10"
-              @click="openCategoryForm()"
-            >
+            <UButton color="primary" icon="i-lucide-plus" class="rounded-full shadow-lg shadow-emerald-950/10"
+              @click="openCategoryForm()">
               Добавить
             </UButton>
           </div>
         </template>
 
-        <div
-          v-if="categories.length"
-          class="space-y-3 bg-[#f9fafb] p-3 sm:p-4"
-        >
-          <div
-            v-for="category in categories"
-            :key="category.id"
-            class="flex items-center justify-between gap-4 rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]"
-          >
+        <div v-if="categories.length" class="space-y-3 bg-[#f9fafb] p-3 sm:p-4">
+          <div v-for="category in categories" :key="category.id"
+            class="flex items-center justify-between gap-4 rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]">
             <div class="min-w-0">
               <p class="truncate font-medium text-[var(--admin-text)]">
                 {{ category.name }}
@@ -117,56 +46,35 @@
             </div>
             <div class="flex gap-3">
               <UTooltip text="Редактировать">
-                <UButton
-                  color="neutral"
-                  variant="ghost"
-                  square
+                <UButton color="neutral" variant="ghost" square
                   class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
-                  aria-label="Редактировать категорию"
-                  @click="openCategoryForm(category)"
-                >
+                  aria-label="Редактировать категорию" @click="openCategoryForm(category)">
                   <Pencil class="size-4" />
                 </UButton>
               </UTooltip>
               <UTooltip text="Удалить">
-                <UButton
-                  color="error"
-                  variant="ghost"
-                  square
-                  class="rounded-full"
-                  aria-label="Удалить категорию"
-                  :loading="deletingCategoryId === category.id"
-                  @click="deleteCategory(category)"
-                >
+                <UButton color="error" variant="ghost" square class="rounded-full" aria-label="Удалить категорию"
+                  :loading="deletingCategoryId === category.id" @click="deleteCategory(category)">
                   <Trash2 class="size-4" />
                 </UButton>
               </UTooltip>
             </div>
           </div>
         </div>
-        <AdminEmptyState
-          v-else-if="!pending"
-          title="Категорий пока нет"
-          description="Создайте первую категорию, чтобы сгруппировать товары каталога."
-        >
+        <AdminEmptyState v-else-if="!pending" title="Категорий пока нет"
+          description="Создайте первую категорию, чтобы сгруппировать товары каталога.">
           <template #icon>
             <FolderTree class="size-6" />
           </template>
           <template #actions>
-            <UButton
-              color="primary"
-              @click="openCategoryForm()"
-            >
+            <UButton color="primary" @click="openCategoryForm()">
               Добавить категорию
             </UButton>
           </template>
         </AdminEmptyState>
       </UCard>
 
-      <UCard
-        class="admin-list-card"
-        :ui="{ body: 'p-0' }"
-      >
+      <UCard class="admin-list-card" :ui="{ body: 'p-0' }">
         <template #header>
           <div class="flex items-center justify-between gap-4">
             <div>
@@ -177,33 +85,20 @@
                 Параметры, которые привязываются к товарам.
               </p>
             </div>
-            <UButton
-              color="primary"
-              icon="i-lucide-plus"
-              class="rounded-full shadow-lg shadow-emerald-950/10"
-              @click="openAttributeForm()"
-            >
+            <UButton color="primary" icon="i-lucide-plus" class="rounded-full shadow-lg shadow-emerald-950/10"
+              @click="openAttributeForm()">
               Добавить
             </UButton>
           </div>
         </template>
 
-        <div
-          v-if="attributes.length"
-          class="space-y-3 bg-[#f9fafb] p-3 sm:p-4"
-        >
-          <div
-            v-for="attribute in attributes"
-            :key="attribute.id"
-            class="flex items-center justify-between gap-4 rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]"
-          >
+        <div v-if="attributes.length" class="space-y-3 bg-[#f9fafb] p-3 sm:p-4">
+          <div v-for="attribute in attributes" :key="attribute.id"
+            class="flex items-center justify-between gap-4 rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]">
             <div class="min-w-0">
               <p class="truncate font-medium text-[var(--admin-text)]">
                 {{ attribute.name }}
-                <span
-                  v-if="attribute.unit"
-                  class="text-[var(--admin-text-muted)]"
-                >
+                <span v-if="attribute.unit" class="text-[var(--admin-text-muted)]">
                   · {{ attribute.unit }}
                 </span>
               </p>
@@ -213,46 +108,28 @@
             </div>
             <div class="flex gap-3">
               <UTooltip text="Редактировать">
-                <UButton
-                  color="neutral"
-                  variant="ghost"
-                  square
+                <UButton color="neutral" variant="ghost" square
                   class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
-                  aria-label="Редактировать характеристику"
-                  @click="openAttributeForm(attribute)"
-                >
+                  aria-label="Редактировать характеристику" @click="openAttributeForm(attribute)">
                   <Pencil class="size-4" />
                 </UButton>
               </UTooltip>
               <UTooltip text="Удалить">
-                <UButton
-                  color="error"
-                  variant="ghost"
-                  square
-                  class="rounded-full"
-                  aria-label="Удалить характеристику"
-                  :loading="deletingAttributeId === attribute.id"
-                  @click="deleteAttribute(attribute)"
-                >
+                <UButton color="error" variant="ghost" square class="rounded-full" aria-label="Удалить характеристику"
+                  :loading="deletingAttributeId === attribute.id" @click="deleteAttribute(attribute)">
                   <Trash2 class="size-4" />
                 </UButton>
               </UTooltip>
             </div>
           </div>
         </div>
-        <AdminEmptyState
-          v-else-if="!pending"
-          title="Характеристик пока нет"
-          description="Добавьте параметры, которые помогут сравнивать товары внутри категорий."
-        >
+        <AdminEmptyState v-else-if="!pending" title="Характеристик пока нет"
+          description="Добавьте параметры, которые помогут сравнивать товары внутри категорий.">
           <template #icon>
             <ListChecks class="size-6" />
           </template>
           <template #actions>
-            <UButton
-              color="primary"
-              @click="openAttributeForm()"
-            >
+            <UButton color="primary" @click="openAttributeForm()">
               Добавить характеристику
             </UButton>
           </template>
@@ -260,113 +137,61 @@
       </UCard>
     </div>
 
-    <UModal
-      v-model:open="categoryModalOpen"
-      :title="editingCategory ? 'Редактировать категорию' : 'Новая категория'"
-    >
+    <UModal v-model:open="categoryModalOpen" :title="editingCategory ? 'Редактировать категорию' : 'Новая категория'">
       <template #body>
-        <UFormField
-          label="Название"
-          required
-          :error="categoryErrors.name"
-        >
-          <UInput
-            v-model="categoryName"
-            size="lg"
-            class="w-full rounded-2xl bg-[#f9fafb]"
-            placeholder="Название категории"
-          />
+        <UFormField label="Название" required :error="categoryErrors.name">
+          <UInput v-model="categoryName" size="lg" class="w-full rounded-2xl bg-[#f9fafb]"
+            placeholder="Название категории" />
         </UFormField>
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            class="rounded-full"
-            @click="closeCategoryForm"
-          >
+          <UButton color="neutral" variant="ghost" class="rounded-full" @click="closeCategoryForm">
             Отмена
           </UButton>
-          <UButton
-            color="primary"
-            class="rounded-full"
-            :loading="savingCategory"
-            @click="saveCategory"
-          >
+          <UButton color="primary" class="rounded-full" :loading="savingCategory" @click="saveCategory">
             Сохранить
           </UButton>
         </div>
       </template>
     </UModal>
 
-    <UModal
-      v-model:open="attributeModalOpen"
-      :title="editingAttribute ? 'Редактировать характеристику' : 'Новая характеристика'"
-    >
+    <UModal v-model:open="attributeModalOpen"
+      :title="editingAttribute ? 'Редактировать характеристику' : 'Новая характеристика'">
       <template #body>
         <div class="grid gap-5 sm:grid-cols-2">
-          <UFormField
-            label="Название"
-            required
-            :error="attributeErrors.name"
-          >
-            <UInput
-              v-model="attributeForm.name"
-              size="lg"
-              class="w-full rounded-2xl bg-[#f9fafb]"
-              placeholder="Например, Мощность"
-            />
+          <UFormField label="Название" required :error="attributeErrors.name">
+            <UInput v-model="attributeForm.name" size="lg" class="w-full rounded-2xl bg-[#f9fafb]"
+              placeholder="Например, Мощность" />
           </UFormField>
-          <UFormField
-            label="Единица"
-            :error="attributeErrors.unit"
-          >
-            <UInput
-              v-model="attributeForm.unit"
-              size="lg"
-              class="w-full rounded-2xl bg-[#f9fafb]"
-              placeholder="Вт, мм, шт."
-            />
+          <UFormField label="Единица" :error="attributeErrors.unit">
+            <UInput v-model="attributeForm.unit" size="lg" class="w-full rounded-2xl bg-[#f9fafb]"
+              placeholder="Вт, мм, шт." />
           </UFormField>
         </div>
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            class="rounded-full"
-            @click="closeAttributeForm"
-          >
+          <UButton color="neutral" variant="ghost" class="rounded-full" @click="closeAttributeForm">
             Отмена
           </UButton>
-          <UButton
-            color="primary"
-            class="rounded-full"
-            :loading="savingAttribute"
-            @click="saveAttribute"
-          >
+          <UButton color="primary" class="rounded-full" :loading="savingAttribute" @click="saveAttribute">
             Сохранить
           </UButton>
         </div>
       </template>
     </UModal>
 
-    <AdminConfirmModal
-      v-model:open="confirmOpen"
-      v-bind="confirmOptions"
-      :loading="confirmLoading"
-      @confirm="runConfirmedAction"
-    />
+    <AdminConfirmModal v-model:open="confirmOpen" v-bind="confirmOptions" :loading="confirmLoading"
+      @confirm="runConfirmedAction" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { FolderTree, ListChecks, Pencil, Tags, Trash2 } from "@lucide/vue";
+import { FolderTree, ListChecks, Pencil, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
-import { formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
 import type { Attribute, Category } from "~~/app/shared/types/admin";
 import { categorySchema } from "~~/shared/schemas/admin/products/category";
@@ -415,8 +240,6 @@ const { data, pending, error, refresh } = await useAsyncData("admin-catalog-dict
 
 const categories = computed(() => data.value?.categories ?? []);
 const attributes = computed(() => data.value?.attributes ?? []);
-const usedAttributesCount = computed(() => attributes.value.filter((attribute) => (attribute._count?.productAttributes ?? 0) > 0).length);
-const attributesWithoutUnitCount = computed(() => attributes.value.filter((attribute) => !attribute.unit).length);
 
 function openCategoryForm(category?: Category) {
   editingCategory.value = category ?? null;

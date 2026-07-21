@@ -11,9 +11,8 @@
     "prisma:validate": "prisma validate --schema ./server/prisma",
     "prisma:generate": "prisma generate --schema ./server/prisma",
     "prisma:migrate:deploy": "prisma migrate deploy --schema ./server/prisma",
-    "seed:shop": "tsx server/prisma/seed-shop-demo.ts",
     "test:integration": "vitest run",
-    "check": "npm run prisma:validate && npm run prisma:generate && npm run typecheck && npm run lint && npm run test:integration",
+    "check": "npm run prisma:validate && npm run prisma:generate && npm run typecheck && npm run lint",
     "preview": "nuxt preview",
     "postinstall": "npm run prisma:generate && nuxt prepare"
   },

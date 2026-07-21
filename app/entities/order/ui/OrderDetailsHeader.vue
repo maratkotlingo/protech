@@ -6,32 +6,17 @@
           Оформлен {{ formatDateTime(order.createdAt) }}
         </p>
         <p class="mt-1 inline-flex items-center gap-2 text-sm font-medium text-zinc-700 ">
-          <UIcon
-            name="i-lucide-phone"
-            class="size-4 text-zinc-400"
-          />
+          <UIcon name="i-lucide-phone" class="size-4 text-zinc-400" />
           {{ order.customerPhone || "Телефон не указан" }}
         </p>
-        <p
-          v-if="order.recipientName || order.recipientPhone"
-          class="mt-1 inline-flex items-center gap-2 text-sm font-medium text-zinc-700 "
-        >
-          <UIcon
-            name="i-lucide-user-round-check"
-            class="size-4 text-zinc-400"
-          />
+        <p v-if="order.recipientName || order.recipientPhone"
+          class="mt-1 inline-flex items-center gap-2 text-sm font-medium text-zinc-700 ">
+          <UIcon name="i-lucide-user-round-check" class="size-4 text-zinc-400" />
           {{ recipientLabel }}
         </p>
         <div class="mt-2 flex flex-wrap items-center gap-2">
-          <OrderStatusPill
-            type="order"
-            :value="order.orderStatus"
-          />
-          <OrderStatusPill
-            v-if="order.payment"
-            type="payment"
-            :value="order.payment.paymentStatus"
-          />
+          <OrderStatusPill type="order" :value="order.orderStatus" />
+          <OrderStatusPill v-if="order.payment" type="payment" :value="order.payment.paymentStatus" />
         </div>
       </div>
 

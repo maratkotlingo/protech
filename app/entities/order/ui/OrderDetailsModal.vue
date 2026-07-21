@@ -1,37 +1,20 @@
 <template>
-  <UModal
-    v-model:open="open"
-    :title="modalTitle"
-    :ui="modalUi"
-  >
+  <UModal v-model:open="open" :title="modalTitle" :ui="modalUi">
     <template #body>
-      <div
-        v-if="order"
-        class="bg-[#f8faf9] pb-2"
-      >
+      <div v-if="order" class="bg-[#f8faf9] pb-2">
         <div class="max-h-[calc(92dvh-4rem)] overflow-y-auto overscroll-contain">
-          <OrderDetailsHeader
-            :order="order"
-            :order-total="orderTotal"
-          />
+          <OrderDetailsHeader :order="order" :order-total="orderTotal" />
 
           <div class="grid gap-4 px-4 pb-6 pt-4 sm:pb-8 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div class="space-y-4">
-              <OrderCurrentStateCard
-                :location-text="currentLocationText"
-                :state="currentState"
-              />
+              <OrderCurrentStateCard :location-text="currentLocationText" :state="currentState" />
 
               <OrderTrackingTimeline :steps="trackingSteps" />
 
               <OrderDetailsItemsPanel :items="order.orderItems" />
             </div>
 
-            <OrderDetailsInfoSidebar
-              :order="order"
-              :payment-rows="paymentRows"
-              :receiving-rows="receivingRows"
-            />
+            <OrderDetailsInfoSidebar :order="order" :payment-rows="paymentRows" :receiving-rows="receivingRows" />
           </div>
         </div>
       </div>

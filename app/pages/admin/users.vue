@@ -1,80 +1,22 @@
 <template>
   <div class="users-shop-page space-y-5">
-    <AdminPageHeader
-      title="Пользователи"
-      kicker="Доступ"
-      description="Роли зарегистрированных аккаунтов, активность покупателей и быстрый доступ к правам администратора."
-    >
+    <AdminPageHeader title="Пользователи" kicker="Доступ"
+      description="Роли зарегистрированных аккаунтов, активность покупателей и быстрый доступ к правам администратора.">
       <template #actions>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-refresh-cw"
-          size="lg"
+        <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" size="lg"
           class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-          :loading="pending"
-          @click="refresh()"
-        >
+          :loading="pending" @click="refresh()">
           Обновить
         </UButton>
       </template>
     </AdminPageHeader>
 
-    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-      <AdminMetricCard
-        label="Пользователей"
-        :value="formatNumber(usersData?.pagination.total ?? users.length)"
-        hint="С учётом текущего фильтра"
-        positive
-      >
-        <template #icon>
-          <Users class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Администраторы"
-        :value="formatNumber(adminsOnPage)"
-        hint="На текущей странице"
-        positive
-      >
-        <template #icon>
-          <ShieldCheck class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Подтверждены"
-        :value="formatNumber(verifiedOnPage)"
-        hint="Email подтверждён"
-        positive
-      >
-        <template #icon>
-          <MailCheck class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Активность"
-        :value="formatNumber(activityOnPage)"
-        hint="Заказы, сообщения и отзывы"
-        positive
-      >
-        <template #icon>
-          <Activity class="size-6" />
-        </template>
-      </AdminMetricCard>
-    </div>
-
     <section class="rounded-3xl bg-white/90 p-4 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur sm:p-5">
       <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(13rem,18rem)]">
         <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
           <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Поиск</span>
-          <UInput
-            v-model="search"
-            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-            size="lg"
-            variant="none"
-            :ui="usersInputUi"
-            placeholder="Имя или email"
-          >
+          <UInput v-model="search" class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5" size="lg"
+            variant="none" :ui="usersInputUi" placeholder="Имя или email">
             <template #leading>
               <Search class="size-4 text-zinc-400" />
             </template>
@@ -82,29 +24,15 @@
         </label>
         <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
           <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Роль</span>
-          <USelect
-            v-model="role"
-            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-            size="lg"
-            color="neutral"
-            variant="none"
-            icon="i-lucide-shield-check"
-            :content="usersSelectContent"
-            :items="roleFilterItems"
-            :ui="usersSelectUi"
-          />
+          <USelect v-model="role" class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5" size="lg"
+            color="neutral" variant="none" icon="i-lucide-shield-check" :content="usersSelectContent"
+            :items="roleFilterItems" :ui="usersSelectUi" />
         </label>
       </div>
     </section>
 
-    <UAlert
-      v-if="error"
-      color="error"
-      variant="soft"
-      title="Не удалось загрузить пользователей"
-      :description="getErrorMessage(error)"
-      class="rounded-2xl"
-    />
+    <UAlert v-if="error" color="error" variant="soft" title="Не удалось загрузить пользователей"
+      :description="getErrorMessage(error)" class="rounded-2xl" />
 
     <section class="admin-list-card">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4">
@@ -116,35 +44,17 @@
             Управляйте правами доступа и быстро оценивайте активность покупателей.
           </p>
         </div>
-        <UBadge
-          color="neutral"
-          variant="soft"
-          class="rounded-full px-3 py-1"
-        >
+        <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1">
           {{ users.length }} на странице
         </UBadge>
       </div>
 
-      <div
-        v-if="users.length"
-        class="grid gap-3 bg-[#f9fafb] p-3 sm:p-4 xl:grid-cols-2 2xl:grid-cols-3"
-      >
-        <article
-          v-for="user in users"
-          :key="user.id"
-          class="rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]"
-        >
+      <div v-if="users.length" class="grid gap-3 bg-[#f9fafb] p-3 sm:p-4 xl:grid-cols-2 2xl:grid-cols-3">
+        <article v-for="user in users" :key="user.id"
+          class="rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]">
           <div class="flex items-start gap-3">
-            <img
-              v-if="user.image"
-              :src="user.image"
-              alt=""
-              class="size-12 rounded-2xl object-cover"
-            >
-            <div
-              v-else
-              class="admin-avatar size-12 shrink-0 text-sm"
-            >
+            <img v-if="user.image" :src="user.image" alt="" class="size-12 rounded-2xl object-cover">
+            <div v-else class="admin-avatar size-12 shrink-0 text-sm">
               {{ getInitials(user.name || user.email) }}
             </div>
             <div class="min-w-0 flex-1">
@@ -152,11 +62,7 @@
                 <p class="truncate font-semibold text-zinc-950">
                   {{ user.name || "Без имени" }}
                 </p>
-                <UBadge
-                  :color="roleColor(user.role)"
-                  variant="soft"
-                  class="rounded-full px-3 py-1"
-                >
+                <UBadge :color="roleColor(user.role)" variant="soft" class="rounded-full px-3 py-1">
                   {{ roleLabels[user.role] }}
                 </UBadge>
               </div>
@@ -169,18 +75,10 @@
           <div class="mt-4 grid gap-3">
             <label class="block rounded-2xl bg-[#f9fafb] p-3">
               <span class="mb-2 block text-xs font-semibold uppercase text-zinc-400">Роль</span>
-              <USelect
-                :model-value="user.role"
-                class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-                size="lg"
-                color="neutral"
-                variant="none"
-                :content="usersSelectContent"
-                :items="roleItems"
-                :ui="usersSelectUi"
-                :disabled="savingUserId === user.id"
-                @update:model-value="(value) => updateRole(user, value)"
-              />
+              <USelect :model-value="user.role" class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
+                size="lg" color="neutral" variant="none" :content="usersSelectContent" :items="roleItems"
+                :ui="usersSelectUi" :disabled="savingUserId === user.id"
+                @update:model-value="(value) => updateRole(user, value)" />
             </label>
 
             <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
@@ -189,12 +87,8 @@
                   Подтверждение
                 </p>
                 <div class="mt-2">
-                  <AdminStatusBadge
-                    type="boolean"
-                    :value="user.emailVerified"
-                    true-label="Подтвержден"
-                    false-label="Не подтвержден"
-                  />
+                  <AdminStatusBadge type="boolean" :value="user.emailVerified" true-label="Подтвержден"
+                    false-label="Не подтвержден" />
                 </div>
               </div>
 
@@ -203,13 +97,16 @@
                   Активность
                 </p>
                 <div class="mt-2 flex flex-wrap gap-2">
-                  <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
+                  <span
+                    class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
                     {{ user._count.orders }} заказов
                   </span>
-                  <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
+                  <span
+                    class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
                     {{ user._count.message }} сообщений
                   </span>
-                  <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
+                  <span
+                    class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
                     {{ user._count.reviews }} отзывов
                   </span>
                 </div>
@@ -238,32 +135,25 @@
         </article>
       </div>
 
-      <AdminEmptyState
-        v-if="!users.length && !pending"
-        title="Пользователи не найдены"
-        description="Измените фильтры или поисковый запрос."
-      >
+      <AdminEmptyState v-if="!users.length && !pending" title="Пользователи не найдены"
+        description="Измените фильтры или поисковый запрос.">
         <template #icon>
           <Users class="size-6" />
         </template>
       </AdminEmptyState>
 
-      <AdminPagination
-        v-if="usersData?.pagination"
-        :pagination="usersData.pagination"
-        :loading="pending"
-        @update:page="page = $event"
-      />
+      <AdminPagination v-if="usersData?.pagination" :pagination="usersData.pagination" :loading="pending"
+        @update:page="page = $event" />
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Activity, MailCheck, Search, ShieldCheck, Users } from "@lucide/vue";
+import { Search, Users } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
-import { buildQuery, formatDate, formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { buildQuery, formatDate, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { getZodFieldErrors } from "~~/app/shared/lib/zodValidation";
 import type { AdminUserListItem, PaginatedResponse, UserRole } from "~~/app/shared/types/admin";
 import { updateUserRoleSchema } from "~~/shared/schemas/admin/users/updateUserRole";
@@ -323,11 +213,7 @@ const { data: usersData, pending, error, refresh } = await useAsyncData(
 );
 
 const users = computed(() => usersData.value?.items ?? []);
-const adminsOnPage = computed(() => users.value.filter((user) => user.role === "ADMIN").length);
-const verifiedOnPage = computed(() => users.value.filter((user) => user.emailVerified).length);
-const activityOnPage = computed(() =>
-  users.value.reduce((total, user) => total + user._count.orders + user._count.message + user._count.reviews, 0)
-);
+
 const roleItems = Object.entries(roleLabels).map(([value, label]) => ({ value, label }));
 const roleFilterItems = [
   { value: "all", label: "Все" },

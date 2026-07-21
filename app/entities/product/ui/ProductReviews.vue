@@ -1,26 +1,17 @@
 <template>
   <section class="space-y-8">
     <div class="flex flex-wrap items-end justify-between gap-4">
-      <ProductSectionHeading
-        eyebrow="Отзывы"
-        title="Опыт покупателей"
-        :description="reviewSummaryText"
-      />
+      <ProductSectionHeading eyebrow="Отзывы" title="Опыт покупателей" :description="reviewSummaryText" />
 
-      <UButton
-        color="primary"
-        variant="soft"
-        icon="i-lucide-message-square-plus"
-        size="lg"
-        class="rounded-full transition duration-300 hover:scale-[1.02]"
-        @click="toggleReviewForm"
-      >
+      <UButton color="primary" variant="soft" icon="i-lucide-message-square-plus" size="lg"
+        class="rounded-full transition duration-300 hover:scale-[1.02]" @click="toggleReviewForm">
         Оставить отзыв
       </UButton>
     </div>
 
     <div class="grid items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-      <aside class="rounded-[2rem] bg-[#f9fafb] p-6 shadow-sm shadow-zinc-950/5 lg:sticky lg:top-8 lg:h-[360px] lg:self-start">
+      <aside
+        class="rounded-[2rem] bg-[#f9fafb] p-6 shadow-sm shadow-zinc-950/5 lg:sticky lg:top-8 lg:h-[360px] lg:self-start">
         <div class="flex items-end justify-between gap-4">
           <div>
             <p class="text-sm font-medium text-zinc-400">Средняя оценка</p>
@@ -32,30 +23,17 @@
         </div>
 
         <div class="mt-5 flex gap-1 text-amber-400">
-          <UIcon
-            v-for="rating in 5"
-            :key="rating"
-            name="i-lucide-star"
-            class="size-5"
-            :class="rating <= roundedAverage ? 'fill-amber-400' : 'text-zinc-300 '"
-          />
+          <UIcon v-for="rating in 5" :key="rating" name="i-lucide-star" class="size-5"
+            :class="rating <= roundedAverage ? 'fill-amber-400' : 'text-zinc-300 '" />
         </div>
 
-        <div
-          v-auto-animate
-          class="mt-8 space-y-3"
-        >
-          <div
-            v-for="item in ratingBreakdown"
-            :key="item.rating"
-            class="grid grid-cols-[2rem_minmax(0,1fr)_2.5rem] items-center gap-3 text-sm"
-          >
+        <div v-auto-animate class="mt-8 space-y-3">
+          <div v-for="item in ratingBreakdown" :key="item.rating"
+            class="grid grid-cols-[2rem_minmax(0,1fr)_2.5rem] items-center gap-3 text-sm">
             <span class="font-medium text-zinc-500">{{ item.rating }}</span>
             <div class="h-2 overflow-hidden rounded-full bg-white shadow-inner shadow-zinc-950/5 ">
-              <div
-                class="h-full rounded-full bg-amber-400 transition-all duration-500"
-                :style="{ width: `${item.percent}%` }"
-              />
+              <div class="h-full rounded-full bg-amber-400 transition-all duration-500"
+                :style="{ width: `${item.percent}%` }" />
             </div>
             <span class="text-right text-zinc-400">{{ item.count }}</span>
           </div>
@@ -63,112 +41,60 @@
       </aside>
 
       <div class="space-y-5">
-        <div class="rounded-[2rem] bg-[#f9fafb] p-3 shadow-sm shadow-zinc-950/5  ">
+        <div class="rounded-4xl bg-white/60 p-3 shadow-sm shadow-zinc-950/5  ">
           <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-            <div
-              v-auto-animate
-              class="flex flex-wrap gap-2"
-            >
-              <button
-                v-for="filter in ratingFilters"
-                :key="filter.key"
-                type="button"
+            <div v-auto-animate class="flex flex-wrap gap-2">
+              <button v-for="filter in ratingFilters" :key="filter.key" type="button"
                 class="rounded-full px-4 py-2 text-sm font-medium transition duration-300 hover:scale-[1.03]"
-                :class="ratingFilter === filter.value ? 'bg-zinc-950 text-white shadow-lg shadow-zinc-950/20' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:text-zinc-950   '"
-                @click="selectRatingFilter(filter.value)"
-              >
+                :class="ratingFilter === filter.value ? 'bg-zinc-950 text-white shadow-lg shadow-zinc-950/20' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:text-zinc-950'"
+                @click="selectRatingFilter(filter.value)">
                 {{ filter.label }}
               </button>
             </div>
 
-            <USelect
-              v-model="reviewSort"
-              :items="reviewSortOptions"
-              :content="reviewSelectContent"
-              value-key="value"
-              label-key="label"
-              color="neutral"
-              variant="none"
-              icon="i-lucide-arrow-up-down"
-              class="w-full rounded-full bg-white shadow-sm shadow-zinc-950/5 xl:w-56 "
-              :ui="reviewSelectUi"
-              aria-label="Сортировка отзывов"
-            />
+            <USelect v-model="reviewSort" :items="reviewSortOptions" :content="reviewSelectContent" value-key="value"
+              label-key="label" color="neutral" variant="none" icon="i-lucide-arrow-up-down"
+              class="w-full rounded-full bg-white shadow-sm shadow-zinc-950/5 xl:w-56 " :ui="reviewSelectUi"
+              aria-label="Сортировка отзывов" />
           </div>
         </div>
 
         <div v-auto-animate>
-          <div
-            v-if="reviewFormOpen"
-            class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 sm:p-6  "
-          >
-            <form
-              class="space-y-5"
-              @submit.prevent="submitReview"
-            >
+          <div v-if="reviewFormOpen" class="rounded-4xl bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
+            <form class="space-y-5" @submit.prevent="submitReview">
               <div>
                 <p class="mb-2 text-sm font-semibold text-zinc-950">Оценка</p>
                 <div class="flex gap-1">
-                  <button
-                    v-for="rating in 5"
-                    :key="rating"
-                    type="button"
+                  <button v-for="rating in 5" :key="rating" type="button"
                     class="rounded-full p-1 text-amber-400 transition duration-300 hover:scale-110 hover:bg-amber-50 "
-                    :aria-label="`Поставить ${rating}`"
-                    @click="form.rating = rating"
-                  >
-                    <UIcon
-                      name="i-lucide-star"
-                      class="size-8"
-                      :class="rating <= form.rating ? 'fill-amber-400' : 'text-zinc-300 '"
-                    />
+                    :aria-label="`Поставить ${rating}`" @click="form.rating = rating">
+                    <UIcon name="i-lucide-star" class="size-8"
+                      :class="rating <= form.rating ? 'fill-amber-400' : 'text-zinc-300 '" />
                   </button>
                 </div>
               </div>
 
               <div class="grid gap-4 md:grid-cols-2">
                 <UFormField label="Плюсы">
-                  <UTextarea
-                    v-model="form.advantages"
-                    class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 "
-                    :rows="3"
-                    variant="none"
-                    placeholder="Что понравилось"
-                    :ui="reviewTextareaUi"
-                  />
+                  <UTextarea v-model="form.advantages" class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 "
+                    :rows="3" variant="none" placeholder="Что понравилось" :ui="reviewTextareaUi" />
                 </UFormField>
 
                 <UFormField label="Минусы">
-                  <UTextarea
-                    v-model="form.disadvantages"
-                    class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 "
-                    :rows="3"
-                    variant="none"
-                    placeholder="Что можно улучшить"
-                    :ui="reviewTextareaUi"
-                  />
+                  <UTextarea v-model="form.disadvantages"
+                    class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 " :rows="3" variant="none"
+                    placeholder="Что можно улучшить" :ui="reviewTextareaUi" />
                 </UFormField>
               </div>
 
               <UFormField label="Комментарий">
-                <UTextarea
-                  v-model="form.comment"
-                  class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 "
-                  :rows="4"
-                  variant="none"
-                  placeholder="Поделитесь опытом использования"
-                  :ui="reviewTextareaUi"
-                />
+                <UTextarea v-model="form.comment" class="w-full rounded-3xl bg-white shadow-sm shadow-zinc-950/5 "
+                  :rows="4" variant="none" placeholder="Поделитесь опытом использования" :ui="reviewTextareaUi" />
               </UFormField>
 
               <div class="flex justify-end">
-                <UButton
-                  color="primary"
-                  icon="i-lucide-send"
-                  class="rounded-full transition duration-300 hover:scale-[1.02]"
-                  type="submit"
-                  :loading="submitting"
-                >
+                <UButton color="primary" icon="i-lucide-send"
+                  class="rounded-full transition duration-300 hover:scale-[1.02]" type="submit" :loading="submitting">
                   Отправить
                 </UButton>
               </div>
@@ -176,27 +102,15 @@
           </div>
         </div>
 
-        <div
-          v-auto-animate
-          class="grid gap-4"
-        >
-          <article
-            v-for="review in visibleReviews"
-            :key="review.id"
-            class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10 sm:p-6   "
-          >
+        <div v-auto-animate class="grid gap-4">
+          <article v-for="review in visibleReviews" :key="review.id"
+            class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10 sm:p-6   ">
             <div class="flex flex-wrap items-start justify-between gap-4">
               <div class="flex items-center gap-3">
-                <img
-                  v-if="review.user?.image"
-                  :src="review.user.image"
-                  :alt="review.user.name ?? 'Покупатель'"
-                  class="size-12 rounded-full object-cover shadow-sm shadow-zinc-950/10"
-                >
-                <div
-                  v-else
-                  class="grid size-12 place-items-center rounded-full bg-white font-semibold text-emerald-700 shadow-sm shadow-zinc-950/5  "
-                >
+                <img v-if="review.user?.image" :src="review.user.image" :alt="review.user.name ?? 'Покупатель'"
+                  class="size-12 rounded-full object-cover shadow-sm shadow-zinc-950/10">
+                <div v-else
+                  class="grid size-12 place-items-center rounded-full bg-white font-semibold text-emerald-700 shadow-sm shadow-zinc-950/5  ">
                   {{ (review.user?.name ?? "П").slice(0, 1).toUpperCase() }}
                 </div>
                 <div>
@@ -210,79 +124,46 @@
               </div>
 
               <div class="flex rounded-full bg-white px-3 py-2 text-amber-400 shadow-sm shadow-zinc-950/5 ">
-                <UIcon
-                  v-for="rating in 5"
-                  :key="rating"
-                  name="i-lucide-star"
-                  class="size-4"
-                  :class="rating <= review.rating ? 'fill-amber-400' : 'text-zinc-300 '"
-                />
+                <UIcon v-for="rating in 5" :key="rating" name="i-lucide-star" class="size-4"
+                  :class="rating <= review.rating ? 'fill-amber-400' : 'text-zinc-300 '" />
               </div>
             </div>
 
-            <div
-              v-if="review.advantages || review.disadvantages || review.comment"
-              class="mt-6 divide-y divide-zinc-200/80 text-sm leading-7 text-zinc-600"
-            >
-              <div
-                v-if="review.advantages"
-                class="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4"
-              >
+            <div v-if="review.advantages || review.disadvantages || review.comment"
+              class="mt-6 divide-y divide-zinc-200/80 text-sm leading-7 text-zinc-600">
+              <div v-if="review.advantages"
+                class="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
                 <p class="font-semibold text-zinc-950">Плюсы</p>
                 <p>{{ review.advantages }}</p>
               </div>
-              <div
-                v-if="review.disadvantages"
-                class="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4"
-              >
+              <div v-if="review.disadvantages"
+                class="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
                 <p class="font-semibold text-zinc-950">Минусы</p>
                 <p>{{ review.disadvantages }}</p>
               </div>
-              <div
-                v-if="review.comment"
-                class="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4"
-              >
+              <div v-if="review.comment"
+                class="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
                 <p class="font-semibold text-zinc-950">Комментарий</p>
                 <p>{{ review.comment }}</p>
               </div>
             </div>
 
-            <div
-              v-if="review.reviewPhotos.length"
-              class="mt-5 flex gap-3 overflow-x-auto pb-1"
-            >
-              <button
-                v-for="(photo, photoIndex) in review.reviewPhotos"
-                :key="photo.id"
-                type="button"
+            <div v-if="review.reviewPhotos.length" class="mt-5 flex gap-3 overflow-x-auto pb-1">
+              <button v-for="(photo, photoIndex) in review.reviewPhotos" :key="photo.id" type="button"
                 class="group relative size-20 shrink-0 overflow-hidden rounded-2xl bg-white shadow-sm shadow-zinc-950/10 ring-1 ring-transparent transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-zinc-950/15 hover:ring-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-                :aria-label="`Открыть фото отзыва ${photoIndex + 1}`"
-                @click="openReviewPhoto(review, photoIndex)"
-              >
-                <img
-                  :src="photo.url"
-                  :alt="`Фото отзыва ${review.id}`"
-                  class="size-full object-cover transition duration-300 group-hover:scale-105"
-                  loading="lazy"
-                >
-                <span class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
-                  <UIcon
-                    name="i-lucide-expand"
-                    class="size-5 drop-shadow"
-                  />
+                :aria-label="`Открыть фото отзыва ${photoIndex + 1}`" @click="openReviewPhoto(review, photoIndex)">
+                <img :src="photo.url" :alt="`Фото отзыва ${review.id}`"
+                  class="size-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
+                <span
+                  class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
+                  <UIcon name="i-lucide-expand" class="size-5 drop-shadow" />
                 </span>
               </button>
             </div>
 
-            <div
-              v-if="review.reviewAnswers.length"
-              class="mt-5 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 "
-            >
+            <div v-if="review.reviewAnswers.length" class="mt-5 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 ">
               <p class="flex items-center gap-2 text-sm font-semibold text-zinc-950 ">
-                <UIcon
-                  name="i-lucide-store"
-                  class="size-4 text-emerald-600 "
-                />
+                <UIcon name="i-lucide-store" class="size-4 text-emerald-600 " />
                 Ответ магазина
               </p>
               <p class="mt-2 text-sm leading-7 text-zinc-600 ">
@@ -291,25 +172,14 @@
             </div>
           </article>
 
-          <div
-            v-if="!filteredReviews.length"
-            class="grid min-h-44 place-items-center rounded-[2rem] bg-[#f9fafb] px-6 text-center text-zinc-500 shadow-sm shadow-zinc-950/5   "
-          >
+          <div v-if="!filteredReviews.length"
+            class="grid min-h-44 place-items-center rounded-[2rem] bg-[#f9fafb] px-6 text-center text-zinc-500 shadow-sm shadow-zinc-950/5   ">
             Отзывов с такой оценкой пока нет.
           </div>
 
-          <div
-            v-else-if="hasMoreReviews"
-            class="flex justify-center pt-2"
-          >
-            <UButton
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-plus"
-              size="lg"
-              class="rounded-full bg-[#f9fafb] transition duration-300 hover:scale-[1.02] "
-              @click="loadMoreReviews"
-            >
+          <div v-else-if="hasMoreReviews" class="flex justify-center pt-2">
+            <UButton color="neutral" variant="soft" icon="i-lucide-plus" size="lg"
+              class="rounded-full bg-[#f9fafb] transition duration-300 hover:scale-[1.02] " @click="loadMoreReviews">
               Показать еще {{ remainingReviewsCount }}
             </UButton>
           </div>
@@ -317,48 +187,23 @@
       </div>
     </div>
 
-    <UModal
-      v-model:open="reviewPhotoOpen"
-      title="Фото отзыва"
-      :ui="reviewPhotoModalUi"
-    >
+    <UModal v-model:open="reviewPhotoOpen" title="Фото отзыва" :ui="reviewPhotoModalUi">
       <template #body>
-        <div
-          v-if="activeReviewPhoto"
-          class="relative overflow-hidden rounded-2xl bg-[#f9fafb]"
-        >
-          <img
-            :src="activeReviewPhoto.url"
-            :alt="activeReviewPhotoAlt"
-            class="mx-auto block max-h-[82dvh] max-w-full object-contain"
-          >
-          <div class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
+        <div v-if="activeReviewPhoto" class="relative overflow-hidden rounded-2xl bg-[#f9fafb]">
+          <img :src="activeReviewPhoto.url" :alt="activeReviewPhotoAlt"
+            class="mx-auto block max-h-[82dvh] max-w-full object-contain">
+          <div
+            class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
             {{ activeReviewPhotoIndex + 1 }} / {{ activeReviewPhotos.length }}
           </div>
-          <div
-            v-if="activeReviewPhotos.length > 1"
-            class="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4"
-          >
-            <UButton
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-chevron-left"
-              size="xl"
-              square
+          <div v-if="activeReviewPhotos.length > 1"
+            class="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4">
+            <UButton color="neutral" variant="soft" icon="i-lucide-chevron-left" size="xl" square
               class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
-              aria-label="Предыдущее фото"
-              @click="previousReviewPhoto"
-            />
-            <UButton
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-chevron-right"
-              size="xl"
-              square
+              aria-label="Предыдущее фото" @click="previousReviewPhoto" />
+            <UButton color="neutral" variant="soft" icon="i-lucide-chevron-right" size="xl" square
               class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
-              aria-label="Следующее фото"
-              @click="nextReviewPhoto"
-            />
+              aria-label="Следующее фото" @click="nextReviewPhoto" />
           </div>
         </div>
       </template>

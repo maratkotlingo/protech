@@ -1,33 +1,24 @@
 <template>
-  <div class="admin-card min-h-[20rem] p-5">
+  <div class="admin-card min-h-80 p-5">
     <div class="mb-5">
       <p class="admin-section-heading">
         {{ title }}
       </p>
-      <p
-        v-if="description"
-        class="admin-section-copy"
-      >
+      <p v-if="description" class="admin-section-copy">
         {{ description }}
       </p>
     </div>
 
     <div class="space-y-4">
-      <div
-        v-for="item in normalizedItems"
-        :key="item.label"
-        class="grid grid-cols-[minmax(120px,220px)_1fr_auto] items-center gap-4"
-      >
-        <p class="truncate text-sm text-[var(--admin-text)]">
+      <div v-for="item in normalizedItems" :key="item.label"
+        class="grid grid-cols-[minmax(120px,220px)_1fr_auto] items-center gap-4">
+        <p class="truncate text-sm text-(--admin-text)">
           {{ item.label }}
         </p>
         <div class="h-2.5 overflow-hidden rounded-md bg-[#f3f4f6]">
-          <div
-            class="h-full rounded-md bg-[var(--admin-accent)]"
-            :style="{ width: `${item.percent}%` }"
-          />
+          <div class="h-full rounded-md bg-(--admin-accent)" :style="{ width: `${item.percent}%` }" />
         </div>
-        <p class="text-sm font-semibold text-[var(--admin-text)]">
+        <p class="text-sm font-semibold text-(--admin-text)">
           {{ item.formatted }}
         </p>
       </div>

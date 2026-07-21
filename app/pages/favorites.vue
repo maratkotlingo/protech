@@ -4,8 +4,7 @@
       <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div class="max-w-3xl">
           <p
-            class="inline-flex items-center gap-2 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700"
-          >
+            class="inline-flex items-center gap-2 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">
             <UIcon name="i-lucide-heart" class="size-4 fill-current" />
             Подборка
           </p>
@@ -18,85 +17,43 @@
         </div>
 
         <div class="flex flex-col gap-2 sm:flex-row lg:justify-end">
-          <UButton
-            color="primary"
-            icon="i-lucide-layout-grid"
-            to="/"
-            size="lg"
-            class="min-h-12 rounded-full px-5 font-semibold shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.02]"
-          >
+          <UButton color="primary" icon="i-lucide-layout-grid" to="/" size="lg"
+            class="min-h-12 rounded-full px-5 font-semibold shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.02]">
             В каталог
           </UButton>
-          <UButton
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-shopping-bag"
-            to="/cart"
-            size="lg"
-            class="min-h-12 rounded-full bg-[#f3f4f6] px-5 font-semibold transition duration-300 hover:scale-[1.02]"
-          >
+          <UButton color="neutral" variant="soft" icon="i-lucide-shopping-bag" to="/cart" size="lg"
+            class="min-h-12 rounded-full bg-[#f3f4f6] px-5 font-semibold transition duration-300 hover:scale-[1.02]">
             Корзина
           </UButton>
         </div>
       </div>
 
       <div class="mt-4 grid gap-2 sm:grid-cols-3">
-        <div
-          v-for="metric in metrics"
-          :key="metric.label"
-          class="rounded-xl bg-[#f9fafb] px-3 py-2.5"
-        >
+        <div v-for="metric in metrics" :key="metric.label" class="rounded-xl bg-[#f9fafb] px-3 py-2.5">
           <div class="flex items-center justify-between gap-3">
             <p class="text-xs text-zinc-500">{{ metric.label }}</p>
-            <UIcon
-              :name="metric.icon"
-              class="size-4 text-zinc-400"
-            />
+            <UIcon :name="metric.icon" class="size-4 text-zinc-400" />
           </div>
           <p class="mt-1 text-lg font-semibold text-zinc-950">{{ metric.value }}</p>
         </div>
       </div>
     </section>
 
-    <section
-      v-if="loading"
-      class="mt-5 rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 sm:p-4"
-    >
+    <section v-if="loading" class="mt-5 rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 sm:p-4">
       <div class="grid gap-3">
-        <USkeleton
-          v-for="item in 4"
-          :key="item"
-          class="h-44 rounded-xl"
-        />
+        <USkeleton v-for="item in 4" :key="item" class="h-44 rounded-xl" />
       </div>
     </section>
 
-    <OrderEmptyState
-      v-else-if="!auth.user"
-      class="mt-5"
-      icon="i-lucide-heart"
-      title="Войдите, чтобы открыть избранное"
-      description="Мы сохраним подборку в аккаунте и синхронизируем ее между устройствами."
-      action-label="Войти"
-      action-icon="i-lucide-user-round"
-      action-to="/auth?redirect=/favorites"
-    />
+    <OrderEmptyState v-else-if="!auth.user" class="mt-5" icon="i-lucide-heart" title="Войдите, чтобы открыть избранное"
+      description="Мы сохраним подборку в аккаунте и синхронизируем ее между устройствами." action-label="Войти"
+      action-icon="i-lucide-user-round" action-to="/auth?redirect=/favorites" />
 
-    <OrderEmptyState
-      v-else-if="!favorites.items.length"
-      class="mt-5"
-      icon="i-lucide-heart-plus"
-      title="Пока ничего нет"
+    <OrderEmptyState v-else-if="!favorites.items.length" class="mt-5" icon="i-lucide-heart-plus" title="Пока ничего нет"
       description="Добавляйте товары сердечком в каталоге или карточке товара — они появятся здесь."
-      action-label="Перейти в каталог"
-      action-icon="i-lucide-layout-grid"
-      action-to="/"
-    />
+      action-label="Перейти в каталог" action-icon="i-lucide-layout-grid" action-to="/" />
 
-    <section
-      v-else
-      class="mt-5 overflow-hidden rounded-2xl bg-white/90 shadow-sm shadow-zinc-950/5"
-    >
+    <section v-else class="mt-5 overflow-hidden rounded-2xl bg-white/90 shadow-sm shadow-zinc-950/5">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-4 py-3 sm:px-5">
         <div>
           <h2 class="text-lg font-semibold tracking-normal text-zinc-950">Сохраненные товары</h2>
@@ -105,40 +62,21 @@
           </p>
         </div>
 
-        <UButton
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-layout-grid"
-          to="/"
-          size="md"
-          class="min-h-11 rounded-full bg-[#f3f4f6] px-4 font-semibold transition duration-300 hover:scale-[1.02]"
-        >
+        <UButton color="neutral" variant="soft" icon="i-lucide-layout-grid" to="/" size="md"
+          class="min-h-11 rounded-full bg-[#f3f4f6] px-4 font-semibold transition duration-300 hover:scale-[1.02]">
           В каталог
         </UButton>
       </div>
 
-      <div
-        v-auto-animate
-        class="grid gap-3 p-3"
-      >
-        <article
-          v-for="row in favoriteRows"
-          :key="row.favorite.id"
-          class="group grid grid-cols-[104px_minmax(0,1fr)] gap-4 rounded-xl bg-[#f9fafb] p-3 transition duration-300 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/10 sm:grid-cols-[132px_minmax(0,1fr)] md:grid-cols-[132px_minmax(0,1fr)_220px] md:items-center lg:grid-cols-[148px_minmax(0,1fr)_240px]"
-        >
-          <NuxtLink
-            :to="`/product/${row.product.id}`"
-            class="relative block aspect-square w-full overflow-hidden rounded-xl bg-white shadow-sm shadow-zinc-950/5"
-          >
-            <img
-              :src="row.product.mainImage || '/favicon.ico'"
-              :alt="row.product.name"
-              class="size-full object-contain transition duration-500 group-hover:scale-105"
-            >
-            <span
-              v-if="row.discount"
-              class="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shadow-sm shadow-zinc-950/10 backdrop-blur"
-            >
+      <div v-auto-animate class="grid gap-3 p-3">
+        <article v-for="row in favoriteRows" :key="row.favorite.id"
+          class="group grid grid-cols-[104px_minmax(0,1fr)] gap-4 rounded-xl bg-[#f9fafb] p-3 transition duration-300 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/10 sm:grid-cols-[132px_minmax(0,1fr)] md:grid-cols-[132px_minmax(0,1fr)_220px] md:items-center lg:grid-cols-[148px_minmax(0,1fr)_240px]">
+          <NuxtLink :to="`/product/${row.product.id}`"
+            class="relative block aspect-square w-full overflow-hidden rounded-xl bg-white shadow-sm shadow-zinc-950/5">
+            <img :src="row.product.mainImage || '/favicon.ico'" :alt="row.product.name"
+              class="size-full object-contain transition duration-500 group-hover:scale-105">
+            <span v-if="row.discount"
+              class="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shadow-sm shadow-zinc-950/10 backdrop-blur">
               -{{ row.discount }}%
             </span>
           </NuxtLink>
@@ -146,22 +84,15 @@
           <div class="grid min-w-0 content-between gap-3 md:min-h-32 lg:min-h-36">
             <div class="min-w-0">
               <div class="flex flex-wrap gap-1.5">
-                <span
-                  class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                  :class="favoriteStockClass(row.product)"
-                >
-                  <span
-                    class="size-2 rounded-full"
-                    :class="favoriteStockDotClass(row.product)"
-                  />
+                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
+                  :class="favoriteStockClass(row.product)">
+                  <span class="size-2 rounded-full" :class="favoriteStockDotClass(row.product)" />
                   {{ row.stock }}
                 </span>
               </div>
 
-              <NuxtLink
-                :to="`/product/${row.product.id}`"
-                class="mt-2 block line-clamp-3 text-base font-semibold tracking-normal text-zinc-950 transition hover:text-emerald-700 sm:line-clamp-2 sm:text-lg"
-              >
+              <NuxtLink :to="`/product/${row.product.id}`"
+                class="mt-2 block line-clamp-3 text-base font-semibold tracking-normal text-zinc-950 transition hover:text-emerald-700 sm:line-clamp-2 sm:text-lg">
                 {{ row.product.name }}
               </NuxtLink>
             </div>
@@ -171,42 +102,29 @@
                 <p class="text-lg font-semibold text-zinc-950">
                   {{ formatCurrency(row.product.currentPrice) }}
                 </p>
-                <p
-                  v-if="row.discount"
-                  class="text-xs text-zinc-400 line-through"
-                >
+                <p v-if="row.discount" class="text-xs text-zinc-400 line-through">
                   {{ formatCurrency(row.product.oldPrice) }}
                 </p>
               </div>
             </div>
           </div>
 
-          <div class="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3 md:col-span-1 md:col-start-3 md:row-start-1 md:grid md:grid-cols-1 md:items-stretch">
-            <UButton
-              :color="cartButtonColor(row.product, row.inCart)"
-              :variant="row.inCart || isOutOfStock(row.product) ? 'soft' : 'solid'"
-              :icon="cartButtonIcon(row.inCart)"
+          <div
+            class="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3 md:col-span-1 md:col-start-3 md:row-start-1 md:grid md:grid-cols-1 md:items-stretch">
+            <UButton :color="cartButtonColor(row.product, row.inCart)"
+              :variant="row.inCart || isOutOfStock(row.product) ? 'soft' : 'solid'" :icon="cartButtonIcon(row.inCart)"
               size="md"
               class="min-h-12 justify-center whitespace-nowrap rounded-full px-2 text-xs font-semibold transition duration-300 hover:scale-[1.02] sm:px-4 sm:text-sm md:w-full"
-              :class="cartButtonClass(row.product, row.inCart)"
-              :disabled="!row.inCart && isOutOfStock(row.product)"
-              :loading="cart.syncingProductId === row.product.id"
-              @click="toggleCart(row.product)"
-            >
+              :class="cartButtonClass(row.product, row.inCart)" :disabled="!row.inCart && isOutOfStock(row.product)"
+              :loading="cart.syncingProductId === row.product.id" @click="toggleCart(row.product)">
               {{ cartButtonLabel(row.product, row.inCart) }}
             </UButton>
 
             <UTooltip text="Убрать из избранного">
-              <UButton
-                color="error"
-                variant="soft"
-                icon="i-lucide-heart-off"
-                size="md"
+              <UButton color="error" variant="soft" icon="i-lucide-heart-off" size="md"
                 class="min-h-12 justify-center whitespace-nowrap rounded-full bg-red-50/80 px-2 text-xs font-semibold transition duration-300 hover:scale-[1.02] sm:px-4 sm:text-sm md:w-full"
                 :loading="favorites.syncingProductId === row.product.id"
-                :aria-label="`Убрать ${row.product.name} из избранного`"
-                @click="toggleFavorite(row.product)"
-              >
+                :aria-label="`Убрать ${row.product.name} из избранного`" @click="toggleFavorite(row.product)">
                 Убрать
               </UButton>
             </UTooltip>
@@ -232,7 +150,7 @@ import { useFavoritesStore } from "~~/app/stores/favorites";
 
 useSeoMeta({
   title: "Избранное",
-  description: "Избранные товары покупателя ProTech."
+  description: "Избранные товары покупателя ПроТех76."
 });
 
 const auth = useAuthStore();

@@ -16,13 +16,8 @@
           </p>
         </div>
 
-        <UButton
-          color="primary"
-          icon="i-lucide-layout-grid"
-          to="/"
-          size="lg"
-          class="min-h-12 rounded-full px-5 font-semibold shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.02]"
-        >
+        <UButton color="primary" icon="i-lucide-layout-grid" to="/" size="lg"
+          class="min-h-12 rounded-full px-5 font-semibold shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.02]">
           В каталог
         </UButton>
       </div>
@@ -42,73 +37,41 @@
       <USkeleton v-for="item in 3" :key="item" class="h-32 rounded-2xl" />
     </div>
 
-    <OrderEmptyState
-      v-else-if="!auth.user"
-      class="mt-5"
-      icon="i-lucide-package-check"
+    <OrderEmptyState v-else-if="!auth.user" class="mt-5" icon="i-lucide-package-check"
       title="Войдите, чтобы увидеть заказы"
-      description="После входа здесь появятся статусы, оплата и состав ваших заказов."
-      action-label="Войти"
-      action-icon="i-lucide-user-round"
-      action-to="/auth?redirect=/orders"
-    />
+      description="После входа здесь появятся статусы, оплата и состав ваших заказов." action-label="Войти"
+      action-icon="i-lucide-user-round" action-to="/auth?redirect=/orders" />
 
-    <OrderEmptyState
-      v-else-if="!orders.length"
-      class="mt-5"
-      icon="i-lucide-shopping-bag"
-      title="Заказов пока нет"
-      description="Начните с каталога: добавьте товары в корзину и оформите первый заказ."
-      action-label="Начать покупки"
-      action-icon="i-lucide-layout-grid"
-      action-to="/"
-    />
+    <OrderEmptyState v-else-if="!orders.length" class="mt-5" icon="i-lucide-shopping-bag" title="Заказов пока нет"
+      description="Начните с каталога: добавьте товары в корзину и оформите первый заказ." action-label="Начать покупки"
+      action-icon="i-lucide-layout-grid" action-to="/" />
 
     <div v-else class="mt-5 space-y-3">
-      <div
-        v-if="historicalOrdersCount"
-        class="flex flex-col gap-3 rounded-2xl bg-white/85 px-4 py-3 shadow-sm shadow-zinc-950/5 sm:flex-row sm:items-center sm:justify-between"
-      >
+      <div v-if="historicalOrdersCount"
+        class="flex flex-col gap-3 rounded-2xl bg-white/85 px-4 py-3 shadow-sm shadow-zinc-950/5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="font-semibold text-zinc-950">
             Текущие заказы
           </p>
           <p class="mt-1 text-sm leading-6 text-zinc-500">
-            {{ showAllOrders ? "Показываем активные и завершенные заказы." : "Завершенные и отмененные заказы скрыты." }}
+            {{ showAllOrders ? "Показываем активные и завершенные заказы." : "Завершенные и отмененные заказы скрыты."
+            }}
           </p>
         </div>
-        <UButton
-          color="neutral"
-          variant="soft"
-          :icon="showAllOrders ? 'i-lucide-eye-off' : 'i-lucide-list'"
-          size="lg"
+        <UButton color="neutral" variant="soft" :icon="showAllOrders ? 'i-lucide-eye-off' : 'i-lucide-list'" size="lg"
           class="min-h-12 rounded-full bg-[#f3f4f6] px-5 font-semibold transition duration-300 hover:scale-[1.02]"
-          @click="toggleShowAllOrders"
-        >
+          @click="toggleShowAllOrders">
           {{ showAllOrders ? "Скрыть завершенные" : "Показать все заказы" }}
         </UButton>
       </div>
 
-      <OrderEmptyState
-        v-if="!visibleOrders.length"
-        class="mt-4"
-        icon="i-lucide-circle-check"
+      <OrderEmptyState v-if="!visibleOrders.length" class="mt-4" icon="i-lucide-circle-check"
         title="Текущих заказов нет"
-        description="Все ваши заказы сейчас завершены или отменены. Нажмите «Показать все заказы», чтобы открыть историю."
-      />
+        description="Все ваши заказы сейчас завершены или отменены. Нажмите «Показать все заказы», чтобы открыть историю." />
 
-      <div
-        v-else
-        v-auto-animate
-        class="space-y-3"
-      >
-        <OrderCard
-          v-for="order in visibleOrders"
-          :key="order.id"
-          :order="order"
-          :class="getOrderCardClass(order)"
-          @open-details="openOrderDetails"
-        />
+      <div v-else v-auto-animate class="space-y-3">
+        <OrderCard v-for="order in visibleOrders" :key="order.id" :order="order" :class="getOrderCardClass(order)"
+          @open-details="openOrderDetails" />
       </div>
     </div>
 
@@ -125,7 +88,7 @@ import { useAuthStore } from "~~/app/stores/auth";
 
 useSeoMeta({
   title: "Мои заказы",
-  description: "История заказов покупателя ProTech."
+  description: "История заказов покупателя ПроТех76."
 });
 
 const auth = useAuthStore();

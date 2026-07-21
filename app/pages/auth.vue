@@ -1,27 +1,18 @@
 <template>
-  <div class="mx-auto grid min-h-[calc(100dvh-9rem)] w-full max-w-[1180px] items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1fr)] lg:px-8">
+  <div
+    class="mx-auto grid min-h-[calc(100dvh-9rem)] w-full max-w-[1180px] items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1fr)] lg:px-8">
     <section class="hidden lg:block">
-      <UBadge
-        color="primary"
-        variant="soft"
-        class="rounded-full"
-      >
+      <UBadge color="primary" variant="soft" class="rounded-full">
         Аккаунт покупателя
       </UBadge>
       <h1 class="mt-5 text-5xl font-semibold tracking-normal text-zinc-950 ">
         Войдите, чтобы покупки стали удобнее
       </h1>
       <div class="mt-8 grid gap-4">
-        <div
-          v-for="item in benefits"
-          :key="item.title"
-          class="flex gap-4 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5  "
-        >
+        <div v-for="item in benefits" :key="item.title"
+          class="flex gap-4 rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5  ">
           <div class="grid size-11 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700  ">
-            <component
-              :is="item.icon"
-              class="size-5"
-            />
+            <component :is="item.icon" class="size-5" />
           </div>
           <div>
             <p class="font-semibold text-zinc-950">{{ item.title }}</p>
@@ -31,132 +22,61 @@
       </div>
     </section>
 
-    <UCard
-      class="rounded-[2rem] bg-white ring-0 shadow-2xl shadow-zinc-950/10  "
-      :ui="{ body: 'p-6 sm:p-8' }"
-    >
+    <UCard class="rounded-[2rem] bg-white ring-0 shadow-2xl shadow-zinc-950/10  " :ui="{ body: 'p-6 sm:p-8' }">
       <div class="mb-7">
         <div class="grid grid-cols-2 rounded-full bg-[#f9fafb] p-1 ">
-          <button
-            type="button"
-            class="rounded-full px-4 py-2 text-sm font-medium transition"
+          <button type="button" class="rounded-full px-4 py-2 text-sm font-medium transition"
             :class="mode === 'login' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5' : 'text-zinc-500 '"
-            @click="mode = 'login'"
-          >
+            @click="mode = 'login'">
             Вход
           </button>
-          <button
-            type="button"
-            class="rounded-full px-4 py-2 text-sm font-medium transition"
+          <button type="button" class="rounded-full px-4 py-2 text-sm font-medium transition"
             :class="mode === 'register' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5' : 'text-zinc-500 '"
-            @click="mode = 'register'"
-          >
+            @click="mode = 'register'">
             Регистрация
           </button>
         </div>
       </div>
 
-      <form
-        class="space-y-5"
-        @submit.prevent="submit"
-      >
-        <UFormField
-          v-if="mode === 'register'"
-          label="Имя"
-          required
-          :error="fieldErrors.name"
-        >
-          <UInput
-            v-model="form.name"
-            class="w-full rounded-2xl bg-[#f9fafb] "
-            size="xl"
-            variant="none"
-            autocomplete="name"
-            placeholder="Как к вам обращаться"
-            :ui="{ base: 'h-12 rounded-2xl bg-transparent' }"
-          >
+      <form class="space-y-5" @submit.prevent="submit">
+        <UFormField v-if="mode === 'register'" label="Имя" required :error="fieldErrors.name">
+          <UInput v-model="form.name" class="w-full rounded-2xl bg-[#f9fafb] " size="xl" variant="none"
+            autocomplete="name" placeholder="Как к вам обращаться" :ui="{ base: 'h-12 rounded-2xl bg-transparent' }">
             <template #leading>
               <UserRound class="size-5 text-zinc-400" />
             </template>
           </UInput>
         </UFormField>
 
-        <UFormField
-          label="Email"
-          required
-          :error="fieldErrors.email"
-        >
-          <UInput
-            v-model="form.email"
-            class="w-full rounded-2xl bg-[#f9fafb] "
-            size="xl"
-            variant="none"
-            type="email"
-            autocomplete="email"
-            placeholder="you@example.com"
-            :ui="{ base: 'h-12 rounded-2xl bg-transparent' }"
-          >
+        <UFormField label="Email" required :error="fieldErrors.email">
+          <UInput v-model="form.email" class="w-full rounded-2xl bg-[#f9fafb] " size="xl" variant="none" type="email"
+            autocomplete="email" placeholder="you@example.com" :ui="{ base: 'h-12 rounded-2xl bg-transparent' }">
             <template #leading>
               <Mail class="size-5 text-zinc-400" />
             </template>
           </UInput>
         </UFormField>
 
-        <UFormField
-          label="Пароль"
-          required
-          :error="fieldErrors.password"
-        >
-          <UInput
-            v-model="form.password"
-            class="w-full rounded-2xl bg-[#f9fafb] "
-            size="xl"
-            variant="none"
-            :type="showPassword ? 'text' : 'password'"
-            autocomplete="current-password"
-            placeholder="Минимум 8 символов"
-            :ui="{ base: 'h-12 rounded-2xl bg-transparent' }"
-          >
+        <UFormField label="Пароль" required :error="fieldErrors.password">
+          <UInput v-model="form.password" class="w-full rounded-2xl bg-[#f9fafb] " size="xl" variant="none"
+            :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="Минимум 8 символов"
+            :ui="{ base: 'h-12 rounded-2xl bg-transparent' }">
             <template #leading>
               <LockKeyhole class="size-5 text-zinc-400" />
             </template>
             <template #trailing>
-              <UButton
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                square
-                class="rounded-full"
-                type="button"
-                :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
-                @click="togglePasswordVisibility"
-              >
-                <EyeOff
-                  v-if="showPassword"
-                  class="size-5"
-                />
-                <Eye
-                  v-else
-                  class="size-5"
-                />
+              <UButton color="neutral" variant="ghost" size="sm" square class="rounded-full" type="button"
+                :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'" @click="togglePasswordVisibility">
+                <EyeOff v-if="showPassword" class="size-5" />
+                <Eye v-else class="size-5" />
               </UButton>
             </template>
           </UInput>
         </UFormField>
 
-        <USwitch
-          v-model="form.rememberMe"
-          label="Запомнить меня"
-        />
+        <USwitch v-model="form.rememberMe" label="Запомнить меня" />
 
-        <UButton
-          color="primary"
-          size="xl"
-          block
-          class="rounded-full"
-          type="submit"
-          :loading="auth.pending"
-        >
+        <UButton color="primary" size="xl" block class="rounded-full" type="submit" :loading="auth.pending">
           <LogIn class="size-5" />
           {{ mode === "login" ? "Войти" : "Создать аккаунт" }}
         </UButton>
@@ -177,7 +97,7 @@ import { useFavoritesStore } from "~~/app/stores/favorites";
 
 useSeoMeta({
   title: "Вход и регистрация",
-  description: "Войдите или создайте аккаунт ProTech, чтобы пользоваться корзиной, избранным и историей заказов."
+  description: "Войдите или создайте аккаунт ПроТех76, чтобы пользоваться корзиной, избранным и историей заказов."
 });
 
 const route = useRoute();

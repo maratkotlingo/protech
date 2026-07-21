@@ -1,19 +1,13 @@
 <template>
-  <main
-    class="admin-shell grid min-h-screen place-items-center px-5 py-12"
-    data-admin-theme
-  >
-    <UCard
-      class="admin-card w-full max-w-xl"
-      :ui="{ body: 'p-6 sm:p-8' }"
-    >
+  <main class="admin-shell grid min-h-screen place-items-center px-5 py-12" data-admin-theme>
+    <UCard class="admin-card w-full max-w-xl" :ui="{ body: 'p-6 sm:p-8' }">
       <div class="mb-7 space-y-5 text-center">
         <div class="admin-icon-tile mx-auto size-14">
           <Zap class="size-7" />
         </div>
         <div>
           <h1 class="text-2xl font-semibold text-[var(--admin-text)]">
-            Вход в ProTech Admin
+            Вход в панель администратора ПроТех76
           </h1>
           <p class="mt-2 text-sm leading-6 text-[var(--admin-text-muted)]">
             Используйте учетную запись с ролью ADMIN.
@@ -21,94 +15,43 @@
         </div>
       </div>
 
-      <form
-        class="space-y-6"
-        @submit.prevent="login"
-      >
-        <UFormField
-          label="Email"
-          required
-          :error="fieldErrors.email"
-        >
-          <UInput
-            v-model="form.email"
-            class="w-full"
-            size="xl"
-            type="email"
-            autocomplete="email"
-            placeholder="admin.demo@protech.local"
-          >
+      <form class="space-y-6" @submit.prevent="login">
+        <UFormField label="Email" required :error="fieldErrors.email">
+          <UInput v-model="form.email" class="w-full" size="xl" type="email" autocomplete="email"
+            placeholder="admin.demo@protech.local">
             <template #leading>
               <Mail class="size-5 text-[var(--admin-text-muted)]" />
             </template>
           </UInput>
         </UFormField>
 
-        <UFormField
-          label="Пароль"
-          required
-          :error="fieldErrors.password"
-        >
-          <UInput
-            v-model="form.password"
-            class="w-full"
-            size="xl"
-            :type="showPassword ? 'text' : 'password'"
-            autocomplete="current-password"
-            placeholder="Введите пароль"
-          >
+        <UFormField label="Пароль" required :error="fieldErrors.password">
+          <UInput v-model="form.password" class="w-full" size="xl" :type="showPassword ? 'text' : 'password'"
+            autocomplete="current-password" placeholder="Введите пароль">
             <template #leading>
               <LockKeyhole class="size-5 text-[var(--admin-text-muted)]" />
             </template>
             <template #trailing>
-              <UButton
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                square
-                type="button"
-                :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
-                @click="togglePasswordVisibility"
-              >
-                <EyeOff
-                  v-if="showPassword"
-                  class="size-5"
-                />
-                <Eye
-                  v-else
-                  class="size-5"
-                />
+              <UButton color="neutral" variant="ghost" size="sm" square type="button"
+                :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'" @click="togglePasswordVisibility">
+                <EyeOff v-if="showPassword" class="size-5" />
+                <Eye v-else class="size-5" />
               </UButton>
             </template>
           </UInput>
         </UFormField>
 
-        <USwitch
-          v-model="form.rememberMe"
-          label="Запомнить меня"
-        />
+        <USwitch v-model="form.rememberMe" label="Запомнить меня" />
 
-        <UButton
-          color="primary"
-          size="xl"
-          block
-          type="submit"
-          :loading="loading"
-          class="rounded-md shadow-lg shadow-emerald-800/15"
-        >
+        <UButton color="primary" size="xl" block type="submit" :loading="loading"
+          class="rounded-md shadow-lg shadow-emerald-800/15">
           <LogIn class="size-5" />
           Войти
         </UButton>
       </form>
 
       <div class="mt-7 flex justify-center">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-store"
-          to="/"
-          class="rounded-md"
-        >
+        <UButton color="neutral" variant="ghost" icon="i-lucide-store" to="/" class="rounded-md">
           Вернуться в магазин
         </UButton>
       </div>

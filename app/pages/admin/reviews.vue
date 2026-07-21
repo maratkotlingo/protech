@@ -1,82 +1,30 @@
 <template>
   <div class="reviews-shop-page space-y-5">
-    <AdminPageHeader
-      title="Отзывы"
-      kicker="Покупатели"
-      description="Модерация отзывов, ответы покупателям и контроль качества карточек товаров."
-    >
+    <AdminPageHeader title="Отзывы" kicker="Покупатели"
+      description="Модерация отзывов, ответы покупателям и контроль качества карточек товаров.">
       <template #actions>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-refresh-cw"
-          size="lg"
+        <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" size="lg"
           class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-          :loading="pending"
-          @click="refresh()"
-        >
+          :loading="pending" @click="refresh()">
           Обновить
         </UButton>
       </template>
     </AdminPageHeader>
 
-    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <AdminMetricCard
-        label="Всего в выдаче"
-        :value="formatNumber(reviewsData?.pagination.total ?? reviews.length)"
-        hint="С учётом текущего фильтра"
-        positive
-      >
-        <template #icon>
-          <MessageSquareText class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Ждут ответа"
-        :value="formatNumber(pendingReviewsCount)"
-        hint="На текущей странице"
-        :positive="pendingReviewsCount === 0"
-      >
-        <template #icon>
-          <Clock3 class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Средняя оценка"
-        :value="averageRatingLabel"
-        hint="По отзывам текущей страницы"
-        :positive="averageRating >= 4"
-      >
-        <template #icon>
-          <Star class="size-6" />
-        </template>
-      </AdminMetricCard>
-    </div>
-
     <section class="rounded-3xl bg-white/90 p-4 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur sm:p-5">
-      <div class="rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
-        <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Режим модерации</span>
+      <div>
+        <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-700">Режим модерации</span>
         <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-          <UButton
-            color="neutral"
-            :variant="!filters.reviews.pendingOnly ? 'solid' : 'ghost'"
-            icon="i-lucide-list-filter"
-            size="lg"
-            class="h-12 justify-center rounded-full px-4"
+          <UButton color="neutral" :variant="!filters.reviews.pendingOnly ? 'solid' : 'ghost'"
+            icon="i-lucide-list-filter" size="lg" class="h-12 justify-center rounded-full px-4"
             :class="!filters.reviews.pendingOnly ? 'shadow-lg shadow-zinc-950/10' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 hover:text-zinc-950'"
-            @click="setReviewsPendingOnly(false)"
-          >
+            @click="setReviewsPendingOnly(false)">
             Все отзывы
           </UButton>
-          <UButton
-            color="primary"
-            :variant="filters.reviews.pendingOnly ? 'solid' : 'ghost'"
-            icon="i-lucide-clock-3"
-            size="lg"
-            class="h-12 justify-center rounded-full px-4"
+          <UButton color="primary" :variant="filters.reviews.pendingOnly ? 'solid' : 'ghost'" icon="i-lucide-clock-3"
+            size="lg" class="h-12 justify-center rounded-full px-4"
             :class="filters.reviews.pendingOnly ? 'shadow-lg shadow-emerald-950/10' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 hover:text-zinc-950'"
-            @click="setReviewsPendingOnly(true)"
-          >
+            @click="setReviewsPendingOnly(true)">
             Очередь ответов
           </UButton>
         </div>
@@ -88,35 +36,20 @@
         {{ reviewsStatusText }}
       </p>
 
-      <div
-        v-auto-animate
-        class="flex flex-wrap gap-2"
-      >
-        <UButton
-          v-if="filters.reviews.pendingOnly"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-rotate-ccw"
+      <div v-auto-animate class="flex flex-wrap gap-2">
+        <UButton v-if="filters.reviews.pendingOnly" color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw"
           class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-          @click="setReviewsPendingOnly(false)"
-        >
+          @click="setReviewsPendingOnly(false)">
           Сбросить
         </UButton>
-        <UBadge
-          color="primary"
-          variant="soft"
-          class="rounded-full px-3 py-1"
-        >
+        <UBadge color="primary" variant="soft" class="rounded-full px-3 py-1">
           {{ selectedReviewModeLabel }}
         </UBadge>
       </div>
     </div>
 
-    <section
-      v-if="selectedReviewIds.length"
-      class="rounded-3xl bg-white/90 p-4 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur sm:p-5"
-    >
+    <section v-if="selectedReviewIds.length"
+      class="rounded-3xl bg-white/90 p-4 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur sm:p-5">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p class="admin-section-heading">
@@ -127,42 +60,23 @@
           </p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <UButton
-            color="primary"
-            variant="soft"
-            class="rounded-full"
-            :loading="bulkLoading === 'markAnswered'"
-            @click="bulkMarkAnswered(true)"
-          >
+          <UButton color="primary" variant="soft" class="rounded-full" :loading="bulkLoading === 'markAnswered'"
+            @click="bulkMarkAnswered(true)">
             <CheckCircle2 class="size-4" />
             Отвечено
           </UButton>
-          <UButton
-            color="neutral"
-            variant="soft"
-            class="rounded-full"
-            :loading="bulkLoading === 'markUnanswered'"
-            @click="bulkMarkAnswered(false)"
-          >
+          <UButton color="neutral" variant="soft" class="rounded-full" :loading="bulkLoading === 'markUnanswered'"
+            @click="bulkMarkAnswered(false)">
             <CircleOff class="size-4" />
             Без ответа
           </UButton>
-          <UButton
-            color="neutral"
-            variant="ghost"
-            class="rounded-full bg-white shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-            @click="exportSelectedReviews"
-          >
+          <UButton color="neutral" variant="ghost"
+            class="rounded-full bg-white shadow-sm shadow-zinc-950/5 hover:bg-zinc-100" @click="exportSelectedReviews">
             <Download class="size-4" />
             Экспорт
           </UButton>
-          <UButton
-            color="error"
-            variant="soft"
-            class="rounded-full"
-            :loading="bulkLoading === 'delete'"
-            @click="confirmBulkDelete"
-          >
+          <UButton color="error" variant="soft" class="rounded-full" :loading="bulkLoading === 'delete'"
+            @click="confirmBulkDelete">
             <Trash2 class="size-4" />
             Удалить
           </UButton>
@@ -170,14 +84,8 @@
       </div>
     </section>
 
-    <UAlert
-      v-if="error"
-      color="error"
-      variant="soft"
-      title="Не удалось загрузить отзывы"
-      :description="getErrorMessage(error)"
-      class="rounded-2xl"
-    />
+    <UAlert v-if="error" color="error" variant="soft" title="Не удалось загрузить отзывы"
+      :description="getErrorMessage(error)" class="rounded-2xl" />
 
     <section class="admin-list-card">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4">
@@ -189,68 +97,42 @@
             Сортировка по свежести, ответы публикуются от имени администратора.
           </p>
         </div>
-        <label
-          v-if="reviews.length"
-          class="inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600"
-        >
-          <input
-            v-model="allReviewsOnPageSelected"
-            class="size-4 rounded border-zinc-200 accent-[var(--admin-accent)]"
-            type="checkbox"
-          >
+        <label v-if="reviews.length"
+          class="inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600">
+          <input v-model="allReviewsOnPageSelected" class="size-4 rounded border-zinc-200 accent-[var(--admin-accent)]"
+            type="checkbox">
           Выбрать страницу
         </label>
       </div>
 
-      <div
-        v-if="reviews.length"
-        class="space-y-4 bg-[#f9fafb] p-3 sm:p-4"
-      >
-        <article
-          v-for="review in reviews"
-          :key="review.id"
-          class="rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)] sm:p-5"
-        >
+      <div v-if="reviews.length" class="space-y-4 bg-[#f9fafb] p-3 sm:p-4">
+        <article v-for="review in reviews" :key="review.id"
+          class="rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)] sm:p-5">
           <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
             <div class="flex min-w-0 gap-3">
-              <label class="mt-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full bg-[#f9fafb] shadow-sm shadow-zinc-950/5">
-                <input
-                  :checked="selectedReviewIds.includes(review.id)"
-                  class="size-4 rounded border-zinc-200 accent-[var(--admin-accent)]"
-                  type="checkbox"
-                  :aria-label="`Выбрать отзыв ${review.id}`"
-                  @change="toggleReviewSelection(review.id, $event)"
-                >
+              <label
+                class="mt-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full bg-[#f9fafb] shadow-sm shadow-zinc-950/5">
+                <input :checked="selectedReviewIds.includes(review.id)"
+                  class="size-4 rounded border-zinc-200 accent-[var(--admin-accent)]" type="checkbox"
+                  :aria-label="`Выбрать отзыв ${review.id}`" @change="toggleReviewSelection(review.id, $event)">
               </label>
-              <img
-                :src="review.product.mainImage"
-                alt=""
-                class="size-16 shrink-0 rounded-2xl object-cover"
-              >
+              <img :src="review.product.mainImage" alt="" class="size-16 shrink-0 rounded-2xl object-cover">
               <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
                   <p class="truncate text-lg font-semibold text-zinc-950">
                     {{ review.product.name }}
                   </p>
-                  <AdminStatusBadge
-                    type="boolean"
-                    :value="review.isAnswered"
-                    true-label="Отвечено"
-                    false-label="Ждёт ответа"
-                  />
+                  <AdminStatusBadge type="boolean" :value="review.isAnswered" true-label="Отвечено"
+                    false-label="Ждёт ответа" />
                 </div>
                 <p class="mt-1 text-sm leading-6 text-zinc-500">
                   {{ review.user.name || review.user.email }} · {{ formatDate(review.createdAt) }}
                 </p>
                 <div class="mt-2 flex items-center gap-1">
-                  <Star
-                    v-for="star in 5"
-                    :key="star"
-                    :class="[
-                      'size-4',
-                      star <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-zinc-200'
-                    ]"
-                  />
+                  <Star v-for="star in 5" :key="star" :class="[
+                    'size-4',
+                    star <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-zinc-200'
+                  ]" />
                   <span class="ml-1 text-xs font-semibold text-zinc-500">
                     {{ review.rating }}/5
                   </span>
@@ -260,27 +142,15 @@
 
             <div class="flex shrink-0 gap-1">
               <UTooltip text="Редактировать">
-                <UButton
-                  color="neutral"
-                  variant="ghost"
-                  square
+                <UButton color="neutral" variant="ghost" square
                   class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
-                  aria-label="Редактировать отзыв"
-                  @click="openEditReview(review)"
-                >
+                  aria-label="Редактировать отзыв" @click="openEditReview(review)">
                   <Pencil class="size-4" />
                 </UButton>
               </UTooltip>
               <UTooltip text="Удалить">
-                <UButton
-                  color="error"
-                  variant="ghost"
-                  square
-                  class="rounded-full"
-                  aria-label="Удалить отзыв"
-                  :loading="deletingReviewId === review.id"
-                  @click="deleteReview(review)"
-                >
+                <UButton color="error" variant="ghost" square class="rounded-full" aria-label="Удалить отзыв"
+                  :loading="deletingReviewId === review.id" @click="deleteReview(review)">
                   <Trash2 class="size-4" />
                 </UButton>
               </UTooltip>
@@ -314,46 +184,27 @@
             </div>
           </div>
 
-          <div
-            v-if="review.reviewPhotos.length"
-            class="mt-4 flex flex-wrap gap-2"
-          >
-            <button
-              v-for="(photo, photoIndex) in review.reviewPhotos"
-              :key="photo.id ?? `${review.id}-${photoIndex}`"
+          <div v-if="review.reviewPhotos.length" class="mt-4 flex flex-wrap gap-2">
+            <button v-for="(photo, photoIndex) in review.reviewPhotos" :key="photo.id ?? `${review.id}-${photoIndex}`"
               type="button"
               class="group relative size-20 shrink-0 overflow-hidden rounded-2xl bg-white shadow-sm shadow-zinc-950/10 ring-1 ring-transparent transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-zinc-950/15 hover:ring-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-              :aria-label="`Открыть фото отзыва ${photoIndex + 1}`"
-              @click="openReviewPhoto(review, photoIndex)"
-            >
-              <img
-                :src="photo.url"
-                alt=""
-                class="size-full object-cover transition duration-300 group-hover:scale-105"
-                loading="lazy"
-              >
-              <span class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
-                <UIcon
-                  name="i-lucide-expand"
-                  class="size-5 drop-shadow"
-                />
+              :aria-label="`Открыть фото отзыва ${photoIndex + 1}`" @click="openReviewPhoto(review, photoIndex)">
+              <img :src="photo.url" alt="" class="size-full object-cover transition duration-300 group-hover:scale-105"
+                loading="lazy">
+              <span
+                class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
+                <UIcon name="i-lucide-expand" class="size-5 drop-shadow" />
               </span>
             </button>
           </div>
 
-          <div
-            v-if="review.reviewAnswers.length"
-            class="mt-4 rounded-2xl bg-[#f9fafb] p-4"
-          >
+          <div v-if="review.reviewAnswers.length" class="mt-4 rounded-2xl bg-[#f9fafb] p-4">
             <p class="text-base font-semibold text-zinc-950">
               Ответы администратора
             </p>
             <div class="mt-3 space-y-2">
-              <div
-                v-for="answer in review.reviewAnswers"
-                :key="answer.id"
-                class="rounded-2xl bg-white p-4 text-sm shadow-sm shadow-zinc-950/5"
-              >
+              <div v-for="answer in review.reviewAnswers" :key="answer.id"
+                class="rounded-2xl bg-white p-4 text-sm shadow-sm shadow-zinc-950/5">
                 <p class="leading-6 text-zinc-950">
                   {{ answer.text }}
                 </p>
@@ -364,91 +215,41 @@
             </div>
           </div>
 
-          <AdminAnswerBox
-            v-model="answerDrafts[review.id]"
-            class="mt-4"
-            :loading="answeringId === review.id"
-            title="Ответ покупателю"
-            :hint="`Ответ будет опубликован в отзыве к товару «${review.product.name}».`"
-            placeholder="Напишите ответ на отзыв покупателя"
-            button-label="Ответить"
-            @submit="answerReview(review)"
-          />
+          <AdminAnswerBox v-model="answerDrafts[review.id]" class="mt-4" :loading="answeringId === review.id"
+            title="Ответ покупателю" :hint="`Ответ будет опубликован в отзыве к товару «${review.product.name}».`"
+            placeholder="Напишите ответ на отзыв покупателя" button-label="Ответить" @submit="answerReview(review)" />
         </article>
       </div>
 
-      <AdminEmptyState
-        v-if="!reviews.length && !pending"
-        title="Отзывы не найдены"
-        description="Новые отзывы покупателей появятся здесь."
-      >
+      <AdminEmptyState v-if="!reviews.length && !pending" title="Отзывы не найдены"
+        description="Новые отзывы покупателей появятся здесь.">
         <template #icon>
           <MessageSquareText class="size-6" />
         </template>
       </AdminEmptyState>
 
-      <AdminPagination
-        v-if="reviewsData?.pagination"
-        :pagination="reviewsData.pagination"
-        :loading="pending"
-        @update:page="page = $event"
-      />
+      <AdminPagination v-if="reviewsData?.pagination" :pagination="reviewsData.pagination" :loading="pending"
+        @update:page="page = $event" />
     </section>
 
-    <UModal
-      v-model:open="reviewModalOpen"
-      title="Редактировать отзыв"
-      scrollable
-    >
+    <UModal v-model:open="reviewModalOpen" title="Редактировать отзыв" scrollable>
       <template #body>
         <div class="space-y-4">
-          <UFormField
-            label="Рейтинг"
-            required
-            :error="reviewErrors.rating"
-          >
-            <UInput
-              v-model.number="reviewForm.rating"
-              class="w-full"
-              size="lg"
-              type="number"
-              min="1"
-              max="5"
-            />
+          <UFormField label="Рейтинг" required :error="reviewErrors.rating">
+            <UInput v-model.number="reviewForm.rating" class="w-full" size="lg" type="number" min="1" max="5" />
           </UFormField>
 
           <div class="grid gap-4 sm:grid-cols-2">
-            <UFormField
-              label="Достоинства"
-              :error="reviewErrors.advantages"
-            >
-              <UTextarea
-                v-model="reviewForm.advantages"
-                class="w-full"
-                :rows="3"
-              />
+            <UFormField label="Достоинства" :error="reviewErrors.advantages">
+              <UTextarea v-model="reviewForm.advantages" class="w-full" :rows="3" />
             </UFormField>
-            <UFormField
-              label="Недостатки"
-              :error="reviewErrors.disadvantages"
-            >
-              <UTextarea
-                v-model="reviewForm.disadvantages"
-                class="w-full"
-                :rows="3"
-              />
+            <UFormField label="Недостатки" :error="reviewErrors.disadvantages">
+              <UTextarea v-model="reviewForm.disadvantages" class="w-full" :rows="3" />
             </UFormField>
           </div>
 
-          <UFormField
-            label="Комментарий"
-            :error="reviewErrors.comment"
-          >
-            <UTextarea
-              v-model="reviewForm.comment"
-              class="w-full"
-              :rows="4"
-            />
+          <UFormField label="Комментарий" :error="reviewErrors.comment">
+            <UTextarea v-model="reviewForm.comment" class="w-full" :rows="4" />
           </UFormField>
 
           <section class="space-y-3 rounded-2xl bg-[#f9fafb] p-4">
@@ -456,43 +257,18 @@
               <p class="admin-section-heading">
                 Фотографии
               </p>
-              <UButton
-                color="primary"
-                variant="soft"
-                type="button"
-                class="rounded-full"
-                @click="addReviewPhoto"
-              >
+              <UButton color="primary" variant="soft" type="button" class="rounded-full" @click="addReviewPhoto">
                 <Plus class="size-4" />
                 URL
               </UButton>
             </div>
-            <p
-              v-if="reviewErrors.reviewPhotos"
-              class="rounded-2xl bg-red-50 p-3 text-sm text-red-700"
-            >
+            <p v-if="reviewErrors.reviewPhotos" class="rounded-2xl bg-red-50 p-3 text-sm text-red-700">
               {{ reviewErrors.reviewPhotos }}
             </p>
-            <div
-              v-for="(photo, index) in reviewForm.reviewPhotos"
-              :key="index"
-              class="grid grid-cols-[1fr_auto] gap-2"
-            >
-              <UInput
-                v-model="photo.url"
-                class="w-full"
-                size="lg"
-                placeholder="URL изображения"
-              />
-              <UButton
-                color="error"
-                variant="ghost"
-                square
-                type="button"
-                class="rounded-full"
-                aria-label="Удалить фото"
-                @click="removeReviewPhoto(index)"
-              >
+            <div v-for="(photo, index) in reviewForm.reviewPhotos" :key="index" class="grid grid-cols-[1fr_auto] gap-2">
+              <UInput v-model="photo.url" class="w-full" size="lg" placeholder="URL изображения" />
+              <UButton color="error" variant="ghost" square type="button" class="rounded-full" aria-label="Удалить фото"
+                @click="removeReviewPhoto(index)">
                 <Trash2 class="size-4" />
               </UButton>
             </div>
@@ -501,79 +277,40 @@
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            class="rounded-full"
-            @click="closeReviewModal"
-          >
+          <UButton color="neutral" variant="ghost" class="rounded-full" @click="closeReviewModal">
             Отмена
           </UButton>
-          <UButton
-            color="primary"
-            class="rounded-full"
-            :loading="savingReview"
-            @click="saveReview"
-          >
+          <UButton color="primary" class="rounded-full" :loading="savingReview" @click="saveReview">
             Сохранить
           </UButton>
         </div>
       </template>
     </UModal>
 
-    <UModal
-      v-model:open="reviewPhotoOpen"
-      title="Фото отзыва"
-      :ui="reviewPhotoModalUi"
-    >
+    <UModal v-model:open="reviewPhotoOpen" title="Фото отзыва" :ui="reviewPhotoModalUi">
       <template #body>
-        <div
-          v-if="activeReviewPhoto"
-          class="relative overflow-hidden rounded-2xl bg-[#f9fafb]"
-        >
-          <img
-            :src="activeReviewPhoto.url"
-            :alt="activeReviewPhotoAlt"
-            class="mx-auto block max-h-[82dvh] max-w-full object-contain"
-          >
-          <div class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
+        <div v-if="activeReviewPhoto" class="relative overflow-hidden rounded-2xl bg-[#f9fafb]">
+          <img :src="activeReviewPhoto.url" :alt="activeReviewPhotoAlt"
+            class="mx-auto block max-h-[82dvh] max-w-full object-contain">
+          <div
+            class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
             {{ activeReviewPhotoIndex + 1 }} / {{ activeReviewPhotos.length }}
           </div>
-          <div
-            v-if="activeReviewPhotos.length > 1"
-            class="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4"
-          >
-            <UButton
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-chevron-left"
-              size="xl"
-              square
+          <div v-if="activeReviewPhotos.length > 1"
+            class="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4">
+            <UButton color="neutral" variant="soft" icon="i-lucide-chevron-left" size="xl" square
               class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
-              aria-label="Предыдущее фото"
-              @click="previousReviewPhoto"
-            />
-            <UButton
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-chevron-right"
-              size="xl"
-              square
+              aria-label="Предыдущее фото" @click="previousReviewPhoto" />
+            <UButton color="neutral" variant="soft" icon="i-lucide-chevron-right" size="xl" square
               class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
-              aria-label="Следующее фото"
-              @click="nextReviewPhoto"
-            />
+              aria-label="Следующее фото" @click="nextReviewPhoto" />
           </div>
         </div>
       </template>
     </UModal>
 
-    <AdminConfirmModal
-      v-model:open="confirmOpen"
-      v-bind="confirmOptions"
-      :loading="confirmLoading"
-      @confirm="runConfirmedAction"
-    />
+    <AdminConfirmModal v-model:open="confirmOpen" v-bind="confirmOptions" :loading="confirmLoading"
+      @confirm="runConfirmedAction" />
   </div>
 </template>
 
@@ -581,7 +318,6 @@
 import {
   CheckCircle2,
   CircleOff,
-  Clock3,
   Download,
   MessageSquareText,
   Pencil,
@@ -660,15 +396,7 @@ const { data: reviewsData, pending, error, refresh } = await useAsyncData(
 
 const reviews = computed(() => reviewsData.value?.items ?? []);
 const selectedReviews = computed(() => reviews.value.filter((review) => selectedReviewIds.value.includes(review.id)));
-const pendingReviewsCount = computed(() => reviews.value.filter((review) => !review.isAnswered).length);
-const averageRating = computed(() => {
-  if (!reviews.value.length) {
-    return 0;
-  }
 
-  return reviews.value.reduce((sum, review) => sum + review.rating, 0) / reviews.value.length;
-});
-const averageRatingLabel = computed(() => reviews.value.length ? averageRating.value.toFixed(1) : "—");
 const selectedReviewModeLabel = computed(() => filters.reviews.pendingOnly ? "Очередь ответов" : "Все отзывы");
 const activeReviewPhoto = computed(() => activeReviewPhotos.value[activeReviewPhotoIndex.value] ?? null);
 const activeReviewPhotoAlt = computed(() => activeReviewPhoto.value ? `Фото отзыва ${activeReviewPhotoIndex.value + 1}` : "Фото отзыва");

@@ -1,494 +1,310 @@
 <template>
   <div class="orders-shop-page space-y-5">
-    <AdminPageHeader
-      title="Заказы"
-      kicker="Операции"
-      description="Статусы заказов, оплаты, состав, доставка и быстрые операционные изменения."
-    >
+    <AdminPageHeader title="Заказы" kicker="Операции"
+      description="Статусы заказов, оплаты, состав, доставка и быстрые операционные изменения.">
       <template #actions>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-refresh-cw"
-          size="lg"
+        <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" size="lg"
           class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-          :loading="pending"
-          @click="refresh()"
-        >
+          :loading="pending" @click="refresh()">
           Обновить
         </UButton>
       </template>
     </AdminPageHeader>
-
-    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-      <AdminMetricCard
-        label="Заказов в выдаче"
-        :value="formatNumber(ordersData?.pagination.total ?? orders.length)"
-        hint="С учётом выбранного статуса"
-        positive
-      >
-        <template #icon>
-          <ClipboardList class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Новые"
-        :value="formatNumber(newOrdersCount)"
-        hint="Требуют подтверждения"
-        :positive="newOrdersCount === 0"
-      >
-        <template #icon>
-          <Clock3 class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="В работе"
-        :value="formatNumber(activeOrdersCount)"
-        hint="Не завершены и не отменены"
-        positive
-      >
-        <template #icon>
-          <Truck class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Оплачено на странице"
-        :value="formatCurrency(paidVisibleRevenue)"
-        hint="Только заказы со статусом оплаты PAID"
-        positive
-      >
-        <template #icon>
-          <Banknote class="size-6" />
-        </template>
-      </AdminMetricCard>
-    </div>
-
-    <section class="rounded-3xl bg-white/90 p-4 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur sm:p-5">
-      <div class="grid gap-3 xl:grid-cols-[minmax(16rem,24rem)_minmax(0,1fr)] xl:items-end">
-        <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
-          <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Статус заказа</span>
-          <USelect
-            v-model="filters.orders.status"
-            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-            size="lg"
-            color="neutral"
-            variant="none"
-            icon="i-lucide-clipboard-list"
-            :content="adminSelectContent"
-            :items="orderStatusFilterItems"
-            :ui="adminSelectUi"
-          />
-        </label>
-
-        <div class="min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
-          <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Быстрый фильтр</span>
-          <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-            <UButton
-              v-for="quickStatus in quickStatusItems"
-              :key="quickStatus.value"
-              :color="filters.orders.status === quickStatus.value ? 'primary' : 'neutral'"
-              :variant="filters.orders.status === quickStatus.value ? 'solid' : 'ghost'"
-              size="lg"
-              class="h-12 min-w-0 justify-center rounded-full px-4 text-sm font-medium"
-              :class="filters.orders.status === quickStatus.value ? 'shadow-lg shadow-emerald-950/10' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 hover:text-zinc-950'"
-              @click="setOrderStatusFilter(quickStatus.value)"
-            >
-              {{ quickStatus.label }}
-            </UButton>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <p class="text-sm text-zinc-500">
         {{ ordersStatusText }}
       </p>
 
-      <div
-        v-auto-animate
-        class="flex flex-wrap gap-2"
-      >
-        <UButton
-          v-if="hasAnyOrderFilter"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-rotate-ccw"
+      <div v-auto-animate class="flex flex-wrap gap-2">
+        <UButton v-if="hasAnyOrderFilter" color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw"
           class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-          @click="setOrderStatusFilter('all')"
-        >
+          @click="setOrderStatusFilter('all')">
           Сбросить
         </UButton>
-        <UBadge
-          color="primary"
-          variant="soft"
-          class="rounded-full px-3 py-1"
-        >
+        <UBadge color="primary" variant="soft" class="rounded-full px-3 py-1">
           {{ selectedOrderStatusFilterLabel }}
         </UBadge>
       </div>
     </div>
 
-    <UAlert
-      v-if="error"
-      color="error"
-      variant="soft"
-      title="Не удалось загрузить заказы"
-      :description="getErrorMessage(error)"
-      class="rounded-2xl"
-    />
+    <UAlert v-if="error" color="error" variant="soft" title="Не удалось загрузить заказы"
+      :description="getErrorMessage(error)" class="rounded-2xl" />
 
     <section class="admin-list-card">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4">
+      <div
+        class="flex flex-col gap-3 border-b border-zinc-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="admin-section-heading">
             Лента заказов
           </p>
           <p class="admin-section-copy">
-            Статусы, оплата, доставка, состав и сообщение покупателю в одной рабочей карточке.
+            Ключевая информация и действия собраны в компактных рабочих карточках.
           </p>
         </div>
-        <UBadge
-          color="neutral"
-          variant="soft"
-          class="rounded-full px-3 py-1"
-        >
-          {{ ordersData?.pagination?.total ?? orders.length }} заказов
-        </UBadge>
+
+        <label class="block w-full min-w-0 rounded-2xl bg-[#f9fafb] p-2 shadow-inner shadow-zinc-950/5 sm:w-72">
+          <span class="sr-only">Фильтр по статусу заказа</span>
+          <USelect v-model="filters.orders.status" class="w-full rounded-xl bg-white shadow-sm shadow-zinc-950/5"
+            size="lg" color="neutral" variant="none" icon="i-lucide-list-filter" :content="adminSelectContent"
+            :items="orderStatusFilterItems" :ui="adminSelectUi" />
+        </label>
       </div>
 
-      <div
-        v-if="orders.length"
-        class="space-y-4 bg-[#f9fafb] p-3 sm:p-4"
-      >
-        <article
-          v-for="order in orders"
-          :key="order.id"
-          class="rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)] sm:p-5"
-        >
-          <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+      <div v-if="orders.length" class="space-y-4 bg-[#f6f7f8] p-3 sm:p-4">
+        <article v-for="order in orders" :key="order.id"
+          class="overflow-hidden rounded-[1.5rem] bg-white shadow-[0_14px_44px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:shadow-[0_20px_60px_rgba(24,24,27,0.12)]">
+          <header class="flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
-                <h2 class="text-xl font-semibold text-zinc-950">
+                <h2 class="text-xl font-semibold tracking-tight text-zinc-950">
                   Заказ #{{ order.id }}
                 </h2>
-                <AdminStatusBadge
-                  type="order"
-                  :value="order.orderStatus"
-                />
-                <AdminStatusBadge
-                  v-if="order.payment"
-                  type="payment"
-                  :value="order.payment.paymentStatus"
-                />
+                <AdminStatusBadge type="order" :value="order.orderStatus" />
+                <AdminStatusBadge v-if="order.payment" type="payment" :value="order.payment.paymentStatus" />
               </div>
-              <p class="mt-2 text-sm leading-6 text-zinc-500">
-                {{ order.user?.name || order.user?.email || "Гость" }} · {{ formatDate(order.createdAt) }}
+              <p class="mt-1.5 text-sm text-zinc-500">
+                Создан {{ formatDate(order.createdAt) }} · обновлён {{ formatDate(order.updatedAt) }}
               </p>
             </div>
 
-            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
-              <UButton
-                v-if="order.user"
-                color="neutral"
-                variant="ghost"
-                icon="i-lucide-messages-square"
-                :to="{ path: '/admin/messages', query: { userId: order.user.id } }"
-                class="col-span-2 min-h-12 justify-center rounded-2xl bg-[#f9fafb] px-4 text-zinc-700 shadow-sm shadow-zinc-950/5 hover:bg-emerald-50 hover:text-emerald-700 sm:col-span-1"
-              >
-                Перейти в чат
-              </UButton>
-              <div class="rounded-2xl bg-emerald-50 px-4 py-3 text-emerald-700">
-                <p class="text-xs font-semibold uppercase">Сумма</p>
-                <p class="mt-1 whitespace-nowrap text-base font-semibold">
-                  {{ formatCurrency(order.payment?.amount) }}
+            <div class="grid grid-cols-2 gap-2 sm:flex sm:items-stretch">
+              <div class="rounded-2xl bg-zinc-100 px-4 py-2.5">
+                <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">
+                  Товаров
                 </p>
-              </div>
-              <div class="rounded-2xl bg-zinc-50 px-4 py-3 text-zinc-700">
-                <p class="text-xs font-semibold uppercase">Позиций</p>
-                <p class="mt-1 whitespace-nowrap text-base font-semibold">
+                <p class="mt-0.5 text-base font-semibold text-zinc-900">
                   {{ order.orderItems.length }}
                 </p>
               </div>
+              <div class="rounded-2xl bg-emerald-50 px-4 py-2.5 ring-1 ring-emerald-100">
+                <p class="text-[11px] font-semibold uppercase tracking-wide text-emerald-600">
+                  Итого
+                </p>
+                <p class="mt-0.5 whitespace-nowrap text-lg font-bold text-emerald-700">
+                  {{ formatCurrency(order.payment?.amount) }}
+                </p>
+              </div>
             </div>
-          </div>
+          </header>
 
-          <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="rounded-2xl bg-[#f9fafb] p-4">
-              <p class="text-xs font-semibold uppercase text-zinc-400">
-                Телефон
-              </p>
-              <p class="mt-2 truncate text-sm font-semibold text-zinc-950">
-                {{ order.customerPhone || "Не указан" }}
-              </p>
-            </div>
-            <div class="rounded-2xl bg-[#f9fafb] p-4">
-              <p class="text-xs font-semibold uppercase text-zinc-400">
-                Получение
-              </p>
-              <p class="mt-2 truncate text-sm font-semibold text-zinc-950">
-                {{ obtainingMethodLabels[order.obtainingMethod] }}
-              </p>
-            </div>
-            <div class="rounded-2xl bg-[#f9fafb] p-4">
-              <p class="text-xs font-semibold uppercase text-zinc-400">
-                Оплата
-              </p>
-              <p class="mt-2 truncate text-sm font-semibold text-zinc-950">
-                {{ paymentMethodLabels[order.paymentMethod] }}
-              </p>
-            </div>
-            <div class="rounded-2xl bg-[#f9fafb] p-4">
-              <p class="text-xs font-semibold uppercase text-zinc-400">
-                Обновлён
-              </p>
-              <p class="mt-2 truncate text-sm font-semibold text-zinc-950">
-                {{ formatDate(order.updatedAt) }}
-              </p>
-            </div>
-          </div>
+          <section class="border-y border-zinc-200 bg-white px-4 py-4 sm:px-5">
+            <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
+              <label class="block min-w-0">
+                <span
+                  class="mb-2 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                  <UIcon name="i-lucide-package-check" class="size-4" />
+                  Статус заказа
+                </span>
+                <USelect :model-value="order.orderStatus"
+                  class="w-full rounded-2xl bg-white shadow-xs shadow-black/20 ring-2 ring-white/10 border border-zinc-200"
+                  size="lg" color="neutral" variant="none" icon="i-lucide-clipboard-check" :content="adminSelectContent"
+                  :items="orderStatusItems" :ui="statusSelectUi" :disabled="savingOrderId === order.id"
+                  @update:model-value="(value) => updateOrderStatus(order, value)" />
+              </label>
 
-          <div class="mt-4 grid gap-4 2xl:grid-cols-[minmax(0,1fr)_minmax(340px,430px)]">
-            <div class="rounded-2xl bg-[#f9fafb] p-4">
-              <div class="mb-3 flex items-center justify-between gap-3">
+              <label class="block min-w-0">
+                <span
+                  class="mb-2 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                  <UIcon name="i-lucide-credit-card" class="size-4" />
+                  Статус оплаты
+                </span>
+                <USelect :model-value="order.payment?.paymentStatus"
+                  class="w-full rounded-2xl bg-white shadow-xs shadow-black/20 ring-2 ring-white/10  border border-zinc-200"
+                  size="lg" color="neutral" variant="none" icon="i-lucide-wallet-cards" :content="adminSelectContent"
+                  :items="paymentStatusItems" :ui="statusSelectUi"
+                  :disabled="!order.payment || savingPaymentId === order.id"
+                  @update:model-value="(value) => updatePaymentStatus(order, value)" />
+              </label>
+
+              <UButton v-if="order.user" color="neutral" variant="solid" icon="i-lucide-messages-square"
+                :to="{ path: '/admin/messages', query: { userId: order.user.id } }"
+                class="min-h-12 justify-center rounded-2xl bg-zinc-800 px-5 text-white ring-1 ring-white/10 hover:bg-zinc-700">
+                Чат
+              </UButton>
+            </div>
+          </section>
+
+          <div class="grid xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.75fr)]">
+            <section class="border-b border-zinc-200 p-4 sm:p-5 xl:border-b-0 xl:border-r">
+              <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <div>
                   <p class="text-base font-semibold text-zinc-950">
-                    Состав заказа
+                    Товары
                   </p>
                   <p class="mt-1 text-sm text-zinc-500">
-                    {{ order.orderItems.length }} позиций в заказе
+                    {{ obtainingMethodLabels[order.obtainingMethod] }} · {{ paymentMethodLabels[order.paymentMethod] }}
                   </p>
                 </div>
+                <p class="text-sm font-medium text-zinc-500">
+                  {{ order.orderItems.length }} позиций
+                </p>
               </div>
 
-              <div class="space-y-2">
-                <div
-                  v-for="item in order.orderItems"
-                  :key="item.product.id"
-                  class="grid gap-3 rounded-2xl bg-white p-3 shadow-sm shadow-zinc-950/5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
-                >
+              <div class="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-white">
+                <div v-for="item in order.orderItems" :key="item.product.id"
+                  class="grid gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-4">
                   <div class="flex min-w-0 items-center gap-3">
-                    <img
-                      :src="item.product.mainImage"
-                      alt=""
-                      class="size-14 shrink-0 rounded-xl object-cover"
-                    >
+                    <img :src="item.product.mainImage" :alt="item.product.name"
+                      class="size-16 shrink-0 rounded-xl bg-zinc-100 object-cover ring-1 ring-zinc-200">
                     <div class="min-w-0">
-                      <p class="truncate text-sm font-semibold text-zinc-950">
+                      <p class="line-clamp-2 text-sm font-semibold leading-5 text-zinc-950">
                         {{ item.product.name }}
                       </p>
-                      <p class="mt-1 text-xs text-zinc-500">
-                        {{ item.quantity }} × {{ formatCurrency(item.price) }}
-                      </p>
+                      <div class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
+                        <span class="rounded-md bg-zinc-100 px-2 py-1 font-medium text-zinc-700">
+                          {{ item.quantity }} шт.
+                        </span>
+                        <span>{{ formatCurrency(item.price) }} за единицу</span>
+                      </div>
                     </div>
                   </div>
-                  <p class="justify-self-start whitespace-nowrap text-sm font-semibold text-zinc-950 sm:justify-self-end">
+
+                  <p class="whitespace-nowrap text-base font-bold text-zinc-950 sm:text-right">
                     {{ formatCurrency(Number(item.price) * item.quantity) }}
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div class="space-y-4">
-              <div class="rounded-2xl bg-[#f9fafb] p-4">
-                <p class="text-base font-semibold text-zinc-950">
-                  Операции
-                </p>
-                <p class="mt-1 text-sm text-zinc-500">
-                  Быстрое изменение статуса заказа и оплаты.
-                </p>
+              <div
+                class="mt-3 flex items-center justify-between gap-4 rounded-2xl bg-emerald-50 px-4 py-3 ring-1 ring-emerald-100">
+                <span class="text-sm font-semibold text-emerald-700">Сумма заказа</span>
+                <span class="whitespace-nowrap text-xl font-bold text-emerald-800">
+                  {{ formatCurrency(order.payment?.amount) }}
+                </span>
+              </div>
+            </section>
 
-                <div class="mt-4 grid gap-3 sm:grid-cols-2 2xl:grid-cols-1">
-                  <label class="block min-w-0">
-                    <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Статус</span>
-                    <USelect
-                      :model-value="order.orderStatus"
-                      class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-                      size="lg"
-                      color="neutral"
-                      variant="none"
-                      icon="i-lucide-clipboard-check"
-                      :content="adminSelectContent"
-                      :items="orderStatusItems"
-                      :ui="adminSelectUi"
-                      :disabled="savingOrderId === order.id"
-                      @update:model-value="(value) => updateOrderStatus(order, value)"
-                    />
-                  </label>
-                  <label class="block min-w-0">
-                    <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Оплата</span>
-                    <USelect
-                      :model-value="order.payment?.paymentStatus"
-                      class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-                      size="lg"
-                      color="neutral"
-                      variant="none"
-                      icon="i-lucide-wallet-cards"
-                      :content="adminSelectContent"
-                      :items="paymentStatusItems"
-                      :ui="adminSelectUi"
-                      :disabled="!order.payment || savingPaymentId === order.id"
-                      @update:model-value="(value) => updatePaymentStatus(order, value)"
-                    />
-                  </label>
+            <aside class="space-y-4 bg-zinc-50/80 p-4 sm:p-5">
+              <section class="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                <div class="flex items-start gap-3">
+                  <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-zinc-950 text-white">
+                    <UIcon name="i-lucide-user-round" class="size-5" />
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                      Получатель
+                    </p>
+                    <p class="mt-1 break-words text-base font-bold text-zinc-950">
+                      {{ order.recipientName || order.user?.name || order.user?.email || "Гость" }}
+                    </p>
+                    <p class="mt-1 break-all text-sm font-semibold text-zinc-700">
+                      {{ order.recipientPhone || order.customerPhone || "Телефон не указан" }}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </section>
 
-              <div class="rounded-2xl bg-[#f9fafb] p-4">
-                <p class="text-base font-semibold text-zinc-950">
-                  Доставка и связь
-                </p>
-                <dl class="mt-4 space-y-3 text-sm">
-                  <div class="flex justify-between gap-4">
-                    <dt class="text-zinc-500">Получатель</dt>
-                    <dd class="text-right font-semibold text-zinc-950">
-                      {{ recipientLabel(order) || order.user?.name || order.user?.email || "Гость" }}
-                    </dd>
-                  </div>
-                  <div class="flex justify-between gap-4">
-                    <dt class="text-zinc-500">Телефон</dt>
-                    <dd class="text-right font-semibold text-zinc-950">
-                      {{ order.recipientPhone || order.customerPhone || "Не указан" }}
-                    </dd>
-                  </div>
+              <section class="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                <div class="flex items-start gap-3">
                   <div
-                    v-if="order.delivery"
-                    class="border-t border-zinc-200 pt-3"
-                  >
-                    <dt class="text-zinc-500">Служба доставки</dt>
-                    <dd class="mt-1 font-semibold text-zinc-950">
-                      {{ deliveryServiceLabel(order) }}
-                    </dd>
-                    <dt class="mt-3 text-zinc-500">Адрес</dt>
-                    <dd class="mt-1 leading-6 text-zinc-950">
-                      {{ order.delivery.address }}
-                    </dd>
-                    <dd
-                      v-if="deliveryDetails(order)"
-                      class="mt-1 text-xs leading-5 text-zinc-500"
-                    >
-                      {{ deliveryDetails(order) }}
-                    </dd>
-                    <dd
-                      v-if="order.delivery.comment"
-                      class="mt-2 rounded-xl bg-white p-3 text-xs leading-5 text-zinc-500 shadow-sm shadow-zinc-950/5"
-                    >
-                      {{ order.delivery.comment }}
-                    </dd>
+                    class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                    <UIcon name="i-lucide-map-pin" class="size-5" />
                   </div>
-                  <div
-                    v-else
-                    class="border-t border-zinc-200 pt-3"
-                  >
-                    <dt class="text-zinc-500">Адрес самовывоза</dt>
-                    <dd class="mt-1 font-semibold text-zinc-950">
-                      Ярославль, пр.-т Октября, д. 78д
-                    </dd>
-                    <dd class="mt-1 text-xs leading-5 text-zinc-500">
-                      По предварительной записи 89201309744.
-                    </dd>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                      {{ order.delivery ? "Адрес доставки" : "Самовывоз" }}
+                    </p>
+
+                    <template v-if="order.delivery">
+                      <p class="mt-1 break-words text-sm font-semibold leading-6 text-zinc-950">
+                        {{ order.delivery.address }}
+                      </p>
+                      <p v-if="deliveryDetails(order)" class="mt-1 text-xs leading-5 text-zinc-500">
+                        {{ deliveryDetails(order) }}
+                      </p>
+                      <p class="mt-2 text-xs font-medium text-emerald-700">
+                        {{ deliveryServiceLabel(order) }}
+                      </p>
+                    </template>
+
+                    <template v-else>
+                      <p class="mt-1 text-sm font-semibold leading-6 text-zinc-950">
+                        Ярославль, пр.-т Октября, д. 78д
+                      </p>
+                      <p class="mt-1 text-xs leading-5 text-zinc-500">
+                        По предварительной записи: 89201309744
+                      </p>
+                    </template>
                   </div>
-                </dl>
-              </div>
-            </div>
+                </div>
+
+                <div v-if="order.delivery?.comment"
+                  class="mt-3 rounded-xl bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900 ring-1 ring-amber-100">
+                  <span class="font-semibold">Комментарий:</span>
+                  {{ order.delivery.comment }}
+                </div>
+              </section>
+
+              <section class="grid grid-cols-2 gap-2">
+                <div class="rounded-xl bg-white p-3 ring-1 ring-zinc-200">
+                  <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">
+                    Получение
+                  </p>
+                  <p class="mt-1 text-sm font-semibold text-zinc-900">
+                    {{ obtainingMethodLabels[order.obtainingMethod] }}
+                  </p>
+                </div>
+                <div class="rounded-xl bg-white p-3 ring-1 ring-zinc-200">
+                  <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">
+                    Оплата
+                  </p>
+                  <p class="mt-1 text-sm font-semibold text-zinc-900">
+                    {{ paymentMethodLabels[order.paymentMethod] }}
+                  </p>
+                </div>
+              </section>
+            </aside>
           </div>
 
-          <form
-            class="mt-4 rounded-2xl bg-[#f9fafb] p-4 shadow-inner shadow-zinc-950/5"
-            @submit.prevent="sendOrderMessage(order)"
-          >
+          <form class="border-t border-zinc-200 bg-white px-4 py-4 sm:px-5" @submit.prevent="sendOrderMessage(order)">
             <template v-if="order.user">
-              <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div class="grid gap-3 lg:grid-cols-[minmax(220px,0.45fr)_minmax(0,1fr)_auto] lg:items-center">
                 <div>
-                  <p class="text-base font-semibold text-zinc-950">
+                  <p class="text-sm font-semibold text-zinc-950">
                     Сообщение заказчику
                   </p>
-                  <p class="mt-1 text-sm leading-6 text-zinc-500">
-                    Ответ уйдёт в диалог пользователя и будет привязан к заказу #{{ order.id }}.
+                  <p class="mt-1 text-xs leading-5 text-zinc-500">
+                    Будет привязано к заказу #{{ order.id }}
                   </p>
                 </div>
-                <UBadge
-                  color="primary"
-                  variant="soft"
-                  class="w-fit rounded-full px-3 py-1"
-                >
-                  {{ order.user.name || order.user.email }}
-                </UBadge>
-              </div>
 
-              <div class="mt-4 rounded-2xl bg-white p-1.5 shadow-sm shadow-zinc-950/5">
-                <UTextarea
-                  v-model="orderMessageDrafts[order.id]"
-                  class="w-full"
-                  size="lg"
-                  variant="none"
-                  :rows="4"
-                  :ui="adminTextareaUi"
-                  :disabled="sendingMessageOrderId === order.id"
-                  placeholder="Напишите сообщение по этому заказу"
-                />
-              </div>
-
-              <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-xs leading-5 text-zinc-500">
-                  Получатель: {{ order.user.name || order.user.email }}
-                </p>
-                <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-end">
-                  <UButton
-                    color="neutral"
-                    variant="ghost"
-                    icon="i-lucide-messages-square"
-                    :to="{ path: '/admin/messages', query: { userId: order.user.id } }"
-                    class="min-h-11 justify-center rounded-full bg-white px-5 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-                  >
-                    Перейти в чат
-                  </UButton>
-                  <UButton
-                    color="primary"
-                    icon="i-lucide-send"
-                    type="submit"
-                    class="min-h-11 justify-center rounded-full px-5 shadow-lg shadow-emerald-950/10"
-                    :disabled="!orderMessageDrafts[order.id]?.trim()"
-                    :loading="sendingMessageOrderId === order.id"
-                  >
-                    Отправить
-                  </UButton>
+                <div class="rounded-2xl bg-zinc-50 p-1 ring-1 ring-zinc-200">
+                  <UTextarea v-model="orderMessageDrafts[order.id]" class="w-full" size="lg" variant="none" :rows="2"
+                    :ui="compactTextareaUi" :disabled="sendingMessageOrderId === order.id"
+                    placeholder="Напишите сообщение по заказу" />
                 </div>
+
+                <UButton color="primary" icon="i-lucide-send" type="submit"
+                  class="min-h-12 justify-center rounded-2xl px-5 shadow-lg shadow-emerald-950/10"
+                  :disabled="!orderMessageDrafts[order.id]?.trim()" :loading="sendingMessageOrderId === order.id">
+                  Отправить
+                </UButton>
               </div>
             </template>
-            <p
-              v-else
-              class="rounded-2xl bg-white px-4 py-3 text-sm leading-6 text-zinc-500 shadow-sm shadow-zinc-950/5"
-            >
-              У заказа нет зарегистрированного аккаунта, поэтому сообщение через личный кабинет недоступно.
+
+            <p v-else class="text-sm leading-6 text-zinc-500">
+              У заказа нет зарегистрированного аккаунта, сообщение через личный кабинет недоступно.
             </p>
           </form>
         </article>
       </div>
 
-      <AdminEmptyState
-        v-if="!orders.length && !pending"
-        title="Заказы не найдены"
-        description="Измените фильтр статуса."
-      >
+      <AdminEmptyState v-if="!orders.length && !pending" title="Заказы не найдены"
+        description="Измените фильтр статуса.">
         <template #icon>
           <ClipboardList class="size-6" />
         </template>
       </AdminEmptyState>
 
-      <AdminPagination
-        v-if="ordersData?.pagination"
-        :pagination="ordersData.pagination"
-        :loading="pending"
-        @update:page="page = $event"
-      />
+      <AdminPagination v-if="ordersData?.pagination" :pagination="ordersData.pagination" :loading="pending"
+        @update:page="page = $event" />
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Banknote, ClipboardList, Clock3, Truck } from "@lucide/vue";
+import { ClipboardList } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import {
   buildQuery,
@@ -543,38 +359,27 @@ const orderStatusFilterItems = [
   { value: "all", label: "Все статусы" },
   ...orderStatusItems
 ];
-const quickStatusItems = [
-  { value: "all" as const, label: "Все" },
-  { value: "NEW" as const, label: "Новые" },
-  { value: "PROCESSING" as const, label: "В работе" },
-  { value: "COMPLETED" as const, label: "Завершённые" }
-];
+
 const adminSelectContent = {
   bodyLock: false,
   collisionPadding: 12
 };
 const adminSelectUi = {
-  base: "h-12 rounded-2xl bg-transparent font-medium text-zinc-700",
+  base: "h-12 rounded-xl bg-transparent font-medium text-zinc-700",
   content: "max-w-[min(28rem,calc(100vw-1rem))] rounded-2xl bg-white shadow-xl shadow-zinc-950/10 ring-0",
   item: "rounded-xl",
   itemLabel: "truncate",
   value: "truncate",
   viewport: "max-h-72 p-1"
 };
-const adminTextareaUi = {
-  base: "min-h-32 resize-y rounded-2xl bg-transparent text-sm leading-6 text-zinc-900"
+const statusSelectUi = {
+  ...adminSelectUi,
+  base: "h-12 rounded-2xl bg-transparent font-semibold text-zinc-900"
 };
-const newOrdersCount = computed(() => orders.value.filter((order) => order.orderStatus === "NEW").length);
-const activeOrdersCount = computed(() =>
-  orders.value.filter((order) => !["COMPLETED", "CANCELLED"].includes(order.orderStatus)).length
-);
-const paidVisibleRevenue = computed(() =>
-  orders.value.reduce((sum, order) => (
-    order.payment?.paymentStatus === "PAID"
-      ? sum + Number(order.payment.amount ?? 0)
-      : sum
-  ), 0)
-);
+const compactTextareaUi = {
+  base: "min-h-20 resize-y rounded-xl bg-transparent text-sm leading-6 text-zinc-900"
+};
+
 const selectedOrderStatusFilterLabel = computed(() => (
   filters.orders.status === "all"
     ? "Все статусы"
@@ -618,11 +423,7 @@ function deliveryDetails(order: OrderListItem) {
 function deliveryServiceLabel(order: OrderListItem) {
   return order.delivery?.deliveryMethod === "OZON"
     ? "Служба доставки OZON"
-    : "Не указана";
-}
-
-function recipientLabel(order: OrderListItem) {
-  return [order.recipientName, order.recipientPhone].filter(Boolean).join(" · ");
+    : "Служба доставки не указана";
 }
 
 async function updateOrderStatus(order: OrderListItem, value: unknown) {

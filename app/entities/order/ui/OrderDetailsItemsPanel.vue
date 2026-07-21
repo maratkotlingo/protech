@@ -8,29 +8,17 @@
     </div>
 
     <div class="mt-3 divide-y divide-zinc-100 pb-1 ">
-      <article
-        v-for="item in items"
-        :key="item.id"
-        class="grid grid-cols-[52px_minmax(0,1fr)_auto] gap-3 py-3 first:pt-0 last:pb-1"
-      >
-        <img
-          :src="item.productMainImage || item.product?.mainImage || '/favicon.ico'"
-          :alt="item.productName"
-          class="size-13 rounded-lg object-cover"
-        >
+      <article v-for="item in items" :key="item.id"
+        class="grid grid-cols-[52px_minmax(0,1fr)_auto] gap-3 py-3 first:pt-0 last:pb-1">
+        <img :src="item.productMainImage || item.product?.mainImage || '/favicon.ico'" :alt="item.productName"
+          class="size-13 rounded-lg object-cover">
 
         <div class="min-w-0">
-          <NuxtLink
-            v-if="item.productId"
-            :to="`/product/${item.productId}`"
-            class="line-clamp-2 text-sm font-semibold text-zinc-950 transition hover:text-emerald-700  "
-          >
+          <NuxtLink v-if="item.productId" :to="`/product/${item.productId}`"
+            class="line-clamp-2 text-sm font-semibold text-zinc-950 transition hover:text-emerald-700  ">
             {{ item.productName }}
           </NuxtLink>
-          <p
-            v-else
-            class="line-clamp-2 text-sm font-semibold text-zinc-950 "
-          >
+          <p v-else class="line-clamp-2 text-sm font-semibold text-zinc-950 ">
             {{ item.productName }}
           </p>
           <p class="mt-1 text-xs leading-5 text-zinc-500 ">

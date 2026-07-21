@@ -1,20 +1,13 @@
 <template>
   <aside class="space-y-4 lg:sticky lg:top-28 lg:self-start">
-    <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
+    <section class="rounded-4xl bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
       <div class="flex items-center justify-between gap-4">
         <h2 class="text-xl font-semibold text-zinc-950">Итого</h2>
-        <UIcon
-          name="i-lucide-receipt-text"
-          class="size-5 text-zinc-400"
-        />
+        <UIcon name="i-lucide-receipt-text" class="size-5 text-zinc-400" />
       </div>
 
       <div class="mt-5 space-y-3 text-sm">
-        <div
-          v-for="row in rows"
-          :key="row.label"
-          class="flex justify-between gap-4 text-zinc-500 "
-        >
+        <div v-for="row in rows" :key="row.label" class="flex justify-between gap-4 text-zinc-500 ">
           <span>{{ row.label }}</span>
           <span class="font-medium text-zinc-950">{{ row.value }}</span>
         </div>
@@ -27,16 +20,10 @@
 
     <OrderPaymentResumeCard :order="order" />
 
-    <section
-      v-if="order.delivery"
-      class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  "
-    >
+    <section v-if="order.delivery" class="rounded-4xl bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
       <div class="flex items-center justify-between gap-4">
         <h2 class="text-xl font-semibold text-zinc-950">Доставка</h2>
-        <UIcon
-          name="i-lucide-map-pin"
-          class="size-5 text-zinc-400"
-        />
+        <UIcon name="i-lucide-map-pin" class="size-5 text-zinc-400" />
       </div>
 
       <div class="mt-4 space-y-3 text-sm leading-6 text-zinc-500 ">
@@ -49,15 +36,8 @@
       </div>
     </section>
 
-    <UButton
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-layout-grid"
-      to="/"
-      block
-      size="lg"
-      class="rounded-full bg-white/90 "
-    >
+    <UButton color="neutral" variant="soft" icon="i-lucide-layout-grid" to="/" block size="lg"
+      class="rounded-full bg-white/90 ">
       Вернуться в каталог
     </UButton>
   </aside>

@@ -64,7 +64,6 @@ export default defineEventHandler(async (event) => {
     ordersTotal,
     ordersNew,
     reviewsPending,
-    faqPending,
     lowStock,
     revenuePaid,
     productOptions,
@@ -75,7 +74,6 @@ export default defineEventHandler(async (event) => {
     prisma.order.count(),
     prisma.order.count({ where: { orderStatus: "NEW" } }),
     prisma.review.count({ where: { OR: [{ isAnswered: false }, { isAnswered: null }] } }),
-    prisma.shopQuestion.count({ where: { OR: [{ isAnswered: false }, { isAnswered: null }] } }),
     prisma.productStock.count({ where: { quantity: { lte: 5 } } }),
     prisma.payment.aggregate({
       where: { paymentStatus: "PAID" },
@@ -243,7 +241,6 @@ export default defineEventHandler(async (event) => {
       ordersTotal,
       ordersNew,
       reviewsPending,
-      faqPending,
       lowStock,
       revenuePaid: revenuePaid._sum.amount ?? 0
     },

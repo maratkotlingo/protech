@@ -24,16 +24,15 @@ model Product {
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
 
-    productImages        ProductImage[]
-    productPrices        ProductPrice[]
-    productStocks        ProductStock[]
-    productAttributes    ProductAttribute[]
-    productSubscriptions ProductSubscription[]
-    favoriteProducts     FavoriteProduct[]
-    cartItems            CartItem[]
-    reviews              Review[]
-    orderItems           OrderItem[]
-    stockMovements       StockMovement[]
+    productImages     ProductImage[]
+    productPrices     ProductPrice[]
+    productStocks     ProductStock[]
+    productAttributes ProductAttribute[]
+    favoriteProducts  FavoriteProduct[]
+    cartItems         CartItem[]
+    reviews           Review[]
+    orderItems        OrderItem[]
+    stockMovements    StockMovement[]
 
     @@index([categoryId, isActive])
     @@map("product")
@@ -120,20 +119,6 @@ model ProductAttribute {
     @@unique([productId, attributeId])
     @@index([attributeId, value])
     @@map("product_attribute")
-}
-
-model ProductSubscription {
-    id        Int     @id @default(autoincrement())
-    productId Int     @map("product_id")
-    product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-    userId    String  @map("user_id")
-    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    createdAt DateTime @default(now()) @map("created_at")
-
-    @@unique([userId, productId])
-    @@index([productId])
-    @@map("product_subscription")
 }
 
 model FavoriteProduct {

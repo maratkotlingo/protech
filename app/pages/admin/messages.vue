@@ -1,82 +1,22 @@
 <template>
-  <div class="messages-shop-page space-y-5 xl:flex xl:h-[calc(100dvh-8.25rem)] xl:min-h-0 xl:flex-col xl:gap-5 xl:space-y-0">
-    <AdminPageHeader
-      title="Сообщения"
-      kicker="Поддержка"
-      description="Диалоги с пользователями, вопросы по заказам и оперативные ответы."
-    >
+  <div
+    class="messages-shop-page space-y-5 xl:flex xl:h-[calc(100dvh-8.25rem)] xl:min-h-0 xl:flex-col xl:gap-5 xl:space-y-0">
+    <AdminPageHeader title="Сообщения" kicker="Поддержка"
+      description="Диалоги с пользователями, вопросы по заказам и оперативные ответы.">
       <template #actions>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-refresh-cw"
-          size="lg"
+        <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" size="lg"
           class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-          :loading="conversationsPending"
-          @click="refreshConversations()"
-        >
+          :loading="conversationsPending" @click="refreshConversations()">
           Обновить
         </UButton>
       </template>
     </AdminPageHeader>
 
-    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-      <AdminMetricCard
-        label="Диалогов"
-        :value="formatNumber(conversations.length)"
-        hint="Всего доступных тредов"
-        positive
-      >
-        <template #icon>
-          <Inbox class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="С непрочитанными"
-        :value="formatNumber(unreadConversationsCount)"
-        hint="Диалоги, где нужен ответ"
-        :positive="unreadConversationsCount === 0"
-      >
-        <template #icon>
-          <BellDot class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="Непрочитанных"
-        :value="formatNumber(unreadMessagesCount)"
-        hint="Сумма по всем диалогам"
-        :positive="unreadMessagesCount === 0"
-      >
-        <template #icon>
-          <MessageSquare class="size-6" />
-        </template>
-      </AdminMetricCard>
-      <AdminMetricCard
-        label="В выбранном треде"
-        :value="formatNumber(messages.length)"
-        hint="Сообщений в открытом диалоге"
-        positive
-      >
-        <template #icon>
-          <MessagesSquare class="size-6" />
-        </template>
-      </AdminMetricCard>
-    </div>
-
-    <UAlert
-      v-if="conversationsError"
-      color="error"
-      variant="soft"
-      title="Не удалось загрузить диалоги"
-      :description="getErrorMessage(conversationsError)"
-      class="rounded-2xl"
-    />
+    <UAlert v-if="conversationsError" color="error" variant="soft" title="Не удалось загрузить диалоги"
+      :description="getErrorMessage(conversationsError)" class="rounded-2xl" />
 
     <div class="grid min-h-[520px] gap-4 xl:min-h-0 xl:flex-1 xl:grid-cols-[360px_minmax(0,1fr)]">
-      <UCard
-        class="admin-list-card min-h-0"
-        :ui="{ body: 'flex h-full min-h-0 flex-col p-0' }"
-      >
+      <UCard class="admin-list-card min-h-0" :ui="{ body: 'flex h-full min-h-0 flex-col p-0' }">
         <div class="shrink-0 border-b border-[var(--admin-border)] p-4">
           <div class="mb-3 flex items-center justify-between gap-3">
             <div>
@@ -87,45 +27,24 @@
                 {{ filteredConversations.length }} из {{ conversations.length }} диалогов
               </p>
             </div>
-            <UBadge
-              :color="socketConnected ? 'success' : 'neutral'"
-              variant="soft"
-              class="rounded-md"
-            >
+            <UBadge :color="socketConnected ? 'success' : 'neutral'" variant="soft" class="rounded-md">
               {{ socketConnected ? "онлайн" : "история" }}
             </UBadge>
           </div>
           <div class="rounded-2xl bg-[#f9fafb] p-1.5 shadow-inner shadow-zinc-950/5">
-            <UInput
-              v-model="search"
-              icon="i-lucide-search"
-              placeholder="Найти пользователя"
-              size="lg"
-              variant="none"
-              :ui="adminInputUi"
-            />
+            <UInput v-model="search" icon="i-lucide-search" placeholder="Найти пользователя" size="lg" variant="none"
+              :ui="adminInputUi" />
           </div>
         </div>
 
         <div class="admin-muted-scroll min-h-0 space-y-2 overflow-y-auto bg-[#f9fafb] p-3 xl:flex-1">
-          <button
-            v-for="conversation in filteredConversations"
-            :key="conversation.user.id"
-            type="button"
+          <button v-for="conversation in filteredConversations" :key="conversation.user.id" type="button"
             class="flex w-full gap-3 rounded-2xl bg-white p-3 text-left shadow-sm shadow-zinc-950/5 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/10"
             :class="selectedUserId === conversation.user.id ? 'ring-2 ring-emerald-200 shadow-emerald-950/10' : ''"
-            @click="selectConversation(conversation.user.id)"
-          >
-            <img
-              v-if="conversation.user.image"
-              :src="conversation.user.image"
-              alt=""
-              class="size-10 shrink-0 rounded-lg object-cover ring-1 ring-[var(--admin-border)]"
-            >
-            <div
-              v-else
-              class="admin-avatar size-10 shrink-0 text-xs"
-            >
+            @click="selectConversation(conversation.user.id)">
+            <img v-if="conversation.user.image" :src="conversation.user.image" alt=""
+              class="size-10 shrink-0 rounded-lg object-cover ring-1 ring-[var(--admin-border)]">
+            <div v-else class="admin-avatar size-10 shrink-0 text-xs">
               {{ getInitials(conversation.user.name || conversation.user.email) }}
             </div>
 
@@ -139,10 +58,8 @@
                     {{ conversation.user.email }}
                   </p>
                 </div>
-                <span
-              v-if="conversation.unreadCount"
-                  class="grid min-w-6 place-items-center rounded-full bg-[var(--admin-accent)] px-2 py-0.5 text-xs font-semibold text-white"
-                >
+                <span v-if="conversation.unreadCount"
+                  class="grid min-w-6 place-items-center rounded-full bg-[var(--admin-accent)] px-2 py-0.5 text-xs font-semibold text-white">
                   {{ conversation.unreadCount }}
                 </span>
               </div>
@@ -150,21 +67,16 @@
               <p class="mt-2 line-clamp-2 text-sm text-[var(--admin-text-muted)]">
                 {{ conversation.lastMessage?.message || "Диалог пока пуст" }}
               </p>
-              <time
-                v-if="conversation.lastMessage"
-                class="mt-2 flex items-center justify-between gap-2 text-xs text-[var(--admin-text-muted)]"
-              >
+              <time v-if="conversation.lastMessage"
+                class="mt-2 flex items-center justify-between gap-2 text-xs text-[var(--admin-text-muted)]">
                 <span>{{ formatDate(conversation.lastMessage.createdAt) }}</span>
                 <span>{{ conversation.totalMessages }} сообщ.</span>
               </time>
             </div>
           </button>
 
-          <AdminEmptyState
-            v-if="!filteredConversations.length && !conversationsPending"
-            title="Диалоги не найдены"
-            description="Проверьте поиск или список пользователей."
-          >
+          <AdminEmptyState v-if="!filteredConversations.length && !conversationsPending" title="Диалоги не найдены"
+            description="Проверьте поиск или список пользователей.">
             <template #icon>
               <MessageSquare class="size-6" />
             </template>
@@ -172,10 +84,7 @@
         </div>
       </UCard>
 
-      <UCard
-        class="admin-list-card min-h-0"
-        :ui="{ body: 'flex h-full min-h-0 flex-col p-0' }"
-      >
+      <UCard class="admin-list-card min-h-0" :ui="{ body: 'flex h-full min-h-0 flex-col p-0' }">
         <template v-if="selectedUser">
           <header class="shrink-0 border-b border-[var(--admin-border)] bg-white p-4">
             <div class="flex flex-wrap items-center justify-between gap-4">
@@ -193,74 +102,40 @@
                 </div>
               </div>
 
-              <UButton
-                color="neutral"
-                variant="outline"
-                icon="i-lucide-refresh-cw"
-                class="rounded-full bg-white"
-                :loading="threadPending"
-                @click="loadThread(selectedUser.id)"
-              >
+              <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" class="rounded-full bg-white"
+                :loading="threadPending" @click="loadThread(selectedUser.id)">
                 Обновить
               </UButton>
             </div>
           </header>
 
-          <div
-            ref="messagesContainer"
-            class="admin-muted-scroll min-h-0 flex-1 overflow-y-auto bg-[#f9fafb] p-4"
-          >
-            <div
-              v-if="threadPending"
-              class="space-y-3"
-            >
-              <USkeleton
-                v-for="item in 5"
-                :key="item"
-                class="h-20 rounded-lg"
-              />
+          <div ref="messagesContainer" class="admin-muted-scroll min-h-0 flex-1 overflow-y-auto bg-[#f9fafb] p-4">
+            <div v-if="threadPending" class="space-y-3">
+              <USkeleton v-for="item in 5" :key="item" class="h-20 rounded-lg" />
             </div>
 
-            <div
-              v-else
-              v-auto-animate
-              class="space-y-3"
-            >
-              <article
-                v-for="message in messages"
-                :key="message.id"
-                class="flex"
-                :class="message.senderRole === 'ADMIN' ? 'justify-end' : 'justify-start'"
-              >
-                <div
-                  class="max-w-[min(44rem,84%)] rounded-2xl px-4 py-3 shadow-sm"
-                  :class="message.senderRole === 'ADMIN'
-                    ? 'bg-[var(--admin-accent)] text-white shadow-green-950/10'
-                    : 'bg-[var(--admin-surface)] text-[var(--admin-text)] ring-1 ring-[var(--admin-border)]'"
-                >
-                  <p
-                    class="text-xs font-semibold"
-                    :class="message.senderRole === 'ADMIN' ? 'text-white/70' : 'text-[var(--admin-text-muted)]'"
-                  >
+            <div v-else v-auto-animate class="space-y-3">
+              <article v-for="message in messages" :key="message.id" class="flex"
+                :class="message.senderRole === 'ADMIN' ? 'justify-end' : 'justify-start'">
+                <div class="max-w-[min(44rem,84%)] rounded-2xl px-4 py-3 shadow-sm" :class="message.senderRole === 'ADMIN'
+                  ? 'bg-[var(--admin-accent)] text-white shadow-green-950/10'
+                  : 'bg-[var(--admin-surface)] text-[var(--admin-text)] ring-1 ring-[var(--admin-border)]'">
+                  <p class="text-xs font-semibold"
+                    :class="message.senderRole === 'ADMIN' ? 'text-white/70' : 'text-[var(--admin-text-muted)]'">
                     {{ getSenderLabel(message.senderRole) }}
                   </p>
                   <p class="mt-1 whitespace-pre-line text-sm leading-6">
                     {{ message.message }}
                   </p>
-                  <time
-                    class="mt-2 block text-xs"
-                    :class="message.senderRole === 'ADMIN' ? 'text-white/65' : 'text-[var(--admin-text-muted)]'"
-                  >
+                  <time class="mt-2 block text-xs"
+                    :class="message.senderRole === 'ADMIN' ? 'text-white/65' : 'text-[var(--admin-text-muted)]'">
                     {{ formatDate(message.createdAt) }}
                   </time>
                 </div>
               </article>
 
-              <AdminEmptyState
-                v-if="!messages.length"
-                title="Диалог пуст"
-                description="Напишите первое сообщение пользователю."
-              >
+              <AdminEmptyState v-if="!messages.length" title="Диалог пуст"
+                description="Напишите первое сообщение пользователю.">
                 <template #icon>
                   <MessageSquare class="size-6" />
                 </template>
@@ -270,47 +145,27 @@
 
           <form
             class="shrink-0 rounded-b-2xl border-t border-zinc-100 bg-white/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-18px_44px_rgba(15,23,42,0.08)] backdrop-blur sm:p-3 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
-            @submit.prevent="sendMessage"
-          >
+            @submit.prevent="sendMessage">
             <UFormField :error="messageError">
               <div
-                class="flex items-end gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45"
-              >
-                <textarea
-                  ref="messageInput"
-                  v-model="draftMessage"
+                class="flex items-end gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45">
+                <textarea ref="messageInput" v-model="draftMessage"
                   class="h-12 min-h-12 max-h-36 flex-1 resize-none overflow-y-hidden rounded-xl bg-transparent px-3 py-3 text-sm leading-5 text-zinc-950 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-60"
-                  :disabled="submitting"
-                  placeholder="Сообщение"
-                  rows="1"
-                  @input="resizeMessageInput"
-                  @keydown.enter.exact.prevent="sendMessage"
-                />
-                <button
-                  type="submit"
+                  :disabled="submitting" placeholder="Сообщение" rows="1" @input="resizeMessageInput"
+                  @keydown.enter.exact.prevent="sendMessage" />
+                <button type="submit"
                   class="mb-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-950/15 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
-                  :disabled="!draftMessage.trim() || submitting"
-                  aria-label="Отправить сообщение"
-                >
-                  <UIcon
-                    :name="submitting ? 'i-lucide-loader-circle' : 'i-lucide-send'"
-                    class="size-4"
-                    :class="submitting ? 'animate-spin' : ''"
-                  />
+                  :disabled="!draftMessage.trim() || submitting" aria-label="Отправить сообщение">
+                  <UIcon :name="submitting ? 'i-lucide-loader-circle' : 'i-lucide-send'" class="size-4"
+                    :class="submitting ? 'animate-spin' : ''" />
                 </button>
               </div>
             </UFormField>
           </form>
         </template>
 
-        <div
-          v-else
-          class="grid min-h-[520px] place-items-center p-6 xl:min-h-0 xl:flex-1"
-        >
-          <AdminEmptyState
-            title="Выберите диалог"
-            description="Слева отображаются пользователи и последние сообщения."
-          >
+        <div v-else class="grid min-h-[520px] place-items-center p-6 xl:min-h-0 xl:flex-1">
+          <AdminEmptyState title="Выберите диалог" description="Слева отображаются пользователи и последние сообщения.">
             <template #icon>
               <MessageSquare class="size-6" />
             </template>
@@ -322,9 +177,9 @@
 </template>
 
 <script setup lang="ts">
-import { BellDot, Inbox, MessageSquare, MessagesSquare } from "@lucide/vue";
+import { MessageSquare } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import { formatDate, formatNumber, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { formatDate, getErrorMessage } from "~~/app/shared/lib/adminFormatters";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import type {
   AdminMessage,
@@ -382,10 +237,7 @@ const {
 );
 
 const conversations = computed(() => conversationsData.value?.conversations ?? []);
-const unreadConversationsCount = computed(() => conversations.value.filter((conversation) => conversation.unreadCount > 0).length);
-const unreadMessagesCount = computed(() =>
-  conversations.value.reduce((total, conversation) => total + conversation.unreadCount, 0)
-);
+
 const filteredConversations = computed(() => {
   const query = search.value.trim().toLowerCase();
 

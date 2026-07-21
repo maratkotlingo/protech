@@ -14,25 +14,13 @@
       </div>
 
       <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-refresh-cw"
-          size="lg"
+        <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" size="lg"
           class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-          :loading="pending"
-          @click="refresh()"
-        >
+          :loading="pending" @click="refresh()">
           Обновить
         </UButton>
-        <UButton
-          color="primary"
-          variant="solid"
-          icon="i-lucide-plus"
-          size="lg"
-          class="h-12 justify-center rounded-full px-4 shadow-lg shadow-emerald-950/10"
-          @click="openCreate"
-        >
+        <UButton color="primary" variant="solid" icon="i-lucide-plus" size="lg"
+          class="h-12 justify-center rounded-full px-4 shadow-lg shadow-emerald-950/10" @click="openCreate">
           Добавить товар
         </UButton>
       </div>
@@ -42,14 +30,8 @@
       <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(13rem,18rem)_minmax(11rem,14rem)]">
         <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
           <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Поиск</span>
-          <UInput
-            v-model="filters.products.search"
-            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-            size="lg"
-            placeholder="Название или артикул"
-            variant="none"
-            :ui="productsInputUi"
-          >
+          <UInput v-model="filters.products.search" class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
+            size="lg" placeholder="Название или артикул" variant="none" :ui="productsInputUi">
             <template #leading>
               <Search class="size-4 text-zinc-400" />
             </template>
@@ -57,32 +39,15 @@
         </label>
         <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
           <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Категория</span>
-          <USelect
-            v-model="filters.products.categoryId"
-            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-            size="lg"
-            color="neutral"
-            variant="none"
-            icon="i-lucide-layout-grid"
-            :content="productsSelectContent"
-            :items="categoryFilterItems"
-            placeholder="Все категории"
-            :ui="productsSelectUi"
-          />
+          <USelect v-model="filters.products.categoryId" class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
+            size="lg" color="neutral" variant="none" icon="i-lucide-layout-grid" :content="productsSelectContent"
+            :items="categoryFilterItems" placeholder="Все категории" :ui="productsSelectUi" />
         </label>
         <label class="block min-w-0 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
           <span class="mb-2 block px-1 text-xs font-semibold uppercase text-zinc-400">Статус</span>
-          <USelect
-            v-model="filters.products.isActive"
-            class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
-            size="lg"
-            color="neutral"
-            variant="none"
-            icon="i-lucide-circle-check"
-            :content="productsSelectContent"
-            :items="statusItems"
-            :ui="productsSelectUi"
-          />
+          <USelect v-model="filters.products.isActive" class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
+            size="lg" color="neutral" variant="none" icon="i-lucide-circle-check" :content="productsSelectContent"
+            :items="statusItems" :ui="productsSelectUi" />
         </label>
       </div>
     </section>
@@ -92,90 +57,29 @@
         {{ productsStatusText }}
       </p>
 
-      <div
-        v-auto-animate
-        class="flex flex-wrap gap-2"
-      >
-        <UButton
-          v-if="hasAnyProductsFilter"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-rotate-ccw"
+      <div v-auto-animate class="flex flex-wrap gap-2">
+        <UButton v-if="hasAnyProductsFilter" color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw"
           class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
-          @click="resetProductsFilters"
-        >
+          @click="resetProductsFilters">
           Сбросить
         </UButton>
-        <UBadge
-          v-if="filters.products.search"
-          color="neutral"
-          variant="soft"
-          class="max-w-full rounded-full px-3 py-1"
-        >
+        <UBadge v-if="filters.products.search" color="neutral" variant="soft" class="max-w-full rounded-full px-3 py-1">
           <span class="truncate">Поиск: {{ filters.products.search }}</span>
         </UBadge>
-        <UBadge
-          v-if="selectedCategoryLabel"
-          color="primary"
-          variant="soft"
-          class="max-w-full rounded-full px-3 py-1"
-        >
+        <UBadge v-if="selectedCategoryLabel" color="primary" variant="soft" class="max-w-full rounded-full px-3 py-1">
           <span class="truncate">{{ selectedCategoryLabel }}</span>
         </UBadge>
-        <UBadge
-          v-if="selectedStatusFilterLabel"
-          color="neutral"
-          variant="soft"
-          class="rounded-full px-3 py-1"
-        >
+        <UBadge v-if="selectedStatusFilterLabel" color="neutral" variant="soft" class="rounded-full px-3 py-1">
           {{ selectedStatusFilterLabel }}
         </UBadge>
       </div>
     </div>
 
-    <UAlert
-      v-if="error"
-      color="error"
-      variant="soft"
-      title="Не удалось загрузить товары"
-      :description="getErrorMessage(error)"
-      class="rounded-2xl"
-    />
-
-    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-      <article
-        v-for="metric in productMetricTiles"
-        :key="metric.key"
-        class="rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 sm:p-5"
-      >
-        <div class="flex min-h-32 items-start justify-between gap-4">
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-zinc-500">
-              {{ metric.label }}
-            </p>
-            <p class="mt-3 text-2xl font-semibold tracking-normal text-zinc-950 sm:text-3xl">
-              {{ metric.value }}
-            </p>
-            <p class="mt-3 text-sm leading-5 text-zinc-500">
-              {{ metric.hint }}
-            </p>
-          </div>
-          <div
-            class="grid size-12 shrink-0 place-items-center rounded-2xl"
-            :class="metric.iconClass"
-          >
-            <component
-              :is="metric.icon"
-              class="size-6"
-            />
-          </div>
-        </div>
-      </article>
-    </div>
+    <UAlert v-if="error" color="error" variant="soft" title="Не удалось загрузить товары"
+      :description="getErrorMessage(error)" class="rounded-2xl" />
 
     <section class="admin-card">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--admin-border)] px-5 py-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-(--admin-border) px-5 py-4">
         <div>
           <p class="admin-section-heading">
             Список товаров
@@ -185,32 +89,21 @@
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-          <label
-            v-if="products.length"
-            class="inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600"
-          >
-            <input
-              v-model="allProductsOnPageSelected"
-              class="size-4 rounded border-[var(--admin-border)] accent-[var(--admin-accent)]"
-              type="checkbox"
-              aria-label="Выбрать все товары на странице"
-            >
+          <label v-if="products.length"
+            class="inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600">
+            <input v-model="allProductsOnPageSelected"
+              class="size-4 rounded border-(--admin-border) accent-(--admin-accent)" type="checkbox"
+              aria-label="Выбрать все товары на странице">
             Выбрать страницу
           </label>
-          <UBadge
-            color="neutral"
-            variant="soft"
-            class="rounded-md"
-          >
+          <UBadge color="neutral" variant="soft" class="rounded-md">
             {{ productsData?.pagination?.total ?? products.length }} товаров
           </UBadge>
         </div>
       </div>
 
-      <div
-        v-if="selectedProductIds.length"
-        class="products-bulk-bar flex flex-wrap items-end justify-between gap-3 px-5 py-4"
-      >
+      <div v-if="selectedProductIds.length"
+        class="products-bulk-bar flex flex-wrap items-end justify-between gap-3 px-5 py-4">
         <div>
           <p class="admin-section-heading">
             Выбрано товаров: {{ selectedProductIds.length }}
@@ -220,231 +113,108 @@
           </p>
         </div>
         <div class="flex flex-wrap items-end gap-2">
-          <UButton
-            color="primary"
-            variant="soft"
-            :loading="bulkLoading === 'activate'"
-            @click="bulkSetActive(true)"
-          >
+          <UButton color="primary" variant="soft" :loading="bulkLoading === 'activate'" @click="bulkSetActive(true)">
             <CheckCircle2 class="size-4" />
             Включить
           </UButton>
-          <UButton
-            color="neutral"
-            variant="soft"
-            :loading="bulkLoading === 'deactivate'"
-            @click="bulkSetActive(false)"
-          >
+          <UButton color="neutral" variant="soft" :loading="bulkLoading === 'deactivate'" @click="bulkSetActive(false)">
             <CircleOff class="size-4" />
             Выключить
           </UButton>
-          <UButton
-            color="error"
-            variant="soft"
-            :loading="bulkLoading === 'delete'"
-            @click="confirmBulkDelete"
-          >
+          <UButton color="error" variant="soft" :loading="bulkLoading === 'delete'" @click="confirmBulkDelete">
             <Trash2 class="size-4" />
             Удалить
           </UButton>
         </div>
       </div>
 
-      <div
-        v-if="products.length"
-        class="grid gap-4 p-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-      >
-        <article
-          v-for="product in products"
-          :key="product.id"
-          class="admin-product-card group overflow-hidden rounded-[1.5rem] bg-white p-2 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)] sm:p-3"
-        >
-          <div class="relative overflow-hidden rounded-xl bg-zinc-100 sm:rounded-[1.45rem]">
-            <img
-              :src="product.mainImage || '/favicon.ico'"
-              :alt="product.name"
+      <div v-if="products.length" class="grid gap-2 p-3 grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <article v-for="product in products" :key="product.id"
+          class="admin-product-card group overflow-hidden rounded-[1.5rem] bg-white p-1 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]">
+          <div class="relative overflow-hidden rounded-xl bg-zinc-100 sm:rounded-xl">
+            <img :src="product.mainImage || '/favicon.ico'" :alt="product.name"
               class="w-full object-cover transition duration-500 group-hover:scale-105"
-              :class="stockQuantity(product) <= 0 ? 'opacity-60 grayscale' : ''"
-              style="aspect-ratio: 3 / 4;"
-              loading="lazy"
-            >
-
-            <div class="absolute left-2 top-2 flex flex-wrap gap-2 sm:left-4 sm:top-4">
-              <UBadge
-                v-if="productDiscountPercent(product)"
-                color="error"
-                variant="solid"
-                class="rounded-full"
-              >
-                -{{ productDiscountPercent(product) }}%
-              </UBadge>
-              <AdminStatusBadge
-                type="stock"
-                :value="stockQuantity(product)"
-              />
-            </div>
-
-            <label class="absolute right-2 top-2 grid size-10 cursor-pointer place-items-center rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 sm:right-4 sm:top-4">
-              <input
-                :checked="selectedProductIds.includes(product.id)"
-                class="size-4 rounded border-[var(--admin-border)] accent-[var(--admin-accent)]"
-                type="checkbox"
-                :aria-label="`Выбрать товар ${product.name}`"
-                @change="toggleProductSelection(product.id, $event)"
-              >
+              :class="stockQuantity(product) <= 0 ? 'opacity-60 grayscale' : ''" style="aspect-ratio: 3 / 4;"
+              loading="lazy">
+            <label
+              class="absolute right-2 top-2 grid size-10 cursor-pointer place-items-center rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 sm:right-4 sm:top-4">
+              <input :checked="selectedProductIds.includes(product.id)"
+                class="size-4 rounded border-(--admin-border) accent-(--admin-accent)" type="checkbox"
+                :aria-label="`Выбрать товар ${product.name}`" @change="toggleProductSelection(product.id, $event)">
             </label>
           </div>
 
           <div class="px-2 pb-3 pt-4">
             <div class="flex items-center justify-between gap-3">
-              <p class="truncate text-xs font-medium uppercase text-zinc-400">
-                {{ product.category.name }}
-              </p>
-              <AdminStatusBadge
-                type="boolean"
-                :value="product.isActive"
-              />
+              <AdminStatusBadge type="boolean" :value="product.isActive" />
             </div>
 
-            <p class="mt-2 line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-zinc-950 sm:min-h-12 sm:text-base sm:leading-6">
+            <p
+              class="mt-2 line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-zinc-950 sm:min-h-12 sm:text-base sm:leading-6">
               {{ product.name }}
-            </p>
-
-            <p class="mt-2 truncate text-sm text-zinc-500">
-              {{ product.article }}
             </p>
 
             <div class="mt-4 flex items-end justify-between gap-3">
               <div class="min-w-0">
                 <div class="flex flex-wrap items-baseline gap-2">
-                  <span
-                    class="font-semibold"
-                    :class="product.oldPrice ? 'text-red-600' : 'text-zinc-950'"
-                  >
+                  <span class="font-semibold" :class="product.oldPrice ? 'text-red-600' : 'text-zinc-950'">
                     {{ formatCurrency(product.currentPrice) }}
                   </span>
-                  <span
-                    v-if="product.oldPrice"
-                    class="text-sm text-zinc-400 line-through"
-                  >
+                  <span v-if="product.oldPrice" class="text-sm text-zinc-400 line-through">
                     {{ formatCurrency(product.oldPrice) }}
                   </span>
                 </div>
-                <p class="mt-1 text-xs text-zinc-500">
-                  Остаток: {{ stockQuantity(product) }} шт.
-                </p>
               </div>
             </div>
 
-            <div class="mt-3 flex items-center gap-1.5 text-xs text-zinc-500 sm:text-sm">
-              <UIcon
-                name="i-lucide-star"
-                class="size-4 text-zinc-300"
-              />
-              <span>{{ product._count.reviews }} отзывов</span>
-              <span>-</span>
-              <span>{{ product._count.orderItems }} продаж</span>
-            </div>
-
-            <p class="mt-2 text-xs text-zinc-400">
-              Обновлено {{ formatDate(product.updatedAt) }}
-            </p>
-
             <div class="mt-4 grid grid-cols-3 gap-2">
-              <UButton
-                color="neutral"
-                variant="ghost"
-                icon="i-lucide-pencil"
+              <UButton color="neutral" variant="ghost" icon="i-lucide-pencil"
                 class="min-w-0 justify-center rounded-full bg-zinc-50 px-2 text-xs shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 sm:text-sm"
-                aria-label="Редактировать товар"
-                @click="openEdit(product.id)"
-              >
-                Редакт.
-              </UButton>
-              <UButton
-                color="neutral"
-                variant="ghost"
-                icon="i-lucide-image"
+                aria-label="Редактировать товар" @click="openEdit(product.id)" />
+              <UButton color="neutral" variant="ghost" icon="i-lucide-image"
                 class="min-w-0 justify-center rounded-full bg-zinc-50 px-2 text-xs shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 sm:text-sm"
-                aria-label="Редактировать изображения товара"
-                @click="openMediaEditor(product.id)"
-              >
-                Фото
-              </UButton>
-              <UButton
-                color="error"
-                variant="soft"
-                icon="i-lucide-trash-2"
-                class="min-w-0 justify-center rounded-full px-2 text-xs sm:text-sm"
-                aria-label="Удалить товар"
-                :loading="deletingId === product.id"
-                @click="deleteProduct(product)"
-              >
-                Удалить
-              </UButton>
+                aria-label="Редактировать изображения товара" @click="openMediaEditor(product.id)" />
+              <UButton color="error" variant="soft" icon="i-lucide-trash-2"
+                class="min-w-0 justify-center rounded-full px-2 text-xs sm:text-sm" aria-label="Удалить товар"
+                :loading="deletingId === product.id" @click="deleteProduct(product)" />
             </div>
           </div>
         </article>
       </div>
 
-      <AdminEmptyState
-        v-if="!products.length && !pending"
-        title="Товары не найдены"
-        description="Измените фильтры или создайте новый товар."
-      >
+      <AdminEmptyState v-if="!products.length && !pending" title="Товары не найдены"
+        description="Измените фильтры или создайте новый товар.">
         <template #icon>
           <PackageSearch class="size-6" />
         </template>
         <template #actions>
-          <UButton
-            color="primary"
-            @click="openCreate"
-          >
+          <UButton color="primary" @click="openCreate">
             Добавить товар
           </UButton>
         </template>
       </AdminEmptyState>
 
-      <AdminPagination
-        v-if="productsData?.pagination"
-        :pagination="productsData.pagination"
-        :loading="pending"
-        @update:page="page = $event"
-      />
+      <AdminPagination v-if="productsData?.pagination" :pagination="productsData.pagination" :loading="pending"
+        @update:page="page = $event" />
     </section>
 
-    <ProductEditorModal
-      v-model:open="editorOpen"
-      :product-id="selectedProductId"
-      :categories="categories"
-      :attributes="attributes"
-      @saved="handleSaved"
-      @dictionaries-updated="refreshDictionaries"
-    />
+    <ProductEditorModal v-model:open="editorOpen" :product-id="selectedProductId" :categories="categories"
+      :attributes="attributes" @saved="handleSaved" @dictionaries-updated="refreshDictionaries" />
 
-    <ProductMediaEditorModal
-      v-model:open="mediaEditorOpen"
-      :product-id="selectedMediaProductId"
-      @saved="handleSaved"
-    />
+    <ProductMediaEditorModal v-model:open="mediaEditorOpen" :product-id="selectedMediaProductId" @saved="handleSaved" />
 
-    <AdminConfirmModal
-      v-model:open="confirmOpen"
-      v-bind="confirmOptions"
-      :loading="confirmLoading"
-      @confirm="runConfirmedAction"
-    />
+    <AdminConfirmModal v-model:open="confirmOpen" v-bind="confirmOptions" :loading="confirmLoading"
+      @confirm="runConfirmedAction" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { CheckCircle2, CircleOff, PackageSearch, PackageX, Search, Tags, Trash2 } from "@lucide/vue";
+import { CheckCircle2, CircleOff, PackageSearch, Trash2 } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import {
   buildQuery,
   formatCurrency,
-  formatDate,
   formatNumber,
   getErrorMessage
 } from "~~/app/shared/lib/adminFormatters";
@@ -527,50 +297,7 @@ const { data: productsData, pending, error, refresh } = await useAsyncData(
 const products = computed(() => productsData.value?.items ?? []);
 const categories = computed(() => dictionaries.value?.categories ?? []);
 const attributes = computed(() => dictionaries.value?.attributes ?? []);
-const totalProducts = computed(() => productsData.value?.pagination?.total ?? products.value.length);
-const activeProductsOnPage = computed(() => products.value.filter((product) => product.isActive).length);
-const lowStockProductsOnPage = computed(() => products.value.filter((product) => stockQuantity(product) <= 5).length);
-const averageVisiblePrice = computed(() => {
-  if (!products.value.length) {
-    return 0;
-  }
 
-  return products.value.reduce((total, product) => total + Number(product.currentPrice ?? 0), 0) / products.value.length;
-});
-const productMetricTiles = computed(() => [
-  {
-    key: "total",
-    label: "Всего товаров",
-    value: formatNumber(totalProducts.value),
-    hint: "С учетом текущих фильтров каталога",
-    icon: PackageSearch,
-    iconClass: "bg-emerald-100 text-emerald-700"
-  },
-  {
-    key: "active",
-    label: "Активны на странице",
-    value: formatNumber(activeProductsOnPage.value),
-    hint: "Видны покупателям в магазине",
-    icon: CheckCircle2,
-    iconClass: "bg-sky-100 text-sky-700"
-  },
-  {
-    key: "stock",
-    label: "Низкий остаток",
-    value: formatNumber(lowStockProductsOnPage.value),
-    hint: "5 штук или меньше в текущей выдаче",
-    icon: PackageX,
-    iconClass: lowStockProductsOnPage.value === 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
-  },
-  {
-    key: "price",
-    label: "Средняя цена",
-    value: formatCurrency(averageVisiblePrice.value),
-    hint: "По товарам на текущей странице",
-    icon: Tags,
-    iconClass: "bg-amber-100 text-amber-700"
-  }
-]);
 const categoryFilterItems = computed(() => [
   { label: "Все категории", value: null },
   ...categories.value.map((category) => ({ label: category.name, value: category.id }))
@@ -647,17 +374,6 @@ watch(products, (items) => {
 
 function stockQuantity(product: ProductListItem) {
   return product.productStocks[0]?.quantity ?? 0;
-}
-
-function productDiscountPercent(product: ProductListItem) {
-  const currentPrice = Number(product.currentPrice ?? 0);
-  const oldPrice = Number(product.oldPrice ?? 0);
-
-  if (!oldPrice || !currentPrice || oldPrice <= currentPrice) {
-    return 0;
-  }
-
-  return Math.round(((oldPrice - currentPrice) / oldPrice) * 100);
 }
 
 function resetProductsFilters() {

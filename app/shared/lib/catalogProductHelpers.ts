@@ -87,7 +87,7 @@ export function productAttributeValue(
 }
 
 export function productBrand(product: ProductCardItem) {
-  return productAttributeValue(product, isBrandAttribute) || product.category?.name || "ProTech";
+  return productAttributeValue(product, isBrandAttribute) || product.category?.name || "ПроТех76";
 }
 
 export function splitAttributeValues(value: string) {

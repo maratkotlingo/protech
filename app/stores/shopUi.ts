@@ -48,8 +48,5 @@ export const useShopUiStore = defineStore("shop-ui", {
     clearCatalogAttributeFilters() {
       this.catalog.attributes = [];
     }
-  },
-  persist: {
-    storage: piniaPluginPersistedstate.localStorage()
   }
 });

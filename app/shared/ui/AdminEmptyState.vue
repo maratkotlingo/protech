@@ -1,5 +1,6 @@
 <template>
-  <div class="grid min-h-64 place-items-center rounded-2xl border border-dashed border-zinc-200 bg-[#f9fafb] p-6 text-center sm:p-8">
+  <div
+    class="grid min-h-64 place-items-center rounded-2xl border border-dashed border-zinc-200 bg-[#f9fafb] p-6 text-center sm:p-8">
     <div class="max-w-lg">
       <div class="mx-auto grid size-12 place-items-center rounded-2xl bg-emerald-100 text-emerald-700">
         <slot name="icon" />
@@ -7,16 +8,10 @@
       <h3 class="mt-4 text-lg font-semibold text-zinc-950">
         {{ title }}
       </h3>
-      <p
-        v-if="description"
-        class="mt-2 text-sm leading-6 text-zinc-500"
-      >
+      <p v-if="description" class="mt-2 text-sm leading-6 text-zinc-500">
         {{ description }}
       </p>
-      <div
-        v-if="$slots.actions"
-        class="mt-5 flex justify-center gap-3"
-      >
+      <div v-if="$slots.actions" class="mt-5 flex justify-center gap-3">
         <slot name="actions" />
       </div>
     </div>

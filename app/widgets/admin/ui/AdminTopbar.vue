@@ -3,21 +3,12 @@
     <div class="admin-container px-3 sm:px-4 lg:px-6 2xl:px-8">
       <div class="admin-topbar-panel flex min-h-16 items-center justify-between gap-3">
         <div class="flex min-w-0 items-center gap-3">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-menu"
-            square
+          <UButton color="neutral" variant="ghost" icon="i-lucide-menu" square
             class="rounded-full bg-[#f9fafb] text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 lg:hidden"
-            aria-label="Открыть навигацию"
-            @click="$emit('open-menu')"
-          />
+            aria-label="Открыть навигацию" @click="$emit('open-menu')" />
 
           <div class="hidden size-11 shrink-0 place-items-center rounded-2xl bg-emerald-100 text-emerald-700 sm:grid">
-            <component
-              :is="currentIcon"
-              class="size-5"
-            />
+            <component :is="currentIcon" class="size-5" />
           </div>
 
           <div class="min-w-0">
@@ -25,8 +16,9 @@
               <p class="truncate text-base font-semibold tracking-normal text-zinc-950 sm:text-lg">
                 {{ currentTitle }}
               </p>
-              <span class="hidden rounded-full bg-[#f9fafb] px-2.5 py-1 text-[0.68rem] font-semibold uppercase text-zinc-400 md:inline-flex">
-                ProTech
+              <span
+                class="hidden rounded-full bg-[#f9fafb] px-2.5 py-1 text-[0.68rem] font-semibold uppercase text-zinc-400 md:inline-flex">
+                ПроТех76
               </span>
             </div>
             <p class="hidden truncate text-xs text-zinc-500 sm:block">
@@ -36,32 +28,23 @@
         </div>
 
         <div class="flex shrink-0 items-center gap-2">
-          <div class="hidden h-11 items-center gap-2 rounded-full bg-[#f9fafb] px-4 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5 xl:flex">
+          <div
+            class="hidden h-11 items-center gap-2 rounded-full bg-[#f9fafb] px-4 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5 xl:flex">
             <CalendarDays class="size-4" />
             {{ todayLabel }}
           </div>
 
-          <UButton
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-store"
-            to="/"
-            class="hidden h-11 rounded-full bg-[#f9fafb] px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 md:inline-flex"
-          >
+          <UButton color="neutral" variant="ghost" icon="i-lucide-store" to="/"
+            class="hidden h-11 rounded-full bg-[#f9fafb] px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 md:inline-flex">
             Магазин
           </UButton>
 
-          <div class="flex h-12 items-center gap-2 rounded-full bg-[#f9fafb] py-1 pl-1 pr-3 shadow-sm shadow-zinc-950/5">
-            <img
-              v-if="user?.image"
-              :src="user.image"
-              :alt="user.name ?? user.email"
-              class="size-10 rounded-full object-cover"
-            >
-            <div
-              v-else
-              class="grid size-10 place-items-center rounded-full bg-white text-xs font-semibold text-emerald-700 shadow-sm shadow-zinc-950/5"
-            >
+          <div
+            class="flex h-12 items-center gap-2 rounded-full bg-[#f9fafb] py-1 pl-1 pr-3 shadow-sm shadow-zinc-950/5">
+            <img v-if="user?.image" :src="user.image" :alt="user.name ?? user.email"
+              class="size-10 rounded-full object-cover">
+            <div v-else
+              class="grid size-10 place-items-center rounded-full bg-white text-xs font-semibold text-emerald-700 shadow-sm shadow-zinc-950/5">
               {{ initials }}
             </div>
             <div class="hidden min-w-0 md:block">
@@ -75,16 +58,9 @@
           </div>
 
           <UTooltip text="Выйти">
-            <UButton
-              color="neutral"
-              variant="ghost"
-              icon="i-lucide-log-out"
-              square
+            <UButton color="neutral" variant="ghost" icon="i-lucide-log-out" square
               class="rounded-full bg-[#f9fafb] text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-red-50 hover:text-red-600"
-              :loading="loggingOut"
-              aria-label="Выйти"
-              @click="logout"
-            />
+              :loading="loggingOut" aria-label="Выйти" @click="logout" />
           </UTooltip>
         </div>
       </div>
@@ -169,7 +145,7 @@ const currentMeta = computed(() => {
   return match?.[1] ?? {
     icon: BarChart3,
     title: "Админ-панель",
-    subtitle: "Операционная панель магазина ProTech"
+    subtitle: "Операционная панель магазина ПроТех76"
   };
 });
 const currentIcon = computed(() => currentMeta.value.icon);

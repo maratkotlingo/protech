@@ -1,44 +1,22 @@
 <template>
-  <div
-    v-if="pending && !products.length"
-    class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4"
-  >
-    <USkeleton
-      v-for="item in 8"
-      :key="item"
-      class="h-[360px] rounded-2xl sm:h-[560px]"
-    />
+  <div v-if="pending && !products.length" class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+    <USkeleton v-for="item in 8" :key="item" class="h-90 rounded-2xl sm:h-140" />
   </div>
 
-  <div
-    v-else-if="products.length"
-    v-auto-animate
-    class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4"
-  >
-    <ProductCatalogCard
-      v-for="product in products"
-      :key="product.id"
-      :product="product"
-      :favorite="favoriteProductIds.includes(product.id)"
-      :in-cart="Boolean(cartItemByProductId(product.id))"
+  <div v-else-if="products.length" v-auto-animate
+    class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+    <ProductCatalogCard v-for="product in products" :key="product.id" :product="product"
+      :favorite="favoriteProductIds.includes(product.id)" :in-cart="Boolean(cartItemByProductId(product.id))"
       :cart-quantity="cartItemByProductId(product.id)?.quantity ?? 0"
-      :loading-favorite="syncingFavoriteProductId === product.id"
-      :loading-cart="syncingCartProductId === product.id"
-      @toggle-cart="$emit('toggleCart', $event)"
-      @toggle-favorite="$emit('toggleFavorite', $event)"
-    />
+      :loading-favorite="syncingFavoriteProductId === product.id" :loading-cart="syncingCartProductId === product.id"
+      @toggle-cart="$emit('toggleCart', $event)" @toggle-favorite="$emit('toggleFavorite', $event)" />
   </div>
 
-  <div
-    v-else
-    class="mt-8 grid min-h-96 place-items-center rounded-[2rem] bg-white px-6 text-center shadow-sm shadow-zinc-950/5 "
-  >
+  <div v-else
+    class="mt-8 grid min-h-96 place-items-center rounded-4xl bg-white px-6 text-center shadow-sm shadow-zinc-950/5 ">
     <div>
       <div class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100 text-zinc-500  ">
-        <UIcon
-          name="i-lucide-search-x"
-          class="size-7"
-        />
+        <UIcon name="i-lucide-search-x" class="size-7" />
       </div>
       <h2 class="mt-4 text-xl font-semibold tracking-normal">Товары не найдены</h2>
       <p class="mt-2 max-w-sm text-sm leading-6 text-zinc-500 ">

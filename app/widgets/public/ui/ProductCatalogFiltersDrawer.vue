@@ -1,11 +1,5 @@
 <template>
-  <UDrawer
-    v-model:open="open"
-    direction="right"
-    :handle="false"
-    :handle-only="true"
-    :ui="drawerUi"
-  >
+  <UDrawer v-model:open="open" direction="right" :handle="false" :handle-only="true" :ui="drawerUi">
     <template #header>
       <div class="flex items-center justify-between gap-4">
         <div>
@@ -15,16 +9,8 @@
           </h2>
         </div>
 
-        <UButton
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-x"
-          size="lg"
-          square
-          class="rounded-full bg-zinc-100 hover:bg-zinc-200  "
-          aria-label="Закрыть фильтры"
-          @click="closeDrawer"
-        />
+        <UButton color="neutral" variant="ghost" icon="i-lucide-x" size="lg" square
+          class="rounded-full bg-zinc-100 hover:bg-zinc-200  " aria-label="Закрыть фильтры" @click="closeDrawer" />
       </div>
     </template>
 
@@ -40,57 +26,34 @@
             </div>
 
             <div
-              class="flex h-8 min-w-32 shrink-0 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-zinc-700 shadow-sm shadow-zinc-950/5  "
-            >
-              <UIcon
-                v-if="priceRangePending"
-                name="i-lucide-loader-circle"
-                class="size-3.5 animate-spin text-zinc-400"
-              />
+              class="flex h-8 min-w-32 shrink-0 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-zinc-700 shadow-sm shadow-zinc-950/5  ">
+              <UIcon v-if="priceRangePending" name="i-lucide-loader-circle"
+                class="size-3.5 animate-spin text-zinc-400" />
               <span v-else>{{ selectedPriceRangeLabel }}</span>
             </div>
           </div>
 
           <div class="mt-4 grid grid-cols-2 gap-2.5">
-            <label class="rounded-[1.25rem] bg-white px-3 py-2.5 shadow-sm shadow-zinc-950/5 transition-colors focus-within:bg-white ">
+            <label
+              class="rounded-[1.25rem] bg-white px-3 py-2.5 shadow-sm shadow-zinc-950/5 transition-colors focus-within:bg-white ">
               <span class="text-[11px] font-semibold uppercase text-zinc-400">От</span>
-              <UInput
-                :model-value="priceMin"
-                type="text"
-                inputmode="numeric"
-                :disabled="priceRangePending"
-                variant="none"
-                class="mt-1 w-full"
-                :ui="priceInputUi"
-                @update:model-value="$emit('setMinPrice', $event)"
-              />
+              <UInput :model-value="priceMin" type="text" inputmode="numeric" :disabled="priceRangePending"
+                variant="none" class="mt-1 w-full" :ui="priceInputUi"
+                @update:model-value="$emit('setMinPrice', $event)" />
             </label>
 
-            <label class="rounded-[1.25rem] bg-white px-3 py-2.5 shadow-sm shadow-zinc-950/5 transition-colors focus-within:bg-white ">
+            <label
+              class="rounded-[1.25rem] bg-white px-3 py-2.5 shadow-sm shadow-zinc-950/5 transition-colors focus-within:bg-white ">
               <span class="text-[11px] font-semibold uppercase text-zinc-400">До</span>
-              <UInput
-                :model-value="priceMax"
-                type="text"
-                inputmode="numeric"
-                :disabled="priceRangePending"
-                variant="none"
-                class="mt-1 w-full"
-                :ui="priceInputUi"
-                @update:model-value="$emit('setMaxPrice', $event)"
-              />
+              <UInput :model-value="priceMax" type="text" inputmode="numeric" :disabled="priceRangePending"
+                variant="none" class="mt-1 w-full" :ui="priceInputUi"
+                @update:model-value="$emit('setMaxPrice', $event)" />
             </label>
           </div>
 
           <div class="mt-4 rounded-[1.35rem] bg-white/80 px-4 py-4 shadow-sm shadow-zinc-950/5 ">
-            <USlider
-              v-model="priceRange"
-              :disabled="priceRangePending || !hasPriceRange"
-              :min="priceRangeMin"
-              :max="sliderMax"
-              :step="PRICE_FILTER_STEP"
-              :min-steps-between-thumbs="0"
-              color="primary"
-            />
+            <USlider v-model="priceRange" :disabled="priceRangePending || !hasPriceRange" :min="priceRangeMin"
+              :max="sliderMax" :step="PRICE_FILTER_STEP" :min-steps-between-thumbs="0" color="primary" />
 
             <div class="mt-3 flex items-center justify-between text-xs font-medium text-zinc-400">
               <span>{{ formatCurrency(priceRangeMin) }}</span>
@@ -99,46 +62,25 @@
           </div>
         </section>
 
-        <div
-          v-if="attributesPending"
-          class="space-y-3"
-        >
-          <USkeleton
-            v-for="item in 4"
-            :key="item"
-            class="h-16 rounded-3xl"
-          />
+        <div v-if="attributesPending" class="space-y-3">
+          <USkeleton v-for="item in 4" :key="item" class="h-16 rounded-3xl" />
         </div>
 
         <template v-else>
-          <section
-            v-for="attribute in attributes"
-            :key="attribute.id"
-          >
+          <section v-for="attribute in attributes" :key="attribute.id">
             <h3 class="font-semibold text-zinc-950 ">
               {{ attribute.name }}<span v-if="attribute.unit" class="text-zinc-400">, {{ attribute.unit }}</span>
             </h3>
-            <div
-              v-auto-animate
-              class="mt-4 grid gap-3"
-            >
-              <UCheckbox
-                v-for="option in visibleAttributeValues(attribute)"
-                :key="`${attribute.id}-${option.value}`"
-                :label="option.value"
-                :model-value="isAttributeSelected(attribute.id, option.value)"
-                color="primary"
+            <div v-auto-animate class="mt-4 grid gap-3">
+              <UCheckbox v-for="option in visibleAttributeValues(attribute)" :key="`${attribute.id}-${option.value}`"
+                :label="option.value" :model-value="isAttributeSelected(attribute.id, option.value)" color="primary"
                 class="rounded-2xl bg-[#f9fafb] p-4 "
-                @update:model-value="$emit('toggleAttribute', attribute.id, option.value)"
-              >
+                @update:model-value="$emit('toggleAttribute', attribute.id, option.value)">
                 <template #label>
                   <span class="flex w-full items-center justify-between gap-3">
                     <span class="flex min-w-0 items-center gap-2">
-                      <span
-                        v-if="isColorAttribute(attribute)"
-                        class="size-4 shrink-0 rounded-full ring-2 ring-white "
-                        :style="{ backgroundColor: colorToCss(option.value) }"
-                      />
+                      <span v-if="isColorAttribute(attribute)" class="size-4 shrink-0 rounded-full ring-2 ring-white "
+                        :style="{ backgroundColor: colorToCss(option.value) }" />
                       <span class="truncate">{{ option.value }}</span>
                     </span>
                     <span class="shrink-0 text-xs text-zinc-400">{{ option.count }}</span>
@@ -147,23 +89,15 @@
               </UCheckbox>
             </div>
 
-            <UButton
-              v-if="attribute.values.length > PRODUCT_CATALOG_VISIBLE_FILTER_OPTIONS"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              class="mt-3 rounded-full px-3 text-zinc-500"
+            <UButton v-if="attribute.values.length > PRODUCT_CATALOG_VISIBLE_FILTER_OPTIONS" color="neutral"
+              variant="ghost" size="sm" class="mt-3 rounded-full px-3 text-zinc-500"
               :icon="isAttributeExpanded(attribute.id) ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-              @click="toggleAttributeExpanded(attribute.id)"
-            >
+              @click="toggleAttributeExpanded(attribute.id)">
               {{ isAttributeExpanded(attribute.id) ? "Свернуть" : `Показать все (${attribute.values.length})` }}
             </UButton>
           </section>
 
-          <p
-            v-if="!attributes.length"
-            class="rounded-3xl bg-[#f9fafb] p-5 text-sm leading-6 text-zinc-500  "
-          >
+          <p v-if="!attributes.length" class="rounded-3xl bg-[#f9fafb] p-5 text-sm leading-6 text-zinc-500  ">
             Для текущей категории пока нет дополнительных характеристик.
           </p>
         </template>
@@ -172,24 +106,12 @@
 
     <template #footer>
       <div class="flex items-center gap-3">
-        <UButton
-          color="neutral"
-          variant="link"
-          size="lg"
-          class="shrink-0 rounded-full px-0 text-zinc-500 whitespace-nowrap"
-          @click="$emit('clear')"
-        >
+        <UButton color="neutral" variant="link" size="lg"
+          class="shrink-0 rounded-full px-0 text-zinc-500 whitespace-nowrap" @click="$emit('clear')">
           Очистить
         </UButton>
-        <UButton
-          color="neutral"
-          variant="solid"
-          size="lg"
-          icon="i-lucide-check"
-          block
-          class="rounded-full"
-          @click="closeDrawer"
-        >
+        <UButton color="neutral" variant="solid" size="lg" icon="i-lucide-check" block class="rounded-full"
+          @click="closeDrawer">
           Применить
         </UButton>
       </div>

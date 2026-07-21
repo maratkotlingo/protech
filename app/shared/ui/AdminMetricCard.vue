@@ -9,28 +9,19 @@
           <p class="text-2xl font-semibold tracking-normal text-zinc-950 sm:text-3xl">
             {{ value }}
           </p>
-          <span
-            v-if="delta"
-            :class="[
-              'rounded-full px-2.5 py-1 text-xs font-semibold',
-              positive ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-            ]"
-          >
+          <span v-if="delta" :class="[
+            'rounded-full px-2.5 py-1 text-xs font-semibold',
+            positive ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+          ]">
             {{ delta }}
           </span>
         </div>
-        <p
-          v-if="hint"
-          class="mt-3 text-xs leading-5 text-zinc-500"
-        >
+        <p v-if="hint" class="mt-3 text-xs leading-5 text-zinc-500">
           {{ hint }}
         </p>
       </div>
 
-      <div
-        class="grid size-12 shrink-0 place-items-center rounded-2xl"
-        :class="iconClass"
-      >
+      <div class="grid size-12 shrink-0 place-items-center rounded-2xl" :class="iconClass">
         <slot name="icon" />
       </div>
     </div>
