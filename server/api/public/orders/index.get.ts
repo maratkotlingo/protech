@@ -1,31 +1,11 @@
 import { PaymentStatus } from "@prisma/client";
-import type { Prisma } from "@prisma/client";
 import type { H3Event } from "h3";
 import { attachOrdersPaymentMeta } from "~~/server/utils/orderPaymentMeta";
 import { attachOrderStatusHistory, getOrderStatusHistoryAuditLogs } from "~~/server/utils/orderStatusHistory";
+import { publicOrderSelect, toPublicOrderDto, type PublicOrderRecord } from "~~/server/utils/publicOrderDto";
 import { syncYooKassaPaymentStatus } from "~~/server/utils/yookassaPaymentStatus";
 
-const orderInclude = {
-  orderItems: {
-    include: {
-      product: {
-        select: {
-          id: true,
-          name: true,
-          mainImage: true
-        }
-      }
-    }
-  },
-  delivery: true,
-  payment: true
-} satisfies Prisma.OrderInclude;
-
-type UserOrder = Prisma.OrderGetPayload<{
-  include: typeof orderInclude;
-}>;
-
-async function syncPendingYooKassaOrders(event: H3Event, orders: UserOrder[]) {
+async function syncPendingYooKassaOrders(event: H3Event, orders: PublicOrderRecord[]) {
   const pendingPaymentIds = orders
     .filter((order) => (
       order.paymentMethod === "ONLINE" &&
@@ -61,7 +41,7 @@ export default defineEventHandler(async (event) => {
     where: {
       userId
     },
-    include: orderInclude,
+    select: publicOrderSelect,
     orderBy: {
       createdAt: "desc"
     }
@@ -72,7 +52,7 @@ export default defineEventHandler(async (event) => {
       where: {
         userId
       },
-      include: orderInclude,
+      select: publicOrderSelect,
       orderBy: {
         createdAt: "desc"
       }
@@ -81,5 +61,5 @@ export default defineEventHandler(async (event) => {
 
   const statusAuditLogs = await getOrderStatusHistoryAuditLogs(orders);
 
-  return attachOrdersPaymentMeta(attachOrderStatusHistory(orders, statusAuditLogs));
+  return attachOrdersPaymentMeta(attachOrderStatusHistory(orders, statusAuditLogs)).map(toPublicOrderDto);
 });

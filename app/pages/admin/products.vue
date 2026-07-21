@@ -1,19 +1,8 @@
 <template>
   <div class="products-shop-page space-y-5">
-    <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="max-w-4xl">
-        <p class="text-sm font-medium uppercase text-emerald-700">
-          Каталог
-        </p>
-        <h1 class="mt-2 text-3xl font-semibold tracking-normal text-zinc-950 sm:text-4xl">
-          Товары
-        </h1>
-        <p class="mt-3 max-w-3xl text-sm leading-6 text-zinc-500 sm:text-base">
-          Создание, редактирование, медиа, цены, категории, характеристики и видимость товаров в магазине.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
+    <AdminPageHeader title="Товары" kicker="Каталог"
+      description="Создание, редактирование, медиа, цены, категории, характеристики и видимость товаров в магазине.">
+      <template #actions>
         <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" size="lg"
           class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           :loading="pending" @click="refresh()">
@@ -23,8 +12,8 @@
           class="h-12 justify-center rounded-full px-4 shadow-lg shadow-emerald-950/10" @click="openCreate">
           Добавить товар
         </UButton>
-      </div>
-    </section>
+      </template>
+    </AdminPageHeader>
 
     <section class="rounded-3xl bg-white/90 p-4 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur sm:p-5">
       <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(13rem,18rem)_minmax(11rem,14rem)]">
@@ -218,6 +207,7 @@ import {
 } from "~~/app/shared/lib/adminFormatters";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { useAdminFiltersStore } from "~~/app/stores/adminFilters";
+import { useAdminConfirmation } from "~~/app/shared/lib/useAdminConfirmation";
 import type {
   Attribute,
   Category,
@@ -239,20 +229,13 @@ const selectedMediaProductId = ref<number | null>(null);
 const deletingId = ref<number | null>(null);
 const selectedProductIds = ref<number[]>([]);
 const bulkLoading = ref<string | null>(null);
-const confirmOpen = ref(false);
-const confirmLoading = ref(false);
-const confirmOptions = reactive({
-  title: "",
-  description: "",
-  message: "",
-  hint: "",
-  verificationLabel: "",
-  verificationPlaceholder: "",
-  verificationText: "",
-  confirmLabel: "Подтвердить",
-  color: "primary" as "primary" | "error"
-});
-let confirmedAction: (() => Promise<void>) | null = null;
+const {
+  confirmLoading,
+  confirmOpen,
+  confirmOptions,
+  requestConfirm,
+  runConfirmedAction
+} = useAdminConfirmation();
 
 watchDebounced(
   () => filters.products.search,
@@ -409,43 +392,6 @@ function toggleProductSelection(productId: number, event: Event) {
     : selectedProductIds.value.filter((id) => id !== productId);
 }
 
-function requestConfirm(
-  options: Partial<typeof confirmOptions>,
-  action: () => Promise<void>
-) {
-  Object.assign(confirmOptions, {
-    title: "",
-    description: "",
-    message: "",
-    hint: "",
-    verificationLabel: "",
-    verificationPlaceholder: "",
-    verificationText: "",
-    confirmLabel: "Подтвердить",
-    color: "primary" as "primary" | "error",
-    ...options
-  });
-  confirmedAction = action;
-  confirmOpen.value = true;
-}
-
-async function runConfirmedAction() {
-  if (!confirmedAction) {
-    confirmOpen.value = false;
-    return;
-  }
-
-  confirmLoading.value = true;
-
-  try {
-    await confirmedAction();
-    confirmOpen.value = false;
-  } finally {
-    confirmLoading.value = false;
-    confirmedAction = null;
-  }
-}
-
 function deleteProduct(product: ProductListItem) {
   const verificationText = product.article || product.name;
 
@@ -465,7 +411,7 @@ function deleteProduct(product: ProductListItem) {
     deletingId.value = product.id;
 
     try {
-      await $fetch(`/api/admin/products/delete/${product.id}`, {
+      await adminFetch(`/api/admin/products/delete/${product.id}`, {
         method: "POST"
       });
       toast.success("Товар удалён");
@@ -482,7 +428,7 @@ async function runBulkProducts(action: string, body: Record<string, unknown>) {
   bulkLoading.value = action;
 
   try {
-    const result = await $fetch<{ count: number }>("/api/admin/products/bulk", {
+    const result = await adminFetch<{ count: number }>("/api/admin/products/bulk", {
       method: "POST",
       body
     });

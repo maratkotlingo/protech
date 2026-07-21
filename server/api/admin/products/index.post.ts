@@ -7,7 +7,8 @@ export default defineEventHandler(async (event) => {
   const body = await validateBody(event, createProductSchema);
 
   const category = await prisma.category.findUnique({
-    where: { id: body.categoryId }
+    where: { id: body.categoryId },
+    select: { id: true }
   });
 
   if (!category) {
@@ -58,14 +59,11 @@ export default defineEventHandler(async (event) => {
           }
           : {})
       },
-      include: {
-        category: true,
-        productImages: true,
-        productAttributes: {
-          include: { attribute: true }
-        },
-        productStocks: true,
-        productPrices: true
+      select: {
+        id: true,
+        name: true,
+        article: true,
+        categoryId: true
       }
     });
 
@@ -81,7 +79,7 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    return { success: true, product };
+    return { success: true };
   } catch (error) {
     const prismaError = toPrismaHttpError(error, {
       P2002: "Товар с таким артикулом уже существует",

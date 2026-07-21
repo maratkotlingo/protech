@@ -35,9 +35,11 @@ const props = defineProps<{
   hint?: string;
   delta?: string;
   positive?: boolean;
+  iconClass?: string;
 }>();
 
 const iconClass = computed(() =>
+  props.iconClass ??
   props.positive === false
     ? "bg-amber-100 text-amber-700"
     : "bg-emerald-100 text-emerald-700"

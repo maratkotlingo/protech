@@ -2,9 +2,10 @@ export default defineEventHandler(async (event) => {
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
 
   try {
-    const product = await prisma.product.findUnique({
+    const product = await prisma.product.findFirst({
       where: {
         id: productId,
+        isActive: true
       },
       select: {
         id: true,
@@ -15,9 +16,6 @@ export default defineEventHandler(async (event) => {
         article: true,
         mainImage: true,
         ozonLink: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
 
         category: {
           select: {
@@ -61,9 +59,7 @@ export default defineEventHandler(async (event) => {
 
         productStocks: {
           select: {
-            id: true,
-            quantity: true,
-            updatedAt: true,
+            quantity: true
           },
         },
 
@@ -78,10 +74,8 @@ export default defineEventHandler(async (event) => {
             disadvantages: true,
             comment: true,
             createdAt: true,
-            updatedAt: true,
             user: {
               select: {
-                id: true,
                 name: true,
                 image: true
               }
@@ -96,13 +90,7 @@ export default defineEventHandler(async (event) => {
 
             reviewAnswers: {
               select: {
-                id: true,
-                text: true,
-                user: {
-                  select: {
-                    name: true
-                  }
-                }
+                text: true
               }
             }
           }
@@ -110,7 +98,7 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    if (!product || !product.isActive) {
+    if (!product) {
       throw createError({
         statusCode: 404,
         message: "Товар не найден",

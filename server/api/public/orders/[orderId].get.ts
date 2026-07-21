@@ -1,23 +1,8 @@
-import { PaymentStatus, type Prisma } from "@prisma/client";
+import { PaymentStatus } from "@prisma/client";
 import { attachOrderPaymentMeta } from "~~/server/utils/orderPaymentMeta";
 import { attachOrderStatusHistory, getOrderStatusHistoryAuditLogs } from "~~/server/utils/orderStatusHistory";
+import { publicOrderSelect, toPublicOrderDto } from "~~/server/utils/publicOrderDto";
 import { syncYooKassaPaymentStatus } from "~~/server/utils/yookassaPaymentStatus";
-
-const orderInclude = {
-  orderItems: {
-    include: {
-      product: {
-        select: {
-          id: true,
-          name: true,
-          mainImage: true
-        }
-      }
-    }
-  },
-  delivery: true,
-  payment: true
-} satisfies Prisma.OrderInclude;
 
 async function getUserOrder(orderId: number, userId: string) {
   return prisma.order.findFirst({
@@ -25,7 +10,7 @@ async function getUserOrder(orderId: number, userId: string) {
       id: orderId,
       userId
     },
-    include: orderInclude
+    select: publicOrderSelect
   });
 }
 
@@ -64,5 +49,5 @@ export default defineEventHandler(async (event) => {
 
   const statusAuditLogs = await getOrderStatusHistoryAuditLogs([order]);
 
-  return attachOrderPaymentMeta(attachOrderStatusHistory([order], statusAuditLogs)[0]!);
+  return toPublicOrderDto(attachOrderPaymentMeta(attachOrderStatusHistory([order], statusAuditLogs)[0]!));
 });

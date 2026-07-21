@@ -29,10 +29,15 @@ export default defineEventHandler(async (event) => {
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { updatedAt: "desc" },
-      include: {
-        category: { select: { id: true, name: true } },
+      select: {
+        id: true,
+        name: true,
+        article: true,
+        currentPrice: true,
+        oldPrice: true,
+        mainImage: true,
+        isActive: true,
         productStocks: { select: { quantity: true } },
-        _count: { select: { reviews: true, orderItems: true } }
       }
     }),
     prisma.product.count({ where })

@@ -120,6 +120,11 @@ export default defineEventHandler(async (event) => {
       data: {
         paymentStatus,
         paidAt: paymentStatus === PaymentStatus.PAID ? new Date() : null
+      },
+      select: {
+        id: true,
+        orderId: true,
+        paymentStatus: true
       }
     });
 
@@ -159,5 +164,5 @@ export default defineEventHandler(async (event) => {
 
   broadcastOrderStatusChangeMessage(statusMessage);
 
-  return { success: true, payment: updatedPayment };
+  return { success: true };
 });

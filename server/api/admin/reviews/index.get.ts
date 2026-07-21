@@ -18,12 +18,27 @@ export default defineEventHandler(async (event) => {
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: "desc" },
-      include: {
-        user: { select: { id: true, name: true, email: true } },
-        product: { select: { id: true, name: true, mainImage: true } },
-        reviewPhotos: true,
+      select: {
+        id: true,
+        rating: true,
+        advantages: true,
+        disadvantages: true,
+        comment: true,
+        isAnswered: true,
+        createdAt: true,
+        user: { select: { name: true, email: true } },
+        product: { select: { name: true, mainImage: true } },
+        reviewPhotos: {
+          select: {
+            id: true,
+            url: true
+          }
+        },
         reviewAnswers: {
-          include: {
+          select: {
+            id: true,
+            text: true,
+            createdAt: true,
             user: { select: { name: true } }
           }
         }

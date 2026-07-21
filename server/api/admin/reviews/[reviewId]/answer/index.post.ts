@@ -8,7 +8,10 @@ export default defineEventHandler(async (event) => {
   const body = await validateBody(event, reviewAnswerSchema);
 
   const review = await prisma.review.findUnique({
-    where: { id: reviewId }
+    where: { id: reviewId },
+    select: {
+      productId: true
+    }
   });
 
   if (!review) {
@@ -24,6 +27,9 @@ export default defineEventHandler(async (event) => {
         reviewId,
         text: body.text,
         userId
+      },
+      select: {
+        id: true
       }
     });
 
@@ -58,5 +64,5 @@ export default defineEventHandler(async (event) => {
     }
   });
 
-  return { success: true, answer };
+  return { success: true };
 });

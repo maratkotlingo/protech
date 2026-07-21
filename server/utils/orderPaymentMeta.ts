@@ -11,7 +11,7 @@ import {
 } from "./orderExpiry";
 
 type PaymentMetaOrder = Pick<Order, "createdAt" | "orderStatus" | "paymentMethod"> & {
-  payment: Pick<Payment, "confirmationUrl" | "paymentStatus"> | null;
+  payment: Pick<Payment, "paymentStatus"> | null;
 };
 
 export function isPendingOnlinePayment(order: PaymentMetaOrder) {

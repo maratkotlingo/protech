@@ -23,49 +23,16 @@ export default defineEventHandler(async (event) => {
       mainImage: true,
       ozonLink: true,
       isActive: true,
-      createdAt: true,
-      updatedAt: true,
-      category: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
+      categoryId: true,
       productImages: {
         select: {
-          id: true,
           url: true,
         },
       },
       productAttributes: {
         select: {
-          id: true,
           value: true,
           attributeId: true,
-          attribute: {
-            select: {
-              id: true,
-              name: true,
-              unit: true,
-            },
-          },
-        },
-      },
-      productStocks: {
-        select: {
-          id: true,
-          quantity: true,
-          updatedAt: true,
-        },
-      },
-      productPrices: {
-        select: {
-          id: true,
-          value: true,
-          createdAt: true,
-        },
-        orderBy: {
-          createdAt: "desc",
         },
       },
     },

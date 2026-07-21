@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    return { success: true, attribute };
+    return { success: true };
   } catch (error) {
     const prismaError = toPrismaHttpError(error, {
       P2025: "Характеристика не найдена",

@@ -9,6 +9,7 @@ import {
   broadcastOrderStatusChangeMessage,
   createOrderStatusChangeMessage
 } from "./orderStatusNotification";
+import { getPositiveIntegerEnv } from "./env";
 
 export type ExpireUnpaidOrdersOptions = {
   expiresBefore?: Date;
@@ -21,12 +22,6 @@ export type ExpireUnpaidOrdersResult = {
   expired: number;
   orderIds: number[];
 };
-
-export function getPositiveIntegerEnv(name: string, fallback: number) {
-  const value = Number(process.env[name]);
-
-  return Number.isInteger(value) && value > 0 ? value : fallback;
-}
 
 export function getOrderPaymentExpiryMinutes() {
   return getPositiveIntegerEnv("ORDER_PAYMENT_EXPIRY_MINUTES", 10);

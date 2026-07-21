@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   const { quantity } = await validateBody(event, addCartItemSchema);
 
   try {
-    const cartItem = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       const cart = await tx.cart.findUnique({
         where: {
           userId
@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
         });
       }
 
-      return await tx.cartItem.update({
+      await tx.cartItem.update({
         where: {
           cartId_productId: {
             cartId: cart.id,
@@ -65,16 +65,12 @@ export default defineEventHandler(async (event) => {
         },
         data: {
           quantity
-        },
-        include: {
-          product: true
         }
       });
     });
 
     return {
-      success: true,
-      cartItem
+      success: true
     };
   } catch (error) {
     const prismaError = toPrismaHttpError(error, {

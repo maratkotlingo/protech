@@ -63,14 +63,11 @@ export default defineEventHandler(async (event) => {
         select: {
           id: true,
           name: true,
-          article: true,
-          description: true,
           currentPrice: true,
           oldPrice: true,
           mainImage: true,
           category: {
             select: {
-              id: true,
               name: true
             }
           },
@@ -81,12 +78,9 @@ export default defineEventHandler(async (event) => {
           },
           productAttributes: {
             select: {
-              id: true,
               value: true,
-              attributeId: true,
               attribute: {
                 select: {
-                  id: true,
                   name: true,
                   unit: true
                 }
@@ -129,8 +123,6 @@ export default defineEventHandler(async (event) => {
       items: products.map((product) => ({
         id: product.id,
         name: product.name,
-        article: product.article,
-        description: product.description,
         currentPrice: product.currentPrice,
         oldPrice: product.oldPrice,
         mainImage: product.mainImage,

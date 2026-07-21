@@ -91,10 +91,11 @@ export default defineEventHandler(async (event) => {
     const updatedOrder = await tx.order.update({
       where: { id: orderId },
       data: orderData,
-      include: {
-        orderItems: true,
-        delivery: true,
-        payment: true
+      select: {
+        id: true,
+        userId: true,
+        orderStatus: true,
+        stockReserved: true
       }
     });
 
@@ -132,5 +133,5 @@ export default defineEventHandler(async (event) => {
 
   broadcastOrderStatusChangeMessage(statusMessage);
 
-  return { success: true, order };
+  return { success: true };
 });

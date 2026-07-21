@@ -64,5 +64,5 @@ export default defineEventHandler(async (event) => {
     }
   });
 
-  return { success: true, count: stocks.length, quantityDeltaTotal, stocks };
+  return { success: true, count: stocks.length, quantityDeltaTotal };
 });

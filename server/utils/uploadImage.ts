@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
-import { extname, join } from "node:path";
+import { extname, join, resolve } from "node:path";
 import { Buffer } from "node:buffer";
 
-const UPLOAD_DIR = join(process.cwd(), "public", "uploads");
+const DEFAULT_UPLOAD_PUBLIC_PATH = "/uploads";
 
 const ALLOWED_MIME = new Set([
   "image/jpeg",
@@ -26,6 +26,23 @@ type UploadPart = {
   type?: string;
   filename?: string;
 };
+
+function getUploadDir() {
+  const configuredDir = process.env.UPLOAD_DIR?.trim();
+
+  return configuredDir ? resolve(configuredDir) : join(process.cwd(), "public", "uploads");
+}
+
+function getUploadPublicPath() {
+  const value = process.env.UPLOAD_PUBLIC_PATH?.trim() || DEFAULT_UPLOAD_PUBLIC_PATH;
+  const normalized = value.replace(/^\/+|\/+$/g, "");
+
+  if (!normalized || normalized.includes("..") || !/^[a-z0-9/_-]+$/i.test(normalized)) {
+    return DEFAULT_UPLOAD_PUBLIC_PATH;
+  }
+
+  return `/${normalized}`;
+}
 
 function hasValidImageSignature(mime: string, data: Buffer) {
   switch (mime) {
@@ -73,14 +90,15 @@ export async function saveUploadedImage(file: UploadPart): Promise<string> {
     });
   }
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
+  const uploadDir = getUploadDir();
+  await mkdir(uploadDir, { recursive: true });
 
   const ext =
     EXT_BY_MIME[mime] ||
     extname(file.filename ?? "").toLowerCase() ||
     ".jpg";
   const filename = `${randomUUID()}${ext}`;
-  await writeFile(join(UPLOAD_DIR, filename), file.data);
+  await writeFile(join(uploadDir, filename), file.data);
 
-  return `/uploads/${filename}`;
+  return `${getUploadPublicPath()}/${filename}`;
 }

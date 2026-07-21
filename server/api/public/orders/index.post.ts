@@ -7,12 +7,6 @@ import { reserveProductStock, restoreOrderStock } from "~~/server/utils/orderSto
 import { createYooKassaPayment } from "~~/server/utils/yookassa";
 import { createOrderSchema } from "~~/shared/schemas/user/orders/createOrder";
 
-const orderInclude = {
-  orderItems: true,
-  delivery: true,
-  payment: true
-} satisfies Prisma.OrderInclude;
-
 export default defineEventHandler(async (event) => {
   const { user } = await requireUser(event);
   const body = await validateBody(event, createOrderSchema);
@@ -195,12 +189,21 @@ export default defineEventHandler(async (event) => {
     where: {
       id: orderId
     },
-    include: orderInclude
+    select: {
+      id: true,
+      payment: {
+        select: {
+          amount: true
+        }
+      }
+    }
   });
 
   if (body.paymentMethod === "OFFLINE") {
     return {
-      order,
+      order: {
+        id: order.id
+      },
       payment: {
         type: "offline",
         confirmationUrl: null
@@ -246,15 +249,10 @@ export default defineEventHandler(async (event) => {
     }
   });
 
-  const updatedOrder = await prisma.order.findUniqueOrThrow({
-    where: {
+  return {
+    order: {
       id: order.id
     },
-    include: orderInclude
-  });
-
-  return {
-    order: updatedOrder,
     payment: {
       type: "yookassa",
       status: yookassaPayment.status,

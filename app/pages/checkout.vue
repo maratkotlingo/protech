@@ -57,12 +57,14 @@
 import { toast } from "vue-sonner";
 import { getErrorMessage } from "~~/app/shared/lib/shopFormatters";
 import { shopFetch } from "~~/app/shared/lib/shopFetch";
-import type { ObtainingMethod, PaymentMethod, ShopOrder } from "~~/app/shared/types/shop";
+import type { ObtainingMethod, PaymentMethod } from "~~/app/shared/types/shop";
 import { useAuthStore } from "~~/app/stores/auth";
 import { useCartStore, type CheckoutDraft } from "~~/app/stores/cart";
 
 type CreateOrderResponse = {
-  order: ShopOrder;
+  order: {
+    id: number;
+  };
   payment: {
     type: "offline" | "yookassa";
     status?: string;

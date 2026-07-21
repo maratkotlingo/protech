@@ -3,14 +3,14 @@ export default defineEventHandler(async (event) => {
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
 
   try {
-    const result = await prisma.favoriteProduct.deleteMany({
+    await prisma.favoriteProduct.deleteMany({
       where: {
         userId: user.id,
         productId
       }
     });
 
-    return { success: true, deletedCount: result.count };
+    return { success: true };
   } catch (error) {
     if (error && typeof error === "object" && "statusCode" in error) {
       throw error;

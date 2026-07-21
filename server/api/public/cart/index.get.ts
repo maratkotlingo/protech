@@ -15,27 +15,13 @@ export default defineEventHandler(async (event) => {
           select: {
             id: true,
             name: true,
-            article: true,
-            description: true,
             currentPrice: true,
             oldPrice: true,
             mainImage: true,
             isActive: true,
-            category: {
-              select: {
-                id: true,
-                name: true
-              }
-            },
             productStocks: {
               select: {
                 quantity: true
-              }
-            },
-
-            _count: {
-              select: {
-                reviews: true
               }
             }
           }
@@ -43,45 +29,17 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    const productIds = cartItems.map((item) => item.product.id);
-
-    const ratings = productIds.length
-      ? await prisma.review.groupBy({
-        by: ["productId"],
-        where: {
-          productId: {
-            in: productIds
-          }
-        },
-        _avg: {
-          rating: true
-        }
-      })
-      : [];
-
-    const ratingByProductId = new Map(
-      ratings.map((item) => [
-        item.productId,
-        item._avg.rating === null ? null : Number(item._avg.rating.toFixed(1))
-      ])
-    );
-
     return cartItems.map((item) => ({
       id: item.id,
       quantity: item.quantity,
       product: {
         id: item.product.id,
         name: item.product.name,
-        article: item.product.article,
-        description: item.product.description,
         currentPrice: item.product.currentPrice,
         oldPrice: item.product.oldPrice,
         mainImage: item.product.mainImage,
-        category: item.product.category,
         isActive: item.product.isActive,
-        stockQuantity: item.product.productStocks[0]?.quantity ?? 0,
-        reviewsCount: item.product._count.reviews,
-        averageRating: ratingByProductId.get(item.product.id) ?? null
+        stockQuantity: item.product.productStocks[0]?.quantity ?? 0
       }
     }));
   } catch (error) {

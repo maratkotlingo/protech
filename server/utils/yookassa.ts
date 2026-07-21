@@ -1,6 +1,7 @@
 import { Buffer } from "node:buffer";
 import { createError, type H3Event } from "h3";
 import type { Prisma } from "@prisma/client";
+import { getPositiveIntegerEnv } from "./env";
 
 export type YooKassaPayment = {
   id: string;
@@ -40,6 +41,29 @@ function getYooKassaApiUrl(event: H3Event) {
   return url.replace(/\/$/, "");
 }
 
+async function fetchYooKassa(event: H3Event, path: string, init: RequestInit) {
+  const timeoutMs = getPositiveIntegerEnv("YOOKASSA_TIMEOUT_MS", 10_000, {
+    min: 1_000,
+    max: 60_000
+  });
+
+  try {
+    return await fetch(`${getYooKassaApiUrl(event)}${path}`, {
+      ...init,
+      signal: AbortSignal.timeout(timeoutMs)
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "TimeoutError") {
+      throw createError({
+        statusCode: 504,
+        message: "ЮKassa не ответила вовремя"
+      });
+    }
+
+    throw error;
+  }
+}
+
 function getYooKassaReturnUrl(event: H3Event, orderId: number) {
   const config = useRuntimeConfig(event);
   const appUrl = String(config.public.appUrl || "").replace(/\/$/, "");
@@ -47,7 +71,7 @@ function getYooKassaReturnUrl(event: H3Event, orderId: number) {
   if (!appUrl) {
     throw createError({
       statusCode: 500,
-      message: "РќРµ РЅР°СЃС‚СЂРѕРµРЅ NUXT_PUBLIC_APP_URL"
+      message: "Не настроен NUXT_PUBLIC_APP_URL"
     });
   }
 
@@ -94,7 +118,7 @@ export async function createYooKassaPayment(
 
   const returnUrl = getYooKassaReturnUrl(event, input.orderId);
 
-  const response = await fetch(`${getYooKassaApiUrl(event)}/v3/payments`, {
+  const response = await fetchYooKassa(event, "/v3/payments", {
     method: "POST",
     headers: {
       Authorization: getYooKassaAuth(event),
@@ -134,7 +158,7 @@ export async function createYooKassaPayment(
 }
 
 export async function getYooKassaPayment(event: H3Event, paymentId: string) {
-  const response = await fetch(`${getYooKassaApiUrl(event)}/v3/payments/${paymentId}`, {
+  const response = await fetchYooKassa(event, `/v3/payments/${paymentId}`, {
     method: "GET",
     headers: {
       Authorization: getYooKassaAuth(event)

@@ -25,9 +25,6 @@ export default defineEventHandler(async (event) => {
             }
           }
           : {})
-      },
-      include: {
-        reviewPhotos: true
       }
     });
 

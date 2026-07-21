@@ -77,5 +77,5 @@ export default defineEventHandler(async (event) => {
     }
   });
 
-  return { success: true, user };
+  return { success: true };
 });

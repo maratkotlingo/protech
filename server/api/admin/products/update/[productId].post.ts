@@ -9,7 +9,8 @@ export default defineEventHandler(async (event) => {
 
   if (body.categoryId !== undefined) {
     const category = await prisma.category.findUnique({
-      where: { id: body.categoryId }
+      where: { id: body.categoryId },
+      select: { id: true }
     });
 
     if (!category) {
@@ -70,13 +71,10 @@ export default defineEventHandler(async (event) => {
         const updatedProduct = await tx.product.update({
           where: { id: productId },
           data,
-          include: {
-            category: true,
-            productImages: true,
-            productAttributes: {
-              include: { attribute: true }
-            },
-            productStocks: true
+          select: {
+            id: true,
+            name: true,
+            article: true
           }
         });
 
@@ -92,13 +90,10 @@ export default defineEventHandler(async (event) => {
       : await prisma.product.update({
         where: { id: productId },
         data,
-        include: {
-          category: true,
-          productImages: true,
-          productAttributes: {
-            include: { attribute: true }
-          },
-          productStocks: true
+        select: {
+          id: true,
+          name: true,
+          article: true
         }
       });
 
@@ -115,7 +110,7 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    return { success: true, product };
+    return { success: true };
   } catch (error) {
     const prismaError = toPrismaHttpError(error, {
       P2025: "Товар не найден",

@@ -3,7 +3,7 @@ export default defineEventHandler(async (event) => {
   const productId = getPositiveIntRouterParam(event, "productId", "Некорректный ID товара");
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       const product = await tx.product.findFirst({
         where: {
           id: productId,
@@ -69,7 +69,7 @@ export default defineEventHandler(async (event) => {
         });
       }
 
-      return await tx.cartItem.upsert({
+      await tx.cartItem.upsert({
         where: {
           cartId_productId: {
             cartId: cart.id,
@@ -85,16 +85,12 @@ export default defineEventHandler(async (event) => {
           quantity: {
             increment: 1
           }
-        },
-        include: {
-          product: true
         }
       });
     });
 
     return {
-      success: true,
-      cartItem: result
+      success: true
     };
   } catch (error) {
     if (error && typeof error === "object" && "statusCode" in error) {

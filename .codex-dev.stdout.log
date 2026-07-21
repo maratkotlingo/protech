@@ -1,0 +1,23 @@
+
+> dev
+> nuxt dev --host 127.0.0.1 --port 3000
+
+|
+•  [32mNuxt [1m4.4.8[22m[39m[90m (with [39m[90mNitro [1m2.13.4[22m[39m[90m, Vite [1m7.3.6[22m[39m[90m and Vue [1m3.5.39[22m[39m[90m)[39m
+
+[32m  ➜ Local:   [39m [36m[4mhttp://127.0.0.1:[1m3000[22m/[24m[39m
+[90m  ➜ Network:  use [37m--host[90m to expose[39m
+
+[33m  ➜ DevTools: [39m[2mpress [22m[32mShift[39m[2m + [22m[32mAlt[39m[2m + [22m[32mD[39m[2m in the browser (v3.2.4)[22m
+
+[36mi[39m Nuxt Icon server bundle mode is set to [36mlocal[39m
+[90m[[90mnuxt:icon[90m][39m [32m√[39m Nuxt Icon discovered local-installed 2 collections: carbon, lucide
+[32m√[39m Vite client built in 42ms
+[32m√[39m Vite server built in 15ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 3531ms
+[36mi[39m Vite server warmed up in 1ms
+[36mi[39m Vite client warmed up in 3ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 2894ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 2642ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 2472ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 2512ms

@@ -1,19 +1,8 @@
 <template>
   <div class="analytics-shop-page space-y-5">
-    <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="max-w-4xl">
-        <p class="text-sm font-medium uppercase text-emerald-700">
-          Аналитика
-        </p>
-        <h1 class="mt-2 text-3xl font-semibold tracking-normal text-zinc-950 sm:text-4xl">
-          Аналитика и статистика
-        </h1>
-        <p class="mt-3 max-w-3xl text-sm leading-6 text-zinc-500 sm:text-base">
-          Финансы, продажи, маржинальность, популярные товары и складские сигналы в одном рабочем экране.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
+    <AdminPageHeader title="Аналитика и статистика" kicker="Аналитика"
+      description="Финансы, продажи, маржинальность, популярные товары и складские сигналы в одном рабочем экране.">
+      <template #actions>
         <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" size="lg"
           class="h-12 justify-center rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           :loading="pending" @click="refresh()">
@@ -24,8 +13,8 @@
           @click="filters.resetAnalyticsFilters()">
           Сбросить
         </UButton>
-      </div>
-    </section>
+      </template>
+    </AdminPageHeader>
 
     <section class="overflow-x-auto rounded-4xl bg-[#f9fafb]/90 p-2 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur">
       <div class="grid min-w-240 grid-cols-6 items-end gap-3 max-2xl:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
@@ -84,32 +73,12 @@
       class="rounded-2xl" />
 
     <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-      <article v-for="metric in metricTiles" :key="metric.key"
-        class="rounded-2xl bg-white p-4 shadow-sm shadow-zinc-950/5 sm:p-5">
-        <div class="flex min-h-32 items-start justify-between gap-4">
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-zinc-500">
-              {{ metric.label }}
-            </p>
-            <div class="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-2">
-              <p class="text-2xl font-semibold tracking-normal text-zinc-950 sm:text-3xl">
-                {{ metric.value }}
-              </p>
-              <span v-if="metric.delta" class="rounded-full px-2.5 py-1 text-xs font-semibold"
-                :class="metric.positive ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">
-                {{ metric.delta }}
-              </span>
-            </div>
-            <p class="mt-3 text-xs leading-5 text-zinc-500">
-              {{ metric.hint }}
-            </p>
-          </div>
-
-          <div class="grid size-12 shrink-0 place-items-center rounded-2xl" :class="metric.iconClass">
-            <component :is="metric.icon" class="size-6" />
-          </div>
-        </div>
-      </article>
+      <AdminMetricCard v-for="metric in metricTiles" :key="metric.key" :delta="metric.delta" :hint="metric.hint"
+        :icon-class="metric.iconClass" :label="metric.label" :positive="metric.positive" :value="metric.value">
+        <template #icon>
+          <component :is="metric.icon" class="size-6" />
+        </template>
+      </AdminMetricCard>
     </div>
 
     <div class="grid gap-4 xl:grid-cols-2">
@@ -153,7 +122,6 @@ import type {
   CategoryAnalyticsResponse,
   DashboardStats,
   DashboardStatsResponse,
-  InventoryAnalyticsResponse,
   ProductAnalyticsResponse,
   SalesAnalyticsResponse
 } from "~~/app/shared/types/admin";
@@ -193,18 +161,11 @@ const analyticsQuery = computed(() => buildQuery({
   limit: filters.analytics.limit
 }));
 
-const dashboardQuery = computed(() => buildQuery({
-  period: filters.analytics.preset,
-  startDate: filters.analytics.startDate,
-  endDate: filters.analytics.endDate,
-}));
-
 const { data, pending, error, refresh } = await useAsyncData("admin-analytics-bundle", async () => {
-  const [dashboard, sales, products, inventory, categories] = await Promise.all([
-    adminFetch<DashboardStatsResponse>(`/api/admin/dashboard/stats${dashboardQuery.value}`),
+  const [dashboard, sales, products, categories] = await Promise.all([
+    adminFetch<DashboardStatsResponse>("/api/admin/dashboard/stats"),
     adminFetch<SalesAnalyticsResponse>(`/api/admin/analytics/sales${analyticsQuery.value}`),
     adminFetch<ProductAnalyticsResponse>(`/api/admin/analytics/products${analyticsQuery.value}`),
-    adminFetch<InventoryAnalyticsResponse>(`/api/admin/analytics/inventory${analyticsQuery.value}`),
     adminFetch<CategoryAnalyticsResponse>(`/api/admin/analytics/categories${analyticsQuery.value}`)
   ]);
 
@@ -212,22 +173,15 @@ const { data, pending, error, refresh } = await useAsyncData("admin-analytics-bu
     dashboard,
     sales,
     products,
-    inventory,
     categories
   };
 }, {
-  watch: [analyticsQuery, dashboardQuery]
+  watch: [analyticsQuery]
 });
 
 const emptyStats: DashboardStats = {
-  productsTotal: 0,
-  productsActive: 0,
-  ordersTotal: 0,
-  ordersNew: 0,
   reviewsPending: 0,
-  faqPending: 0,
-  lowStock: 0,
-  revenuePaid: 0
+  lowStock: 0
 };
 
 const dashboardStats = computed(() => data.value?.dashboard.stats ?? emptyStats);
@@ -235,7 +189,6 @@ const salesTotals = computed(() => data.value?.sales.totals ?? {
   orders: 0,
   quantity: 0,
   revenue: 0,
-  cost: 0,
   grossProfit: 0,
   averageOrderValue: 0,
   grossMargin: 0

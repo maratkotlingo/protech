@@ -1,22 +1,20 @@
 import { Prisma } from "@prisma/client";
 import { getQuery, type H3Event } from "h3";
 import { prisma } from "./prisma";
+import { getPositiveIntegerEnv } from "./env";
 
-export type AnalyticsGranularity = "day" | "week" | "month";
 export type AnalyticsSortBy = "revenue" | "quantity" | "orders" | "profit";
 
 export type AnalyticsQuery = {
   startDate: Date;
   endDate: Date;
-  granularity: AnalyticsGranularity;
-  productId?: number;
   categoryId?: number;
   limit: number;
   sortBy: AnalyticsSortBy;
 };
 
-const granularitySet = new Set<AnalyticsGranularity>(["day", "week", "month"]);
 const sortBySet = new Set<AnalyticsSortBy>(["revenue", "quantity", "orders", "profit"]);
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 function parseDate(value: unknown) {
   if (!value) return null;
@@ -47,12 +45,39 @@ function clampLimit(value: unknown) {
   return Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, 200) : 20;
 }
 
-export function toDateKey(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+function getInclusiveDayCount(startDate: Date, endDate: Date) {
+  return Math.floor((startOfDay(endDate).getTime() - startOfDay(startDate).getTime()) / MS_PER_DAY) + 1;
+}
 
-  return `${year}-${month}-${day}`;
+export function getAnalyticsMaxDays() {
+  return getPositiveIntegerEnv("ANALYTICS_MAX_DAYS", 366, {
+    min: 1,
+    max: 3660
+  });
+}
+
+export function clampAnalyticsDateRange(startDate: Date, endDate: Date) {
+  let normalizedStartDate = startOfDay(startDate);
+  let normalizedEndDate = endOfDay(endDate);
+
+  if (normalizedStartDate > normalizedEndDate) {
+    [normalizedStartDate, normalizedEndDate] = [
+      startOfDay(normalizedEndDate),
+      endOfDay(normalizedStartDate)
+    ];
+  }
+
+  const maxDays = getAnalyticsMaxDays();
+
+  if (getInclusiveDayCount(normalizedStartDate, normalizedEndDate) > maxDays) {
+    normalizedStartDate = startOfDay(normalizedEndDate);
+    normalizedStartDate.setDate(normalizedStartDate.getDate() - maxDays + 1);
+  }
+
+  return {
+    startDate: normalizedStartDate,
+    endDate: normalizedEndDate
+  };
 }
 
 export function parseAnalyticsQuery(event: H3Event): AnalyticsQuery {
@@ -62,18 +87,15 @@ export function parseAnalyticsQuery(event: H3Event): AnalyticsQuery {
   defaultStartDate.setDate(defaultStartDate.getDate() - 29);
 
   const startDate = startOfDay(parseDate(query.startDate) ?? defaultStartDate);
-  const granularity = granularitySet.has(String(query.granularity) as AnalyticsGranularity)
-    ? String(query.granularity) as AnalyticsGranularity
-    : "day";
   const sortBy = sortBySet.has(String(query.sortBy) as AnalyticsSortBy)
     ? String(query.sortBy) as AnalyticsSortBy
     : "revenue";
 
+  const range = clampAnalyticsDateRange(startDate, endDate);
+
   return {
-    startDate: startDate <= endDate ? startDate : startOfDay(endDate),
-    endDate: startDate <= endDate ? endDate : endOfDay(startDate),
-    granularity,
-    productId: toPositiveInt(query.productId),
+    startDate: range.startDate,
+    endDate: range.endDate,
     categoryId: toPositiveInt(query.categoryId),
     limit: clampLimit(query.limit),
     sortBy
@@ -97,29 +119,11 @@ export function getPaidSalesFilters(query: AnalyticsQuery) {
     Prisma.sql`o."order_status" <> 'CANCELLED'`
   ];
 
-  if (query.productId) {
-    filters.push(Prisma.sql`oi."product_id" = ${query.productId}`);
-  }
-
   if (query.categoryId) {
     filters.push(Prisma.sql`oi."category_id" = ${query.categoryId}`);
   }
 
   return Prisma.join(filters, " AND ");
-}
-
-export async function getProductOptions() {
-  return await prisma.product.findMany({
-    select: {
-      id: true,
-      name: true,
-      article: true,
-      categoryId: true
-    },
-    orderBy: {
-      name: "asc"
-    }
-  });
 }
 
 export async function getCategoryOptions() {

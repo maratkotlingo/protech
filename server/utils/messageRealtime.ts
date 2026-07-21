@@ -2,8 +2,7 @@ import type { Peer } from "crossws";
 
 export type RealtimeMessagePayload = {
   id: number;
-  userId: string;
-  messageType: string;
+  userId?: string;
   senderRole: string;
   message: string;
   readAt: Date | string | null;
@@ -18,7 +17,7 @@ export type MessageRealtimeEvent =
   | {
       type: "message.read";
       messageIds: number[];
-      userId: string;
+      userId?: string;
     };
 
 const peersByTopic = new Map<string, Set<Peer>>();

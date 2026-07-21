@@ -6,6 +6,7 @@ import {
   type H3Event,
   setHeader
 } from "h3";
+import { getPositiveIntegerEnv } from "../utils/env";
 
 type RateLimitRule = {
   name: string;
@@ -18,14 +19,6 @@ type RateLimitBucket = {
   count: number;
   resetAt: number;
 };
-
-const buckets = new Map<string, RateLimitBucket>();
-
-function getPositiveIntegerEnv(name: string, fallback: number) {
-  const value = Number(process.env[name]);
-
-  return Number.isInteger(value) && value > 0 ? value : fallback;
-}
 
 const rules: RateLimitRule[] = [
   {
@@ -52,18 +45,24 @@ const rules: RateLimitRule[] = [
 ];
 
 function getClientKey(event: H3Event) {
-  return getRequestIP(event, { xForwardedFor: true }) ?? "unknown";
+  return getRequestIP(event, {
+    xForwardedFor: process.env.RATE_LIMIT_TRUST_PROXY === "true"
+  }) ?? "unknown";
 }
 
-function cleanupExpiredBuckets(now: number) {
-  for (const [key, bucket] of buckets) {
-    if (bucket.resetAt <= now) {
-      buckets.delete(key);
-    }
-  }
+async function getRateLimitBucket(key: string, now: number) {
+  const bucket = await useStorage("rate-limit").getItem<RateLimitBucket>(key);
+
+  return bucket && bucket.resetAt > now ? bucket : null;
 }
 
-export default defineEventHandler((event) => {
+async function setRateLimitBucket(key: string, bucket: RateLimitBucket, windowMs: number) {
+  await useStorage("rate-limit").setItem(key, bucket, {
+    ttl: Math.ceil(windowMs / 1000)
+  });
+}
+
+export default defineEventHandler(async (event) => {
   if (process.env.RATE_LIMIT_DISABLED === "true") {
     return;
   }
@@ -76,20 +75,14 @@ export default defineEventHandler((event) => {
   }
 
   const now = Date.now();
-  cleanupExpiredBuckets(now);
-
   const key = `${rule.name}:${getClientKey(event)}`;
-  const current = buckets.get(key);
-  const bucket =
-    current && current.resetAt > now
-      ? current
-      : {
-        count: 0,
-        resetAt: now + rule.windowMs
-      };
+  const bucket = await getRateLimitBucket(key, now) ?? {
+    count: 0,
+    resetAt: now + rule.windowMs
+  };
 
   bucket.count += 1;
-  buckets.set(key, bucket);
+  await setRateLimitBucket(key, bucket, rule.windowMs);
 
   const remaining = Math.max(rule.max - bucket.count, 0);
   const resetSeconds = Math.ceil((bucket.resetAt - now) / 1000);

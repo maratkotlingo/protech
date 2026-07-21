@@ -1,5 +1,5 @@
 import type { H3Event } from "h3";
-import { appendResponseHeader, createError, readBody, readValidatedBody, setResponseHeader } from "h3";
+import { appendResponseHeader, createError, readValidatedBody, setResponseHeader } from "h3";
 import type { z } from "zod";
 import { auth } from "./auth";
 
@@ -68,23 +68,4 @@ export async function validateBody<TSchema extends z.ZodType>(
   }
 
   return result.data;
-}
-
-export async function parseProductIdsBody(event: H3Event) {
-  const data = await readBody<{ productIds?: unknown[] }>(event);
-
-  const productIds = Array.isArray(data?.productIds)
-    ? [...new Set(data.productIds)]
-      .map(Number)
-      .filter((id) => Number.isInteger(id) && id > 0)
-    : [];
-
-  if (!productIds.length) {
-    throw createError({
-      statusCode: 400,
-      message: "Передайте массив productIds"
-    });
-  }
-
-  return productIds;
 }

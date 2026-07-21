@@ -1,9 +1,12 @@
 import { MessageSenderRole } from "@prisma/client";
 import { broadcastMessageToAdmins, broadcastMessageToUser } from "~~/server/utils/messageRealtime";
+import { adminMessageSelect } from "~~/server/utils/messageDto";
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event);
   const userId = getRouterParam(event, "userId");
+  const query = getQuery(event);
+  const limit = getBoundedPositiveIntQueryParam(query.limit, 200, 500);
 
   if (!userId) {
     throw createError({
@@ -40,7 +43,8 @@ export default defineEventHandler(async (event) => {
     },
     select: {
       id: true
-    }
+    },
+    take: 500
   });
 
   if (unreadIncoming.length) {
@@ -48,34 +52,47 @@ export default defineEventHandler(async (event) => {
 
     await prisma.message.updateMany({
       where: {
-        id: { in: messageIds }
+        userId,
+        senderRole: MessageSenderRole.USER,
+        readAt: null
       },
       data: {
         readAt: new Date()
       }
     });
 
-    const eventPayload = {
+    const adminEventPayload = {
       type: "message.read" as const,
       messageIds,
       userId
     };
+    const userEventPayload = {
+      type: "message.read" as const,
+      messageIds
+    };
 
-    broadcastMessageToAdmins(eventPayload);
-    broadcastMessageToUser(userId, eventPayload);
+    broadcastMessageToAdmins(adminEventPayload);
+    broadcastMessageToUser(userId, userEventPayload);
   }
 
-  const messages = await prisma.message.findMany({
+  const fetchedMessages = await prisma.message.findMany({
     where: {
       userId
     },
     orderBy: {
-      createdAt: "asc"
-    }
+      createdAt: "desc"
+    },
+    select: adminMessageSelect,
+    take: limit + 1
   });
+  const messages = fetchedMessages.slice(0, limit).reverse();
 
   return {
     user,
-    messages
+    messages,
+    pagination: {
+      limit,
+      hasMore: fetchedMessages.length > limit
+    }
   };
 });

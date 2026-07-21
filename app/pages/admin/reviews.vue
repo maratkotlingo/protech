@@ -331,6 +331,7 @@ import {
   formatNumber,
   getErrorMessage
 } from "~~/app/shared/lib/adminFormatters";
+import { useAdminConfirmation } from "~~/app/shared/lib/useAdminConfirmation";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
 import { useAdminFiltersStore } from "~~/app/stores/adminFilters";
 import type { PaginatedResponse, ReviewListItem } from "~~/app/shared/types/admin";
@@ -357,17 +358,13 @@ const editingReview = ref<ReviewListItem | null>(null);
 const activeReviewPhotos = ref<ReviewPhoto[]>([]);
 const activeReviewPhotoIndex = ref(0);
 const reviewErrors = reactive<Record<string, string | undefined>>({});
-const confirmOpen = ref(false);
-const confirmLoading = ref(false);
-const confirmOptions = reactive({
-  title: "",
-  description: "",
-  message: "",
-  hint: "",
-  confirmLabel: "Подтвердить",
-  color: "primary" as "primary" | "error"
-});
-let confirmedAction: (() => Promise<void>) | null = null;
+const {
+  confirmLoading,
+  confirmOpen,
+  confirmOptions,
+  requestConfirm,
+  runConfirmedAction
+} = useAdminConfirmation();
 const reviewForm = reactive({
   rating: 5,
   advantages: "",
@@ -553,40 +550,6 @@ async function saveReview() {
     toast.error(getErrorMessage(error, "Не удалось обновить отзыв"));
   } finally {
     savingReview.value = false;
-  }
-}
-
-function requestConfirm(
-  options: Partial<typeof confirmOptions>,
-  action: () => Promise<void>
-) {
-  Object.assign(confirmOptions, {
-    title: "",
-    description: "",
-    message: "",
-    hint: "",
-    confirmLabel: "Подтвердить",
-    color: "primary" as "primary" | "error",
-    ...options
-  });
-  confirmedAction = action;
-  confirmOpen.value = true;
-}
-
-async function runConfirmedAction() {
-  if (!confirmedAction) {
-    confirmOpen.value = false;
-    return;
-  }
-
-  confirmLoading.value = true;
-
-  try {
-    await confirmedAction();
-    confirmOpen.value = false;
-  } finally {
-    confirmLoading.value = false;
-    confirmedAction = null;
   }
 }
 

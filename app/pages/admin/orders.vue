@@ -431,7 +431,7 @@ async function updateOrderStatus(order: OrderListItem, value: unknown) {
   savingOrderId.value = order.id;
 
   try {
-    await $fetch(`/api/admin/orders/${order.id}/status`, {
+    await adminFetch(`/api/admin/orders/${order.id}/status`, {
       method: "POST",
       body: { orderStatus }
     });
@@ -454,7 +454,7 @@ async function updatePaymentStatus(order: OrderListItem, value: unknown) {
   savingPaymentId.value = order.id;
 
   try {
-    await $fetch("/api/admin/orders/payment", {
+    await adminFetch("/api/admin/orders/payment", {
       method: "POST",
       body: {
         orderId: order.id,

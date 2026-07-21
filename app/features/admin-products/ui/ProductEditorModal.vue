@@ -225,6 +225,7 @@
 <script setup lang="ts">
 import { LoaderCircle, Plus, Save } from "@lucide/vue";
 import { toast } from "vue-sonner";
+import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { getErrorMessage, toNumber } from "~~/app/shared/lib/adminFormatters";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
 import type { Attribute, Category, ProductDetails, ProductFormState } from "~~/app/shared/types/admin";
@@ -246,7 +247,6 @@ type ProductEditorField =
   | "oldPrice"
   | "ozonLink"
   | "isActive";
-type ProductEditorFieldValue = ProductFormState[ProductEditorField];
 
 const open = defineModel<boolean>("open", { default: false });
 
@@ -436,8 +436,8 @@ function handleAttributeSelect(index: number, value: SelectValue) {
   }
 }
 
-function updateFormField(field: ProductEditorField, value: ProductEditorFieldValue) {
-  (form as unknown as Record<ProductEditorField, ProductEditorFieldValue>)[field] = value;
+function updateFormField<T extends ProductEditorField>(field: T, value: ProductFormState[T]) {
+  form[field] = value;
   fieldErrors[field] = undefined;
 }
 
@@ -487,7 +487,7 @@ function mapProductToForm(product: ProductDetails): ProductFormState {
     article: product.article,
     mainImage: product.mainImage,
     ozonLink: product.ozonLink ?? "",
-    categoryId: product.category.id,
+    categoryId: product.categoryId,
     isActive: product.isActive,
     productImages: product.productImages.map((image) => ({ url: image.url })),
     productAttributes: product.productAttributes.map((attribute) => ({
@@ -506,7 +506,7 @@ async function loadProduct() {
   loading.value = true;
 
   try {
-    const product = await $fetch<ProductDetails>(`/api/admin/products/${props.productId}`);
+    const product = await adminFetch<ProductDetails>(`/api/admin/products/${props.productId}`);
     resetForm(mapProductToForm(product));
   } catch (error) {
     toast.error(getErrorMessage(error, "Не удалось загрузить товар"));
@@ -532,7 +532,7 @@ async function createCategory() {
   creatingCategory.value = true;
 
   try {
-    const result = await $fetch<{ success: boolean; category: Category }>("/api/admin/categories", {
+    const result = await adminFetch<{ success: boolean; category: Category }>("/api/admin/categories", {
       method: "POST",
       body: parsed.data
     });
@@ -570,7 +570,7 @@ async function createAttribute() {
   creatingAttribute.value = true;
 
   try {
-    const result = await $fetch<{ success: boolean; attribute: Attribute }>("/api/admin/products/attributes", {
+    const result = await adminFetch<{ success: boolean; attribute: Attribute }>("/api/admin/products/attributes", {
       method: "POST",
       body: parsed.data
     });
@@ -684,13 +684,13 @@ async function save() {
 
   try {
     if (props.productId) {
-      await $fetch(`/api/admin/products/update/${props.productId}`, {
+      await adminFetch(`/api/admin/products/update/${props.productId}`, {
         method: "POST",
         body: parsed.data
       });
       toast.success("Товар обновлён");
     } else {
-      await $fetch("/api/admin/products", {
+      await adminFetch("/api/admin/products", {
         method: "POST",
         body: parsed.data
       });
@@ -710,7 +710,7 @@ async function uploadImage(file: File) {
   const formData = new FormData();
   formData.set("file", file);
 
-  return await $fetch<{ url: string }>("/api/admin/upload", {
+  return await adminFetch<{ url: string }>("/api/admin/upload", {
     method: "POST",
     body: formData
   });

@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div v-if="$slots.actions" class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
+    <div v-if="$slots.actions" class="grid w-full grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-2 sm:w-auto sm:flex sm:flex-wrap sm:justify-end">
       <slot name="actions" />
     </div>
   </section>

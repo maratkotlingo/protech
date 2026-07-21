@@ -33,3 +33,13 @@ export function getPageQueryParam(value: unknown) {
 export function getOptionalPositiveIntQueryParam(value: unknown) {
   return toPositiveInteger(value) ?? undefined;
 }
+
+export function getBoundedPositiveIntQueryParam(
+  value: unknown,
+  fallback: number,
+  max: number
+) {
+  const parsed = toPositiveInteger(value) ?? fallback;
+
+  return Math.min(parsed, max);
+}

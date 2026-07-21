@@ -1,14 +1,9 @@
 import { expireUnpaidOrders } from "~~/server/utils/orderExpiry";
+import { getPositiveIntegerEnv } from "~~/server/utils/env";
 
 const globalForOrderExpiry = globalThis as typeof globalThis & {
   __protechOrderExpiryTimer?: NodeJS.Timeout;
 };
-
-function getPositiveIntegerEnv(name: string, fallback: number) {
-  const value = Number(process.env[name]);
-
-  return Number.isInteger(value) && value > 0 ? value : fallback;
-}
 
 export default defineNitroPlugin(() => {
   if (process.env.ORDER_EXPIRY_JOB_DISABLED === "true") {

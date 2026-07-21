@@ -39,14 +39,18 @@ export default defineEventHandler(async (event) => {
     }
   });
 
-  const eventPayload = {
+  const adminEventPayload = {
     type: "message.read" as const,
     messageIds,
     userId
   };
+  const userEventPayload = {
+    type: "message.read" as const,
+    messageIds
+  };
 
-  broadcastMessageToUser(userId, eventPayload);
-  broadcastMessageToAdmins(eventPayload);
+  broadcastMessageToUser(userId, userEventPayload);
+  broadcastMessageToAdmins(adminEventPayload);
 
   return { messageIds };
 });

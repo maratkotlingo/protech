@@ -75,10 +75,9 @@ export function isColorAttribute(attribute: Pick<AttributeFilter, "name">) {
 
 export function productAttributeValue(
   product: ProductCardItem,
-  predicate: (attribute: Pick<AttributeFilter, "id" | "name" | "unit">) => boolean
+  predicate: (attribute: Pick<AttributeFilter, "name" | "unit">) => boolean
 ) {
   const item = product.productAttributes?.find((attributeValue) => predicate({
-    id: attributeValue.attribute.id,
     name: attributeValue.attribute.name,
     unit: attributeValue.attribute.unit
   }));

@@ -16,21 +16,16 @@ export type Category = {
 export type ProductCardItem = {
   id: number;
   name: string;
-  article?: string;
-  description?: string;
   currentPrice: MoneyLike;
   oldPrice: MoneyLike;
   mainImage: string;
-  category?: Category;
+  category?: Pick<Category, "name">;
   stockQuantity?: number;
   reviewsCount?: number;
   averageRating?: number | null;
   productAttributes?: Array<{
-    id: number;
     value: string;
-    attributeId: number;
     attribute: {
-      id: number;
       name: string;
       unit: string;
     };
@@ -63,9 +58,6 @@ export type ProductDetails = {
   article: string;
   mainImage: string;
   ozonLink: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
   category: Category;
   productImages: Array<{
     id: number;
@@ -87,9 +79,7 @@ export type ProductDetails = {
     createdAt: string;
   }>;
   productStocks: Array<{
-    id: number;
     quantity: number;
-    updatedAt: string;
   }>;
   reviews: ReviewItem[];
 };
@@ -101,9 +91,7 @@ export type ReviewItem = {
   disadvantages: string | null;
   comment: string | null;
   createdAt: string;
-  updatedAt: string;
   user: {
-    id: string;
     name: string | null;
     image: string | null;
   };
@@ -112,11 +100,7 @@ export type ReviewItem = {
     url: string;
   }>;
   reviewAnswers: Array<{
-    id: number;
     text: string;
-    user: {
-      name: string | null;
-    } | null;
   }>;
 };
 
@@ -131,7 +115,6 @@ export type CartItem = {
 
 export type FavoriteItem = {
   id: number;
-  createdAt: string;
   product: ProductCardItem;
 };
 
@@ -149,13 +132,10 @@ export type ObtainingMethod = "DELIVERY" | "PICKUP";
 export type PaymentMethod = "OFFLINE" | "ONLINE";
 export type OrderStatus = "NEW" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "COMPLETED" | "CANCELLED";
 export type PaymentStatus = "PENDING" | "UPON_RECEIPT" | "PAID" | "CANCELLED";
-export type MessageType = "DELIVERY" | "STOCK" | "PRICE" | "FAQ_ANSWER" | "REVIEW_ANSWER" | "SUPPORT";
 export type MessageSenderRole = "USER" | "ADMIN" | "SYSTEM";
 
 export type ShopMessage = {
   id: number;
-  userId: string;
-  messageType: MessageType;
   senderRole: MessageSenderRole;
   message: string;
   readAt: string | null;
@@ -164,6 +144,10 @@ export type ShopMessage = {
 
 export type MessagesResponse = {
   messages: ShopMessage[];
+  pagination?: {
+    limit: number;
+    hasMore: boolean;
+  };
 };
 
 export type OrderStatusHistoryItem = {
@@ -197,7 +181,6 @@ export type ShopOrder = {
   } | null;
   payment: {
     amount: MoneyLike;
-    confirmationUrl: string | null;
     paymentStatus: PaymentStatus;
     paidAt: string | null;
   } | null;
@@ -211,8 +194,6 @@ export type ShopOrder = {
     productArticle: string;
     productMainImage: string | null;
     product?: {
-      id: number;
-      name: string;
       mainImage: string;
     };
   }>;

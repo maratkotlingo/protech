@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="catalog-shop-page space-y-5">
     <AdminPageHeader title="Справочники" kicker="Каталог"
       description="Категории товаров и характеристики, которые используются в карточках каталога.">
@@ -192,6 +192,7 @@ import { FolderTree, ListChecks, Pencil, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { adminFetch } from "~~/app/shared/lib/adminFetch";
 import { getErrorMessage } from "~~/app/shared/lib/adminFormatters";
+import { useAdminConfirmation } from "~~/app/shared/lib/useAdminConfirmation";
 import { clearFieldErrors, getZodFieldErrors, replaceFieldErrors } from "~~/app/shared/lib/zodValidation";
 import type { Attribute, Category } from "~~/app/shared/types/admin";
 import { categorySchema } from "~~/shared/schemas/admin/products/category";
@@ -217,17 +218,13 @@ const attributeForm = reactive({
 });
 const categoryErrors = reactive<Record<string, string | undefined>>({});
 const attributeErrors = reactive<Record<string, string | undefined>>({});
-const confirmOpen = ref(false);
-const confirmLoading = ref(false);
-const confirmOptions = reactive({
-  title: "",
-  description: "",
-  message: "",
-  hint: "",
-  confirmLabel: "Подтвердить",
-  color: "primary" as "primary" | "error"
-});
-let confirmedAction: (() => Promise<void>) | null = null;
+const {
+  confirmLoading,
+  confirmOpen,
+  confirmOptions,
+  requestConfirm,
+  runConfirmedAction
+} = useAdminConfirmation();
 
 const { data, pending, error, refresh } = await useAsyncData("admin-catalog-dictionaries", async () => {
   const [categories, attributes] = await Promise.all([
@@ -278,13 +275,13 @@ async function saveCategory() {
 
   try {
     if (editingCategory.value) {
-      await $fetch(`/api/admin/categories/update/${editingCategory.value.id}`, {
+      await adminFetch(`/api/admin/categories/update/${editingCategory.value.id}`, {
         method: "POST",
         body: parsed.data
       });
       toast.success("Категория обновлена");
     } else {
-      await $fetch("/api/admin/categories", {
+      await adminFetch("/api/admin/categories", {
         method: "POST",
         body: parsed.data
       });
@@ -318,13 +315,13 @@ async function saveAttribute() {
 
   try {
     if (editingAttribute.value) {
-      await $fetch(`/api/admin/products/attributes/update/${editingAttribute.value.id}`, {
+      await adminFetch(`/api/admin/products/attributes/update/${editingAttribute.value.id}`, {
         method: "POST",
         body: parsed.data
       });
       toast.success("Характеристика обновлена");
     } else {
-      await $fetch("/api/admin/products/attributes", {
+      await adminFetch("/api/admin/products/attributes", {
         method: "POST",
         body: parsed.data
       });
@@ -340,40 +337,6 @@ async function saveAttribute() {
   }
 }
 
-function requestConfirm(
-  options: Partial<typeof confirmOptions>,
-  action: () => Promise<void>
-) {
-  Object.assign(confirmOptions, {
-    title: "",
-    description: "",
-    message: "",
-    hint: "",
-    confirmLabel: "Подтвердить",
-    color: "primary" as "primary" | "error",
-    ...options
-  });
-  confirmedAction = action;
-  confirmOpen.value = true;
-}
-
-async function runConfirmedAction() {
-  if (!confirmedAction) {
-    confirmOpen.value = false;
-    return;
-  }
-
-  confirmLoading.value = true;
-
-  try {
-    await confirmedAction();
-    confirmOpen.value = false;
-  } finally {
-    confirmLoading.value = false;
-    confirmedAction = null;
-  }
-}
-
 function deleteCategory(category: Category) {
   requestConfirm({
     title: "Удалить категорию",
@@ -385,7 +348,7 @@ function deleteCategory(category: Category) {
     deletingCategoryId.value = category.id;
 
     try {
-      await $fetch(`/api/admin/categories/delete/${category.id}`, {
+      await adminFetch(`/api/admin/categories/delete/${category.id}`, {
         method: "POST"
       });
       toast.success("Категория удалена");
@@ -409,7 +372,7 @@ function deleteAttribute(attribute: Attribute) {
     deletingAttributeId.value = attribute.id;
 
     try {
-      await $fetch(`/api/admin/products/attributes/delete/${attribute.id}`, {
+      await adminFetch(`/api/admin/products/attributes/delete/${attribute.id}`, {
         method: "POST"
       });
       toast.success("Характеристика удалена");

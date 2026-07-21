@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
       summary: `Updated category ${category.name}`
     });
 
-    return { success: true, category };
+    return { success: true };
   } catch (error) {
     const prismaError = toPrismaHttpError(error, {
       P2025: "Категория не найдена",

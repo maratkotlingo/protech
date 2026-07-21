@@ -1,6 +1,7 @@
 import { MessageSenderRole, MessageType } from "@prisma/client";
 import { sendMessageSchema } from "~~/shared/schemas/messages/message";
 import { broadcastMessageToAdmins, broadcastMessageToUser } from "~~/server/utils/messageRealtime";
+import { adminMessageSelect, toPublicMessageDto } from "~~/server/utils/messageDto";
 
 export default defineEventHandler(async (event) => {
   const { userId } = await requireUser(event);
@@ -12,16 +13,21 @@ export default defineEventHandler(async (event) => {
       messageType: MessageType.SUPPORT,
       senderRole: MessageSenderRole.USER,
       message: body.message
-    }
+    },
+    select: adminMessageSelect
   });
 
-  const payload = {
+  const publicPayload = {
+    type: "message.created" as const,
+    message: toPublicMessageDto(message)
+  };
+  const adminPayload = {
     type: "message.created" as const,
     message
   };
 
-  broadcastMessageToUser(userId, payload);
-  broadcastMessageToAdmins(payload);
+  broadcastMessageToUser(userId, publicPayload);
+  broadcastMessageToAdmins(adminPayload);
 
-  return { message };
+  return { message: publicPayload.message };
 });

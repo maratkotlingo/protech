@@ -9,7 +9,6 @@ type MessageCreatedEvent = {
 type MessageReadEvent = {
   messageIds: number[];
   type: "message.read";
-  userId: string;
 };
 
 type RealtimeEvent = MessageCreatedEvent | MessageReadEvent | { type: "connection.ready" };

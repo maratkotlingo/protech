@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
   const { user } = await requireUser(event);
 
   try {
-    const result = await prisma.cartItem.deleteMany({
+    await prisma.cartItem.deleteMany({
       where: {
         cart: {
           userId: user.id
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    return { success: true, deletedCount: result.count };
+    return { success: true };
   } catch (error) {
     if (error && typeof error === "object" && "statusCode" in error) {
       throw error;

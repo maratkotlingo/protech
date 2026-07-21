@@ -7,7 +7,6 @@ export const useAdminFiltersStore = defineStore("admin-filters", {
       preset: "30",
       startDate: shiftDateKey(-29),
       endDate: todayDateKey(),
-      productId: null as number | null,
       categoryId: null as number | null,
       limit: 12
     },
@@ -37,7 +36,6 @@ export const useAdminFiltersStore = defineStore("admin-filters", {
       this.analytics.preset = "30";
       this.analytics.startDate = shiftDateKey(-29);
       this.analytics.endDate = todayDateKey();
-      this.analytics.productId = null;
       this.analytics.categoryId = null;
       this.analytics.limit = 12;
     }

@@ -32,9 +32,8 @@ export default defineEventHandler(async (event) => {
     const review = await prisma.review.update({
       where: { id: reviewId },
       data,
-      include: {
-        reviewPhotos: true,
-        reviewAnswers: true
+      select: {
+        id: true
       }
     });
 
@@ -49,7 +48,7 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    return { success: true, review };
+    return { success: true };
   } catch (error) {
     const prismaError = toPrismaHttpError(error, {
       P2025: "Отзыв не найден"
