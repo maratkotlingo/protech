@@ -92,11 +92,11 @@
         </div>
 
         <div v-else
-          class="grid min-h-24 place-items-center rounded-2xl bg-white px-4 text-center text-sm leading-6 text-[var(--admin-text-muted)] shadow-sm shadow-zinc-950/5">
+          class="grid min-h-24 place-items-center rounded-2xl bg-white px-4 text-center text-sm leading-6 text-(--admin-text-muted) shadow-sm shadow-zinc-950/5">
           Нажмите «Добавить товар», чтобы создать строку прихода.
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--admin-text-muted)]">
+        <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-(--admin-text-muted)">
           <span>Товаров в приходе: {{ arrivalItems.length }}</span>
           <span>Всего будет добавлено: {{ formatNumber(arrivalTotalQuantity) }} шт.</span>
         </div>

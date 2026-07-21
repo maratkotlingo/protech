@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="messages-shop-page space-y-5 xl:flex xl:h-[calc(100dvh-8.25rem)] xl:min-h-0 xl:flex-col xl:gap-5 xl:space-y-0">
+  <div class="messages-shop-page space-y-5 xl:flex xl:h-[calc(100dvh-8.25rem)] xl:min-h-0 xl:flex-col xl:gap-5 xl:space-y-0">
     <AdminPageHeader title="Сообщения" kicker="Поддержка"
       description="Диалоги с пользователями, вопросы по заказам и оперативные ответы.">
       <template #actions>
@@ -15,9 +14,9 @@
     <UAlert v-if="conversationsError" color="error" variant="soft" title="Не удалось загрузить диалоги"
       :description="getErrorMessage(conversationsError)" class="rounded-2xl" />
 
-    <div class="grid min-h-[520px] gap-4 xl:min-h-0 xl:flex-1 xl:grid-cols-[360px_minmax(0,1fr)]">
+    <div class="grid min-h-130 gap-4 xl:min-h-0 xl:flex-1 xl:grid-cols-[360px_minmax(0,1fr)]">
       <UCard class="admin-list-card min-h-0" :ui="{ body: 'flex h-full min-h-0 flex-col p-0' }">
-        <div class="shrink-0 border-b border-[var(--admin-border)] p-4">
+        <div class="shrink-0 border-b border-(--admin-border) p-4">
           <div class="mb-3 flex items-center justify-between gap-3">
             <div>
               <p class="admin-section-heading">
@@ -43,7 +42,7 @@
             :class="selectedUserId === conversation.user.id ? 'ring-2 ring-emerald-200 shadow-emerald-950/10' : ''"
             @click="selectConversation(conversation.user.id)">
             <img v-if="conversation.user.image" :src="conversation.user.image" alt=""
-              class="size-10 shrink-0 rounded-lg object-cover ring-1 ring-[var(--admin-border)]">
+              class="size-10 shrink-0 rounded-lg object-cover ring-1 ring-(--admin-border)">
             <div v-else class="admin-avatar size-10 shrink-0 text-xs">
               {{ getInitials(conversation.user.name || conversation.user.email) }}
             </div>
@@ -51,24 +50,24 @@
             <div class="min-w-0 flex-1">
               <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
-                  <p class="truncate font-semibold text-[var(--admin-text)]">
+                  <p class="truncate font-semibold text-(--admin-text)">
                     {{ conversation.user.name || conversation.user.email }}
                   </p>
-                  <p class="mt-0.5 truncate text-xs text-[var(--admin-text-muted)]">
+                  <p class="mt-0.5 truncate text-xs text-(--admin-text-muted)">
                     {{ conversation.user.email }}
                   </p>
                 </div>
                 <span v-if="conversation.unreadCount"
-                  class="grid min-w-6 place-items-center rounded-full bg-[var(--admin-accent)] px-2 py-0.5 text-xs font-semibold text-white">
+                  class="grid min-w-6 place-items-center rounded-full bg-(--admin-accent) px-2 py-0.5 text-xs font-semibold text-white">
                   {{ conversation.unreadCount }}
                 </span>
               </div>
 
-              <p class="mt-2 line-clamp-2 text-sm text-[var(--admin-text-muted)]">
+              <p class="mt-2 line-clamp-2 text-sm text-(--admin-text-muted)">
                 {{ conversation.lastMessage?.message || "Диалог пока пуст" }}
               </p>
               <time v-if="conversation.lastMessage"
-                class="mt-2 flex items-center justify-between gap-2 text-xs text-[var(--admin-text-muted)]">
+                class="mt-2 flex items-center justify-between gap-2 text-xs text-(--admin-text-muted)">
                 <span>{{ formatDate(conversation.lastMessage.createdAt) }}</span>
                 <span>{{ conversation.totalMessages }} сообщ.</span>
               </time>
@@ -86,17 +85,17 @@
 
       <UCard class="admin-list-card min-h-0" :ui="{ body: 'flex h-full min-h-0 flex-col p-0' }">
         <template v-if="selectedUser">
-          <header class="shrink-0 border-b border-[var(--admin-border)] bg-white p-4">
+          <header class="shrink-0 border-b border-(--admin-border) bg-white p-4">
             <div class="flex flex-wrap items-center justify-between gap-4">
               <div class="flex min-w-0 items-center gap-3">
                 <div class="admin-avatar size-11 shrink-0 text-sm">
                   {{ getInitials(selectedUser.name || selectedUser.email) }}
                 </div>
                 <div class="min-w-0">
-                  <p class="truncate text-lg font-semibold text-[var(--admin-text)]">
+                  <p class="truncate text-lg font-semibold text-(--admin-text)">
                     {{ selectedUser.name || selectedUser.email }}
                   </p>
-                  <p class="truncate text-sm text-[var(--admin-text-muted)]">
+                  <p class="truncate text-sm text-(--admin-text-muted)">
                     {{ selectedUser.email }} · {{ messages.length }} сообщений
                   </p>
                 </div>
@@ -118,17 +117,17 @@
               <article v-for="message in messages" :key="message.id" class="flex"
                 :class="message.senderRole === 'ADMIN' ? 'justify-end' : 'justify-start'">
                 <div class="max-w-[min(44rem,84%)] rounded-2xl px-4 py-3 shadow-sm" :class="message.senderRole === 'ADMIN'
-                  ? 'bg-[var(--admin-accent)] text-white shadow-green-950/10'
-                  : 'bg-[var(--admin-surface)] text-[var(--admin-text)] ring-1 ring-[var(--admin-border)]'">
+                  ? 'bg-(--admin-accent) text-white shadow-green-950/10'
+                  : 'bg-(--admin-surface) text-(--admin-text) ring-1 ring-(--admin-border)'">
                   <p class="text-xs font-semibold"
-                    :class="message.senderRole === 'ADMIN' ? 'text-white/70' : 'text-[var(--admin-text-muted)]'">
+                    :class="message.senderRole === 'ADMIN' ? 'text-white/70' : 'text-(--admin-text-muted)'">
                     {{ getSenderLabel(message.senderRole) }}
                   </p>
                   <p class="mt-1 whitespace-pre-line text-sm leading-6">
                     {{ message.message }}
                   </p>
                   <time class="mt-2 block text-xs"
-                    :class="message.senderRole === 'ADMIN' ? 'text-white/65' : 'text-[var(--admin-text-muted)]'">
+                    :class="message.senderRole === 'ADMIN' ? 'text-white/65' : 'text-(--admin-text-muted)'">
                     {{ formatDate(message.createdAt) }}
                   </time>
                 </div>
@@ -143,12 +142,10 @@
             </div>
           </div>
 
-          <form
-            class="shrink-0 rounded-b-2xl border-t border-zinc-100 bg-white/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-18px_44px_rgba(15,23,42,0.08)] backdrop-blur sm:p-3 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
+          <form class="shrink-0 rounded-b-2xl border-t border-zinc-100 bg-white/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-18px_44px_rgba(15,23,42,0.08)] backdrop-blur sm:p-3 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
             @submit.prevent="sendMessage">
             <UFormField :error="messageError">
-              <div
-                class="flex items-end gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45">
+              <div class="flex items-end gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45">
                 <textarea ref="messageInput" v-model="draftMessage"
                   class="h-12 min-h-12 max-h-36 flex-1 resize-none overflow-y-hidden rounded-xl bg-transparent px-3 py-3 text-sm leading-5 text-zinc-950 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-60"
                   :disabled="submitting" placeholder="Сообщение" rows="1" @input="resizeMessageInput"
@@ -164,7 +161,7 @@
           </form>
         </template>
 
-        <div v-else class="grid min-h-[520px] place-items-center p-6 xl:min-h-0 xl:flex-1">
+        <div v-else class="grid min-h-130 place-items-center p-6 xl:min-h-0 xl:flex-1">
           <AdminEmptyState title="Выберите диалог" description="Слева отображаются пользователи и последние сообщения.">
             <template #icon>
               <MessageSquare class="size-6" />

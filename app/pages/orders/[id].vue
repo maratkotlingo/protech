@@ -13,8 +13,8 @@
     </div>
 
     <div v-if="loading" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-      <USkeleton class="h-[34rem] rounded-[2rem]" />
-      <USkeleton class="h-96 rounded-[2rem]" />
+      <USkeleton class="h-136 rounded-4xl" />
+      <USkeleton class="h-96 rounded-4xl" />
     </div>
 
     <UAlert v-else-if="!order" color="error" variant="soft" title="Заказ не найден"
@@ -22,11 +22,10 @@
 
     <div v-else class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
       <div class="space-y-6">
-        <section class="rounded-[2rem] bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8  ">
+        <section class="rounded-4xl bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-8  ">
           <div class="flex flex-wrap items-start justify-between gap-5">
             <div>
-              <p
-                class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700  ">
+              <p class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700  ">
                 <UIcon name="i-lucide-receipt-text" class="size-4" />
                 Заказ №{{ order.id }}
               </p>
@@ -55,7 +54,7 @@
           </div>
         </section>
 
-        <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
+        <section class="rounded-4xl bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 class="text-2xl font-semibold tracking-normal text-zinc-950">Маршрут заказа</h2>
@@ -74,7 +73,7 @@
           </div>
         </section>
 
-        <section class="rounded-[2rem] bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
+        <section class="rounded-4xl bg-white/90 p-5 shadow-sm shadow-zinc-950/5 sm:p-6  ">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 class="text-2xl font-semibold tracking-normal text-zinc-950">Состав заказа</h2>

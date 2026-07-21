@@ -27,10 +27,8 @@
       </div>
     </section>
 
-    <section
-      class="overflow-x-auto rounded-4xl bg-[#f9fafb]/90 p-2 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur">
-      <div
-        class="grid min-w-[960px] grid-cols-6 items-end gap-3 max-2xl:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
+    <section class="overflow-x-auto rounded-4xl bg-[#f9fafb]/90 p-2 shadow-[0_18px_60px_rgba(24,24,27,0.06)] backdrop-blur">
+      <div class="grid min-w-240 grid-cols-6 items-end gap-3 max-2xl:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
         <UButton v-for="period in periodOptions" :key="period.value"
           :color="filters.analytics.preset === period.value ? 'primary' : 'neutral'"
           :variant="filters.analytics.preset === period.value ? 'solid' : 'ghost'" size="lg"

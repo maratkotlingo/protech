@@ -16,8 +16,7 @@
               <p class="truncate text-base font-semibold tracking-normal text-zinc-950 sm:text-lg">
                 {{ currentTitle }}
               </p>
-              <span
-                class="hidden rounded-full bg-[#f9fafb] px-2.5 py-1 text-[0.68rem] font-semibold uppercase text-zinc-400 md:inline-flex">
+              <span class="hidden rounded-full bg-[#f9fafb] px-2.5 py-1 text-[0.68rem] font-semibold uppercase text-zinc-400 md:inline-flex">
                 ПроТех76
               </span>
             </div>
@@ -28,8 +27,7 @@
         </div>
 
         <div class="flex shrink-0 items-center gap-2">
-          <div
-            class="hidden h-11 items-center gap-2 rounded-full bg-[#f9fafb] px-4 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5 xl:flex">
+          <div class="hidden h-11 items-center gap-2 rounded-full bg-[#f9fafb] px-4 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5 xl:flex">
             <CalendarDays class="size-4" />
             {{ todayLabel }}
           </div>
@@ -39,8 +37,7 @@
             Магазин
           </UButton>
 
-          <div
-            class="flex h-12 items-center gap-2 rounded-full bg-[#f9fafb] py-1 pl-1 pr-3 shadow-sm shadow-zinc-950/5">
+          <div class="flex h-12 items-center gap-2 rounded-full bg-[#f9fafb] py-1 pl-1 pr-3 shadow-sm shadow-zinc-950/5">
             <img v-if="user?.image" :src="user.image" :alt="user.name ?? user.email"
               class="size-10 rounded-full object-cover">
             <div v-else

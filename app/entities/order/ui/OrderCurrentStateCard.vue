@@ -13,8 +13,7 @@
         <p class="mt-1 text-sm leading-6 text-zinc-500 ">
           {{ state.description }}
         </p>
-        <p
-          class="mt-3 inline-flex items-center gap-2 rounded-lg bg-[#f3f4f6] px-3 py-2 text-sm font-medium text-zinc-700  ">
+        <p class="mt-3 inline-flex items-center gap-2 rounded-lg bg-[#f3f4f6] px-3 py-2 text-sm font-medium text-zinc-700  ">
           <UIcon name="i-lucide-map-pin" class="size-4 text-zinc-400" />
           {{ locationText }}
         </p>

@@ -1,19 +1,15 @@
 <template>
-  <section
-    v-if="attributes.length"
+  <section v-if="attributes.length"
     class="space-y-3"
   >
-    <ProductSectionHeading
-      eyebrow="Спецификации"
+    <ProductSectionHeading eyebrow="Спецификации"
       title="Характеристики"
     />
 
-    <div
-      v-auto-animate
+    <div v-auto-animate
       class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4"
     >
-      <ProductAttributeCard
-        v-for="attribute in attributes"
+      <ProductAttributeCard v-for="attribute in attributes"
         :key="attribute.id"
         :label="attribute.attribute.name"
         :value="formatProductAttribute(attribute)"

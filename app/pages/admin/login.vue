@@ -6,10 +6,10 @@
           <Zap class="size-7" />
         </div>
         <div>
-          <h1 class="text-2xl font-semibold text-[var(--admin-text)]">
+          <h1 class="text-2xl font-semibold text-(--admin-text)">
             Вход в панель администратора ПроТех76
           </h1>
-          <p class="mt-2 text-sm leading-6 text-[var(--admin-text-muted)]">
+          <p class="mt-2 text-sm leading-6 text-(--admin-text-muted)">
             Используйте учетную запись с ролью ADMIN.
           </p>
         </div>
@@ -20,7 +20,7 @@
           <UInput v-model="form.email" class="w-full" size="xl" type="email" autocomplete="email"
             placeholder="admin.demo@protech.local">
             <template #leading>
-              <Mail class="size-5 text-[var(--admin-text-muted)]" />
+              <Mail class="size-5 text-(--admin-text-muted)" />
             </template>
           </UInput>
         </UFormField>
@@ -29,7 +29,7 @@
           <UInput v-model="form.password" class="w-full" size="xl" :type="showPassword ? 'text' : 'password'"
             autocomplete="current-password" placeholder="Введите пароль">
             <template #leading>
-              <LockKeyhole class="size-5 text-[var(--admin-text-muted)]" />
+              <LockKeyhole class="size-5 text-(--admin-text-muted)" />
             </template>
             <template #trailing>
               <UButton color="neutral" variant="ghost" size="sm" square type="button"

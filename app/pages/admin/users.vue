@@ -97,16 +97,13 @@
                   Активность
                 </p>
                 <div class="mt-2 flex flex-wrap gap-2">
-                  <span
-                    class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
+                  <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
                     {{ user._count.orders }} заказов
                   </span>
-                  <span
-                    class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
+                  <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
                     {{ user._count.message }} сообщений
                   </span>
-                  <span
-                    class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
+                  <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm shadow-zinc-950/5">
                     {{ user._count.reviews }} отзывов
                   </span>
                 </div>

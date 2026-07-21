@@ -15,8 +15,7 @@
         'group flex min-w-0 items-center gap-3 rounded-2xl p-1.5 transition hover:bg-emerald-50',
         collapsed ? 'justify-center' : ''
       ]" aria-label="ПроТех76 - Панель администратора" @click="$emit('navigate')">
-        <span
-          class="grid size-11 place-items-center overflow-hidden rounded-[1.35rem] shadow-xl shadow-emerald-900/20 transition duration-300 group-hover:rotate-3 group-hover:scale-105">
+        <span class="grid size-11 place-items-center overflow-hidden rounded-[1.35rem] shadow-xl shadow-emerald-900/20 transition duration-300 group-hover:rotate-3 group-hover:scale-105">
           <img src="/logo.png" alt="Логотип ПроТех76" class="size-full object-contain">
         </span>
         <span v-if="!collapsed" class="min-w-0 leading-tight">
@@ -91,8 +90,7 @@
       <NuxtLink v-if="!collapsed" to="/"
         class="flex items-center gap-3 rounded-2xl bg-[#f9fafb] p-3 text-sm font-semibold text-zinc-700 shadow-inner shadow-zinc-950/5 transition hover:bg-emerald-50 hover:text-emerald-700"
         @click="$emit('navigate')">
-        <span
-          class="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-emerald-700 shadow-sm shadow-zinc-950/5">
+        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-emerald-700 shadow-sm shadow-zinc-950/5">
           <Store class="size-5" />
         </span>
         <span class="min-w-0">

@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="flex flex-col gap-3 border-t border-zinc-100 bg-[#f9fafb] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+  <div class="flex flex-col gap-3 border-t border-zinc-100 bg-[#f9fafb] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
     <p class="text-sm text-zinc-500">
       Страница {{ pagination.page }} из {{ Math.max(pagination.pages, 1) }} · всего {{ pagination.total }}
     </p>

@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="grid gap-4 rounded-[1.75rem] bg-[#f9fafb] p-4 transition duration-300 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/5 sm:grid-cols-[88px_minmax(0,1fr)_auto]  ">
+  <div class="grid gap-4 rounded-[1.75rem] bg-[#f9fafb] p-4 transition duration-300 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/5 sm:grid-cols-[88px_minmax(0,1fr)_auto]  ">
     <img :src="item.productMainImage || item.product?.mainImage || '/favicon.ico'" :alt="item.productName"
       class="size-22 rounded-[1.35rem] object-cover">
 

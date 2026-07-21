@@ -1,13 +1,11 @@
 <template>
-  <UModal
-    v-model:open="open"
+  <UModal v-model:open="open"
     :ui="productEditorModalUi"
   >
     <template #header>
       <div class="flex min-w-0 items-start gap-4">
         <div class="grid size-12 shrink-0 place-items-center rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-950/15">
-          <UIcon
-            name="i-lucide-package-plus"
+          <UIcon name="i-lucide-package-plus"
             class="size-6"
           />
         </div>
@@ -26,8 +24,7 @@
     </template>
 
     <template #body>
-      <div
-        v-if="loading"
+      <div v-if="loading"
         class="grid min-h-96 place-items-center bg-[#f9fafb]"
       >
         <div class="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-zinc-500 shadow-sm shadow-zinc-950/5">
@@ -36,8 +33,7 @@
         </div>
       </div>
 
-      <form
-        v-else
+      <form v-else
         id="product-editor-form"
         class="space-y-5 bg-[#f9fafb] p-4 sm:p-6"
         @submit.prevent="save"
@@ -45,8 +41,7 @@
         <section class="rounded-3xl bg-white p-4 shadow-sm shadow-zinc-950/5 ring-1 ring-zinc-200/70 sm:p-5">
           <div class="flex items-start gap-3">
             <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
-              <UIcon
-                name="i-lucide-file-pen-line"
+              <UIcon name="i-lucide-file-pen-line"
                 class="size-5"
               />
             </span>
@@ -60,8 +55,7 @@
             </div>
           </div>
 
-          <ProductEditorBasicsSection
-            class="mt-5"
+          <ProductEditorBasicsSection class="mt-5"
             :category-items="categoryItems"
             :field-errors="fieldErrors"
             :form="form"
@@ -70,8 +64,7 @@
           />
         </section>
 
-        <ProductEditorMediaSection
-          :field-errors="fieldErrors"
+        <ProductEditorMediaSection :field-errors="fieldErrors"
           :main-image="form.mainImage"
           :product-images="form.productImages"
           :uploading-gallery="uploadingGallery"
@@ -84,8 +77,7 @@
           @upload-main-image="uploadMainImage"
         />
 
-        <ProductEditorAttributesSection
-          :attribute-items="attributeItems"
+        <ProductEditorAttributesSection :attribute-items="attributeItems"
           :attributes="form.productAttributes"
           :error="fieldErrors.productAttributes"
           @add="addAttribute"
@@ -98,8 +90,7 @@
 
     <template #footer>
       <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <UButton
-          color="neutral"
+        <UButton color="neutral"
           variant="ghost"
           size="lg"
           class="min-h-12 justify-center rounded-full px-6"
@@ -107,8 +98,7 @@
         >
           Отмена
         </UButton>
-        <UButton
-          color="primary"
+        <UButton color="primary"
           size="lg"
           type="submit"
           form="product-editor-form"
@@ -122,21 +112,18 @@
     </template>
   </UModal>
 
-  <UModal
-    v-model:open="categoryCreateOpen"
+  <UModal v-model:open="categoryCreateOpen"
     title="Новая категория"
     description="Категория будет создана и сразу выбрана для товара."
     :ui="compactModalUi"
   >
     <template #body>
       <div class="rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5">
-        <UFormField
-          label="Название категории"
+        <UFormField label="Название категории"
           required
           :error="newCategoryError"
         >
-          <UInput
-            v-model="newCategoryName"
+          <UInput v-model="newCategoryName"
             class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="xl"
             variant="none"
@@ -152,8 +139,7 @@
 
     <template #footer>
       <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <UButton
-          color="neutral"
+        <UButton color="neutral"
           variant="ghost"
           size="lg"
           class="min-h-11 justify-center rounded-full px-5"
@@ -161,8 +147,7 @@
         >
           Отмена
         </UButton>
-        <UButton
-          color="primary"
+        <UButton color="primary"
           size="lg"
           class="min-h-11 justify-center rounded-full px-5"
           :loading="creatingCategory"
@@ -175,21 +160,18 @@
     </template>
   </UModal>
 
-  <UModal
-    v-model:open="attributeCreateOpen"
+  <UModal v-model:open="attributeCreateOpen"
     title="Новая характеристика"
     description="Характеристика будет создана и сразу подставлена в выбранную строку."
     :ui="attributeModalUi"
   >
     <template #body>
       <div class="grid gap-4 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5 sm:grid-cols-[minmax(0,1fr)_180px]">
-        <UFormField
-          label="Название"
+        <UFormField label="Название"
           required
           :error="newAttributeErrors.name"
         >
-          <UInput
-            v-model="newAttributeForm.name"
+          <UInput v-model="newAttributeForm.name"
             class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="xl"
             variant="none"
@@ -200,12 +182,10 @@
             @keydown.enter.prevent="createAttribute"
           />
         </UFormField>
-        <UFormField
-          label="Ед. изм."
+        <UFormField label="Ед. изм."
           :error="newAttributeErrors.unit"
         >
-          <UInput
-            v-model="newAttributeForm.unit"
+          <UInput v-model="newAttributeForm.unit"
             class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="xl"
             variant="none"
@@ -220,8 +200,7 @@
 
     <template #footer>
       <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <UButton
-          color="neutral"
+        <UButton color="neutral"
           variant="ghost"
           size="lg"
           class="min-h-11 justify-center rounded-full px-5"
@@ -229,8 +208,7 @@
         >
           Отмена
         </UButton>
-        <UButton
-          color="primary"
+        <UButton color="primary"
           size="lg"
           class="min-h-11 justify-center rounded-full px-5"
           :loading="creatingAttribute"

@@ -13,9 +13,9 @@
     <ol class="mt-4">
       <li v-for="(step, index) in steps" :key="step.status" class="grid grid-cols-[36px_minmax(0,1fr)] gap-3">
         <div class="relative flex justify-center">
-          <span v-if="index < steps.length - 1" class="absolute bottom-[-0.75rem] top-9 w-px"
+          <span v-if="index < steps.length - 1" class="absolute -bottom-3 top-9 w-px"
             :class="getConnectorClass(step, steps[index + 1])" />
-          <span class="relative z-[1] grid size-9 place-items-center rounded-full"
+          <span class="relative z-1 grid size-9 place-items-center rounded-full"
             :class="getStepIconClass(step.state)">
             <UIcon :name="step.icon" class="size-4" />
           </span>

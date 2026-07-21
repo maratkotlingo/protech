@@ -18,19 +18,22 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const [answer] = await prisma.$transaction([
-    prisma.reviewAnswer.create({
+  const answer = await prisma.$transaction(async (tx) => {
+    const answer = await tx.reviewAnswer.create({
       data: {
         reviewId,
         text: body.text,
         userId
       }
-    }),
-    prisma.review.update({
+    });
+
+    await tx.review.update({
       where: { id: reviewId },
       data: { isAnswered: true }
-    })
-  ]).catch((error) => {
+    });
+
+    return answer;
+  }).catch((error) => {
     const prismaError = toPrismaHttpError(error, {
       P2025: "Отзыв не найден",
       P2003: { statusCode: 404, message: "Отзыв не найден" }

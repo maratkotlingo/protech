@@ -136,8 +136,7 @@
               class="w-full object-cover transition duration-500 group-hover:scale-105"
               :class="stockQuantity(product) <= 0 ? 'opacity-60 grayscale' : ''" style="aspect-ratio: 3 / 4;"
               loading="lazy">
-            <label
-              class="absolute right-2 top-2 grid size-10 cursor-pointer place-items-center rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 sm:right-4 sm:top-4">
+            <label class="absolute right-2 top-2 grid size-10 cursor-pointer place-items-center rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 sm:right-4 sm:top-4">
               <input :checked="selectedProductIds.includes(product.id)"
                 class="size-4 rounded border-(--admin-border) accent-(--admin-accent)" type="checkbox"
                 :aria-label="`Выбрать товар ${product.name}`" @change="toggleProductSelection(product.id, $event)">
@@ -149,8 +148,7 @@
               <AdminStatusBadge type="boolean" :value="product.isActive" />
             </div>
 
-            <p
-              class="mt-2 line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-zinc-950 sm:min-h-12 sm:text-base sm:leading-6">
+            <p class="mt-2 line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-zinc-950 sm:min-h-12 sm:text-base sm:leading-6">
               {{ product.name }}
             </p>
 

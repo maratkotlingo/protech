@@ -1,12 +1,10 @@
 <template>
   <div class="space-y-5">
-    <UFormField
-      label="Название"
+    <UFormField label="Название"
       required
       :error="fieldErrors.name"
     >
-      <UInput
-        :model-value="form.name"
+      <UInput :model-value="form.name"
         class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
         size="xl"
         variant="none"
@@ -17,13 +15,11 @@
     </UFormField>
 
     <div class="grid gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-      <UFormField
-        label="Артикул"
+      <UFormField label="Артикул"
         required
         :error="fieldErrors.article"
       >
-        <UInput
-          :model-value="form.article"
+        <UInput :model-value="form.article"
           class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
           variant="none"
@@ -33,13 +29,11 @@
         />
       </UFormField>
 
-      <UFormField
-        label="Категория"
+      <UFormField label="Категория"
         required
         :error="fieldErrors.categoryId"
       >
-        <USelect
-          :model-value="form.categoryId"
+        <USelect :model-value="form.categoryId"
           class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
           color="neutral"
@@ -53,13 +47,11 @@
       </UFormField>
     </div>
 
-    <UFormField
-      label="Описание"
+    <UFormField label="Описание"
       required
       :error="fieldErrors.description"
     >
-      <UTextarea
-        :model-value="form.description"
+      <UTextarea :model-value="form.description"
         class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
         size="xl"
         variant="none"
@@ -73,13 +65,11 @@
     </UFormField>
 
     <div class="grid gap-5 lg:grid-cols-3">
-      <UFormField
-        label="Цена"
+      <UFormField label="Цена"
         required
         :error="fieldErrors.currentPrice"
       >
-        <UInput
-          :model-value="form.currentPrice"
+        <UInput :model-value="form.currentPrice"
           class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
           variant="none"
@@ -91,12 +81,10 @@
         />
       </UFormField>
 
-      <UFormField
-        label="Себестоимость"
+      <UFormField label="Себестоимость"
         :error="fieldErrors.costPrice"
       >
-        <UInput
-          :model-value="form.costPrice"
+        <UInput :model-value="form.costPrice"
           class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
           variant="none"
@@ -108,12 +96,10 @@
         />
       </UFormField>
 
-      <UFormField
-        label="Старая цена"
+      <UFormField label="Старая цена"
         :error="fieldErrors.oldPrice"
       >
-        <UInput
-          :model-value="form.oldPrice"
+        <UInput :model-value="form.oldPrice"
           class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
           variant="none"
@@ -127,12 +113,10 @@
     </div>
 
     <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
-      <UFormField
-        label="Ссылка OZON"
+      <UFormField label="Ссылка OZON"
         :error="fieldErrors.ozonLink"
       >
-        <UInput
-          :model-value="form.ozonLink"
+        <UInput :model-value="form.ozonLink"
           class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
           size="xl"
           variant="none"
@@ -143,8 +127,7 @@
       </UFormField>
 
       <div class="rounded-2xl bg-[#f9fafb] p-4 shadow-inner shadow-zinc-950/5 sm:p-5">
-        <USwitch
-          :model-value="form.isActive"
+        <USwitch :model-value="form.isActive"
           label="Товар активен"
           description="Показывать товар в публичном каталоге"
           @update:model-value="emit('updateField', 'isActive', Boolean($event))"

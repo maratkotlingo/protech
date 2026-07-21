@@ -1,7 +1,6 @@
 <template>
   <section class="relative min-h-[380px] overflow-hidden rounded-[2rem] bg-zinc-900 shadow-[0_28px_90px_rgba(15,23,42,0.16)] sm:min-h-[760px] ">
-    <iframe
-      :src="mapSrc"
+    <iframe :src="mapSrc"
       class="absolute inset-0 size-full border-0"
       loading="lazy"
       referrerpolicy="no-referrer-when-downgrade"
@@ -14,8 +13,7 @@
       <div class="w-full max-w-md rounded-[1.5rem] bg-white/90 px-4 py-3 shadow-xl shadow-zinc-950/15 backdrop-blur-xl ">
         <div class="flex items-center gap-3">
           <span class="grid size-10 shrink-0 place-items-center rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-950/20">
-            <UIcon
-              :name="isPickup ? 'i-lucide-store' : 'i-lucide-map-pin'"
+            <UIcon :name="isPickup ? 'i-lucide-store' : 'i-lucide-map-pin'"
               class="size-5 shrink-0"
             />
           </span>
@@ -26,8 +24,7 @@
         </div>
       </div>
 
-      <UBadge
-        :color="badgeColor"
+      <UBadge :color="badgeColor"
         variant="soft"
         class="rounded-full bg-white/90 px-3 py-1.5 shadow-lg shadow-zinc-950/10 backdrop-blur "
       >
@@ -43,14 +40,12 @@
         </p>
       </div>
 
-      <div
-        v-if="pending || error"
+      <div v-if="pending || error"
         class="rounded-[1.5rem] px-4 py-3 text-sm shadow-xl backdrop-blur-xl"
         :class="error ? 'bg-red-50/95 text-red-700 shadow-red-950/10' : 'bg-white/90 text-zinc-500 shadow-zinc-950/10  '"
       >
         <span class="inline-flex items-center gap-2">
-          <UIcon
-            :name="error ? 'i-lucide-circle-alert' : 'i-lucide-loader-circle'"
+          <UIcon :name="error ? 'i-lucide-circle-alert' : 'i-lucide-loader-circle'"
             class="size-4"
             :class="{ 'animate-spin': pending && !error }"
           />

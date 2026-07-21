@@ -1,18 +1,15 @@
 <template>
   <aside class="lg:sticky lg:top-24 lg:self-start">
     <div class="rounded-2xl bg-white p-4 shadow-[0_16px_50px_rgba(15,23,42,0.09)] ring-1 ring-zinc-100 sm:p-5">
-      <div
-        class="inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-medium"
+      <div class="inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-medium"
         :class="stockStatus.shellClass"
       >
         <span class="relative flex size-2">
-          <span
-            v-if="stockQuantity > 0"
+          <span v-if="stockQuantity > 0"
             class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
             :class="stockStatus.pulseClass"
           />
-          <span
-            class="relative inline-flex size-2 rounded-full"
+          <span class="relative inline-flex size-2 rounded-full"
             :class="stockStatus.dotClass"
           />
         </span>
@@ -22,22 +19,19 @@
       <div class="mt-4">
         <p class="text-xs font-medium uppercase text-zinc-400">Цена</p>
         <div class="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <p
-            class="min-w-0 text-3xl font-semibold tracking-normal"
+          <p class="min-w-0 text-3xl font-semibold tracking-normal"
             :class="discountValue ? 'text-red-600' : 'text-zinc-950'"
           >
             {{ formatCurrency(product.currentPrice) }}
           </p>
-          <p
-            v-if="product.oldPrice"
+          <p v-if="product.oldPrice"
             class="shrink-0 text-base text-zinc-400 line-through"
           >
             {{ formatCurrency(product.oldPrice) }}
           </p>
         </div>
 
-        <UBadge
-          v-if="discountValue"
+        <UBadge v-if="discountValue"
           color="primary"
           variant="soft"
           class="mt-2 rounded-full px-2.5 py-1"
@@ -46,13 +40,11 @@
         </UBadge>
       </div>
 
-      <div
-        v-if="isInCart"
+      <div v-if="isInCart"
         class="mt-5 grid gap-2 sm:grid-cols-[minmax(0,1fr)_7rem]"
       >
         <div class="grid grid-cols-[2.5rem_minmax(2.5rem,1fr)_2.5rem] items-center rounded-full bg-[#f3f4f6] p-1.5">
-          <UButton
-            color="neutral"
+          <UButton color="neutral"
             variant="ghost"
             icon="i-lucide-minus"
             size="md"
@@ -62,14 +54,12 @@
             aria-label="Уменьшить количество"
             @click="decrementQuantity"
           />
-          <div
-            v-auto-animate
+          <div v-auto-animate
             class="grid h-10 min-w-0 place-items-center text-center text-base font-semibold text-zinc-950"
           >
             {{ quantity }}
           </div>
-          <UButton
-            color="neutral"
+          <UButton color="neutral"
             variant="ghost"
             icon="i-lucide-plus"
             size="md"
@@ -81,8 +71,7 @@
           />
         </div>
 
-        <UButton
-          color="error"
+        <UButton color="error"
           variant="soft"
           size="lg"
           block
@@ -95,8 +84,7 @@
         </UButton>
       </div>
 
-      <UButton
-        v-else
+      <UButton v-else
         color="primary"
         size="lg"
         block
@@ -108,8 +96,7 @@
         {{ stockQuantity <= 0 ? "Нет в наличии" : "Добавить в корзину" }}
       </UButton>
 
-      <UButton
-        color="neutral"
+      <UButton color="neutral"
         variant="soft"
         size="lg"
         block

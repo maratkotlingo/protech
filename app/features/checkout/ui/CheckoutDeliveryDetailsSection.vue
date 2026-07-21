@@ -1,13 +1,11 @@
 <template>
-  <section
-    v-if="isDelivery"
+  <section v-if="isDelivery"
     class="rounded-[1.75rem] bg-white/90 p-4 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-5  "
   >
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <span class="grid size-9 place-items-center rounded-full bg-sky-50 text-sky-700  ">
-          <UIcon
-            name="i-lucide-map-pin"
+          <UIcon name="i-lucide-map-pin"
             class="size-4.5"
           />
         </span>
@@ -17,8 +15,7 @@
         </div>
       </div>
 
-      <UBadge
-        color="neutral"
+      <UBadge color="neutral"
         variant="soft"
         class="rounded-full bg-sky-50 px-3 py-1 text-sky-700"
       >
@@ -27,13 +24,11 @@
     </div>
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      <UFormField
-        label="Город"
+      <UFormField label="Город"
         required
         :error="fieldErrors.city"
       >
-        <UInput
-          :model-value="draft.city"
+        <UInput :model-value="draft.city"
           class="w-full rounded-[1.1rem] bg-[#f9fafb] shadow-inner shadow-zinc-950/5 "
           size="md"
           variant="none"
@@ -42,13 +37,11 @@
           @update:model-value="emit('updateField', 'city', String($event ?? ''))"
         />
       </UFormField>
-      <UFormField
-        label="Улица"
+      <UFormField label="Улица"
         required
         :error="fieldErrors.street"
       >
-        <UInput
-          :model-value="draft.street"
+        <UInput :model-value="draft.street"
           class="w-full rounded-[1.1rem] bg-[#f9fafb] shadow-inner shadow-zinc-950/5 "
           size="md"
           variant="none"
@@ -57,13 +50,11 @@
           @update:model-value="emit('updateField', 'street', String($event ?? ''))"
         />
       </UFormField>
-      <UFormField
-        label="Дом"
+      <UFormField label="Дом"
         required
         :error="fieldErrors.house"
       >
-        <UInput
-          :model-value="draft.house"
+        <UInput :model-value="draft.house"
           class="w-full rounded-[1.1rem] bg-[#f9fafb] shadow-inner shadow-zinc-950/5 "
           size="md"
           variant="none"
@@ -73,8 +64,7 @@
         />
       </UFormField>
       <UFormField label="Квартира">
-        <UInput
-          :model-value="draft.apartment"
+        <UInput :model-value="draft.apartment"
           class="w-full rounded-[1.1rem] bg-[#f9fafb] shadow-inner shadow-zinc-950/5 "
           size="md"
           variant="none"
@@ -84,8 +74,7 @@
         />
       </UFormField>
       <UFormField label="Подъезд">
-        <UInput
-          :model-value="draft.entrance"
+        <UInput :model-value="draft.entrance"
           class="w-full rounded-[1.1rem] bg-[#f9fafb] shadow-inner shadow-zinc-950/5 "
           size="md"
           variant="none"
@@ -94,8 +83,7 @@
         />
       </UFormField>
       <UFormField label="Этаж">
-        <UInput
-          :model-value="draft.floor"
+        <UInput :model-value="draft.floor"
           class="w-full rounded-[1.1rem] bg-[#f9fafb] shadow-inner shadow-zinc-950/5 "
           size="md"
           variant="none"
@@ -107,8 +95,7 @@
 
     <div class="mt-3 grid gap-3 sm:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
       <UFormField label="Домофон">
-        <UInput
-          :model-value="draft.intercom"
+        <UInput :model-value="draft.intercom"
           class="w-full rounded-[1.1rem] bg-[#f9fafb] shadow-inner shadow-zinc-950/5 "
           size="md"
           variant="none"
@@ -117,8 +104,7 @@
         />
       </UFormField>
       <UFormField label="Комментарий курьеру">
-        <UTextarea
-          :model-value="draft.comment"
+        <UTextarea :model-value="draft.comment"
           class="w-full rounded-[1.1rem] bg-[#f9fafb] shadow-inner shadow-zinc-950/5 "
           :rows="2"
           variant="none"
@@ -130,14 +116,12 @@
     </div>
   </section>
 
-  <section
-    v-else
+  <section v-else
     class="rounded-[1.75rem] bg-white/90 p-4 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-5  "
   >
     <div class="flex items-center gap-3">
       <span class="grid size-9 place-items-center rounded-full bg-sky-50 text-sky-700  ">
-        <UIcon
-          name="i-lucide-store"
+        <UIcon name="i-lucide-store"
           class="size-4.5"
         />
       </span>

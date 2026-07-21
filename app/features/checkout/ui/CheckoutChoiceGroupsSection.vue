@@ -4,8 +4,7 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="grid size-9 place-items-center rounded-full bg-emerald-50 text-emerald-700  ">
-            <UIcon
-              name="i-lucide-truck"
+            <UIcon name="i-lucide-truck"
               class="size-4.5"
             />
           </span>
@@ -13,16 +12,14 @@
         </div>
 
         <div class="mt-3 grid gap-2">
-          <button
-            v-for="option in obtainingOptions"
+          <button v-for="option in obtainingOptions"
             :key="option.value"
             type="button"
             :class="choiceButtonClass(obtainingMethod === option.value)"
             @click="emit('selectObtaining', option.value)"
           >
             <span :class="choiceIconClass(obtainingMethod === option.value)">
-              <UIcon
-                :name="option.icon"
+              <UIcon :name="option.icon"
                 class="size-4.5"
               />
             </span>
@@ -30,8 +27,7 @@
               <span class="block text-sm font-semibold text-zinc-950">{{ option.title }}</span>
               <span class="mt-0.5 block text-xs leading-4 text-zinc-500">{{ option.description }}</span>
             </span>
-            <UIcon
-              v-if="obtainingMethod === option.value"
+            <UIcon v-if="obtainingMethod === option.value"
               name="i-lucide-check"
               class="absolute right-3 top-3 size-4 text-emerald-600"
             />
@@ -42,8 +38,7 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="grid size-9 place-items-center rounded-full bg-zinc-100 text-zinc-700  ">
-            <UIcon
-              name="i-lucide-credit-card"
+            <UIcon name="i-lucide-credit-card"
               class="size-4.5"
             />
           </span>
@@ -51,8 +46,7 @@
         </div>
 
         <div class="mt-3 grid gap-2">
-          <button
-            v-for="option in paymentOptions"
+          <button v-for="option in paymentOptions"
             :key="option.value"
             type="button"
             :disabled="option.disabled"
@@ -60,16 +54,14 @@
             @click="emit('selectPayment', option.value)"
           >
             <span :class="choiceIconClass(paymentMethod === option.value, option.disabled)">
-              <UIcon
-                :name="option.icon"
+              <UIcon :name="option.icon"
                 class="size-4.5"
               />
             </span>
             <span class="min-w-0">
               <span class="flex items-center gap-2">
                 <span class="text-sm font-semibold text-zinc-950">{{ option.title }}</span>
-                <span
-                  v-if="option.badge"
+                <span v-if="option.badge"
                   class="rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-zinc-500 shadow-sm shadow-zinc-950/5  "
                 >
                   {{ option.badge }}
@@ -77,8 +69,7 @@
               </span>
               <span class="mt-0.5 block text-xs leading-4 text-zinc-500">{{ option.description }}</span>
             </span>
-            <UIcon
-              v-if="paymentMethod === option.value"
+            <UIcon v-if="paymentMethod === option.value"
               name="i-lucide-check"
               class="absolute right-3 top-3 size-4 text-emerald-600"
             />

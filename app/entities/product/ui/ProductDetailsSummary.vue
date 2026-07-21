@@ -1,7 +1,6 @@
 <template>
   <section class="p-1 sm:p-0">
-    <UBadge
-      color="neutral"
+    <UBadge color="neutral"
       variant="soft"
       class="rounded-full bg-white px-2.5 py-1 text-zinc-600 shadow-sm shadow-zinc-950/5"
     >
@@ -14,8 +13,7 @@
 
     <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-zinc-500">
       <span class="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 shadow-sm shadow-zinc-950/5">
-        <UIcon
-          name="i-lucide-star"
+        <UIcon name="i-lucide-star"
           class="size-4 text-amber-400"
           :class="averageRating ? 'fill-amber-400' : ''"
         />
@@ -25,8 +23,7 @@
     </div>
 
     <dl class="mt-5 space-y-2.5">
-      <div
-        v-for="item in details"
+      <div v-for="item in details"
         :key="item.label"
         class="grid grid-cols-[7.5rem_minmax(0,1fr)] items-start gap-3 text-sm"
       >
@@ -36,20 +33,17 @@
         </dd>
       </div>
 
-      <div
-        v-if="product.ozonLink"
+      <div v-if="product.ozonLink"
         class="grid grid-cols-[7.5rem_minmax(0,1fr)] items-start gap-3 text-sm"
       >
         <dt class="text-zinc-400">Ozon</dt>
         <dd>
-          <NuxtLink
-            :to="product.ozonLink"
+          <NuxtLink :to="product.ozonLink"
             target="_blank"
             class="inline-flex items-center gap-1.5 font-medium text-emerald-700 transition hover:text-emerald-800"
           >
             Открыть товар
-            <UIcon
-              name="i-lucide-external-link"
+            <UIcon name="i-lucide-external-link"
               class="size-3.5"
             />
           </NuxtLink>
@@ -57,8 +51,7 @@
       </div>
     </dl>
 
-    <div
-      v-if="visibleAttributes.length"
+    <div v-if="visibleAttributes.length"
       class="mt-5"
     >
       <div class="flex items-center justify-between gap-3">
@@ -69,8 +62,7 @@
       </div>
 
       <dl class="mt-3 space-y-2">
-        <div
-          v-for="attribute in visibleAttributes"
+        <div v-for="attribute in visibleAttributes"
           :key="attribute.id"
           class="grid grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] gap-3 border-b border-dashed border-zinc-200 pb-2 text-sm last:border-b-0"
         >
@@ -84,8 +76,7 @@
       </dl>
     </div>
 
-    <UButton
-      color="neutral"
+    <UButton color="neutral"
       variant="soft"
       icon="i-lucide-list-checks"
       size="md"

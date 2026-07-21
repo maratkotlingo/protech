@@ -21,13 +21,11 @@
     </div>
 
     <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-      <div
-        v-if="previewItems.length"
+      <div v-if="previewItems.length"
         class="flex items-center gap-3"
       >
         <div class="flex -space-x-2">
-          <img
-            v-for="item in previewItems"
+          <img v-for="item in previewItems"
             :key="item.id"
             :src="item.product.mainImage || '/favicon.ico'"
             :alt="item.product.name"
@@ -39,8 +37,7 @@
         </p>
       </div>
 
-      <UButton
-        color="primary"
+      <UButton color="primary"
         size="xl"
         icon="i-lucide-check-circle-2"
         class="min-h-14 w-full justify-center rounded-full px-8 text-base font-semibold transition duration-300 hover:scale-[1.01] sm:w-auto sm:min-w-72"
@@ -51,8 +48,7 @@
       </UButton>
     </div>
 
-    <UAlert
-      v-if="submitError"
+    <UAlert v-if="submitError"
       color="error"
       variant="soft"
       :description="submitError"

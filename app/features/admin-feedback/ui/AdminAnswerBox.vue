@@ -1,6 +1,5 @@
 <template>
-  <form
-    class="rounded-2xl bg-[#f9fafb] p-4 shadow-inner shadow-zinc-950/5"
+  <form class="rounded-2xl bg-[#f9fafb] p-4 shadow-inner shadow-zinc-950/5"
     @submit.prevent="$emit('submit')"
   >
     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -8,15 +7,13 @@
         <p class="text-base font-semibold text-zinc-950">
           {{ title }}
         </p>
-        <p
-          v-if="hint"
+        <p v-if="hint"
           class="mt-1 text-sm leading-6 text-zinc-500"
         >
           {{ hint }}
         </p>
       </div>
-      <UBadge
-        color="primary"
+      <UBadge color="primary"
         variant="soft"
         class="w-fit rounded-full px-3 py-1"
       >
@@ -25,8 +22,7 @@
     </div>
 
     <div class="mt-4 rounded-2xl bg-white p-1.5 shadow-sm shadow-zinc-950/5">
-      <UTextarea
-        :model-value="modelValue"
+      <UTextarea :model-value="modelValue"
         class="w-full"
         size="lg"
         :placeholder="placeholder"
@@ -42,8 +38,7 @@
       <p class="text-xs leading-5 text-zinc-500">
         {{ footerHint }}
       </p>
-      <UButton
-        color="primary"
+      <UButton color="primary"
         icon="i-lucide-send"
         type="submit"
         class="min-h-11 justify-center rounded-full px-5 shadow-lg shadow-emerald-950/10"

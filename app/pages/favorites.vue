@@ -3,8 +3,7 @@
     <section class="overflow-hidden rounded-2xl bg-white/90 p-4 shadow-[0_16px_50px_rgba(15,23,42,0.06)] sm:p-5">
       <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div class="max-w-3xl">
-          <p
-            class="inline-flex items-center gap-2 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">
+          <p class="inline-flex items-center gap-2 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">
             <UIcon name="i-lucide-heart" class="size-4 fill-current" />
             Подборка
           </p>
@@ -109,8 +108,7 @@
             </div>
           </div>
 
-          <div
-            class="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3 md:col-span-1 md:col-start-3 md:row-start-1 md:grid md:grid-cols-1 md:items-stretch">
+          <div class="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3 md:col-span-1 md:col-start-3 md:row-start-1 md:grid md:grid-cols-1 md:items-stretch">
             <UButton :color="cartButtonColor(row.product, row.inCart)"
               :variant="row.inCart || isOutOfStock(row.product) ? 'soft' : 'solid'" :icon="cartButtonIcon(row.inCart)"
               size="md"

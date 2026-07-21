@@ -1,6 +1,5 @@
 <template>
-  <UDrawer
-    v-model:open="open"
+  <UDrawer v-model:open="open"
     direction="right"
     :handle="false"
     :handle-only="true"
@@ -15,8 +14,7 @@
           </h2>
         </div>
 
-        <UButton
-          color="neutral"
+        <UButton color="neutral"
           variant="ghost"
           icon="i-lucide-x"
           size="lg"
@@ -33,8 +31,7 @@
         <section class="rounded-[1.75rem] bg-[#f9fafb] p-4 shadow-sm shadow-zinc-950/5">
           <div class="flex items-center justify-between gap-3">
             <h3 class="font-semibold text-zinc-950">Характеристики</h3>
-            <UBadge
-              color="neutral"
+            <UBadge color="neutral"
               variant="soft"
               class="rounded-full bg-white px-2.5 py-1 text-zinc-500"
             >
@@ -42,12 +39,10 @@
             </UBadge>
           </div>
 
-          <dl
-            v-if="attributes.length"
+          <dl v-if="attributes.length"
             class="mt-4 divide-y divide-zinc-200/80"
           >
-            <div
-              v-for="attribute in attributes"
+            <div v-for="attribute in attributes"
               :key="attribute.id"
               class="grid grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] gap-3 py-3 text-sm first:pt-0 last:pb-0"
             >
@@ -60,8 +55,7 @@
             </div>
           </dl>
 
-          <p
-            v-else
+          <p v-else
             class="mt-4 rounded-2xl bg-white px-4 py-3 text-sm text-zinc-500"
           >
             Характеристики пока не заполнены.

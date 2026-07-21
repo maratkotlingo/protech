@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="mx-auto grid min-h-[calc(100dvh-9rem)] w-full max-w-[1180px] items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1fr)] lg:px-8">
+  <div class="mx-auto grid min-h-[calc(100dvh-9rem)] w-full max-w-295 items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1fr)] lg:px-8">
     <section class="hidden lg:block">
       <UBadge color="primary" variant="soft" class="rounded-full">
         Аккаунт покупателя
@@ -22,7 +21,7 @@
       </div>
     </section>
 
-    <UCard class="rounded-[2rem] bg-white ring-0 shadow-2xl shadow-zinc-950/10  " :ui="{ body: 'p-6 sm:p-8' }">
+    <UCard class="rounded-4xl bg-white ring-0 shadow-2xl shadow-zinc-950/10  " :ui="{ body: 'p-6 sm:p-8' }">
       <div class="mb-7">
         <div class="grid grid-cols-2 rounded-full bg-[#f9fafb] p-1 ">
           <button type="button" class="rounded-full px-4 py-2 text-sm font-medium transition"

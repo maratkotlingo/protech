@@ -1,16 +1,13 @@
 <template>
   <article class="group grid grid-cols-[104px_minmax(0,1fr)] gap-4 rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/10 sm:grid-cols-[132px_minmax(0,1fr)] md:grid-cols-[132px_minmax(0,1fr)_220px] md:items-center lg:grid-cols-[148px_minmax(0,1fr)_260px]">
-    <NuxtLink
-      :to="`/product/${item.product.id}`"
+    <NuxtLink :to="`/product/${item.product.id}`"
       class="relative block aspect-square w-full overflow-hidden rounded-xl bg-white shadow-sm shadow-zinc-950/5"
     >
-      <img
-        :src="item.product.mainImage || '/favicon.ico'"
+      <img :src="item.product.mainImage || '/favicon.ico'"
         :alt="item.product.name"
         class="size-full object-contain transition duration-500 group-hover:scale-105"
       >
-      <span
-        v-if="discountPercent"
+      <span v-if="discountPercent"
         class="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shadow-sm shadow-zinc-950/10 backdrop-blur"
       >
         -{{ discountPercent }}%
@@ -19,19 +16,16 @@
 
     <div class="grid min-w-0 content-between gap-3 md:min-h-32 lg:min-h-36">
       <div class="min-w-0">
-        <span
-          class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
+        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
           :class="stockMeta.class"
         >
-          <span
-            class="size-2 rounded-full"
+          <span class="size-2 rounded-full"
             :class="stockMeta.dotClass"
           />
           {{ stockMeta.label }}
         </span>
 
-        <NuxtLink
-          :to="`/product/${item.product.id}`"
+        <NuxtLink :to="`/product/${item.product.id}`"
           class="mt-2 block line-clamp-3 text-base font-semibold tracking-normal text-zinc-950 transition hover:text-emerald-700 sm:line-clamp-2 sm:text-lg"
         >
           {{ item.product.name }}
@@ -43,8 +37,7 @@
           <p class="text-lg font-semibold text-zinc-950">
             {{ formatCurrency(lineTotal) }}
           </p>
-          <p
-            v-if="originalLineTotal > lineTotal"
+          <p v-if="originalLineTotal > lineTotal"
             class="text-xs text-zinc-400 line-through"
           >
             {{ formatCurrency(originalLineTotal) }}
@@ -58,22 +51,19 @@
 
     <div class="col-span-2 grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3 md:col-span-1 md:col-start-3 md:row-start-1 md:grid md:grid-cols-1 md:items-stretch">
       <div class="flex min-h-12 items-center justify-between gap-2 rounded-2xl bg-white p-1.5 shadow-sm shadow-zinc-950/5 sm:w-56 md:w-full">
-        <button
-          type="button"
+        <button type="button"
           class="grid size-10 place-items-center rounded-xl bg-[#f3f4f6] text-zinc-700 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:text-emerald-700 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-100 disabled:text-zinc-300"
           :disabled="loading || normalizedLocalQuantity <= 1"
           aria-label="Уменьшить количество"
           @click="changeQuantity(normalizedLocalQuantity - 1)"
         >
-          <UIcon
-            name="i-lucide-minus"
+          <UIcon name="i-lucide-minus"
             class="size-4"
           />
         </button>
 
         <div class="grid min-w-14 place-items-center px-1">
-          <input
-            v-model="localQuantity"
+          <input v-model="localQuantity"
             class="h-7 w-12 bg-transparent text-center text-lg font-semibold text-zinc-950 outline-none"
             type="text"
             inputmode="numeric"
@@ -85,23 +75,20 @@
           <span class="text-[10px] font-semibold uppercase text-zinc-400">шт</span>
         </div>
 
-        <button
-          type="button"
+        <button type="button"
           class="grid size-10 place-items-center rounded-xl bg-emerald-600 text-white shadow-sm shadow-emerald-950/15 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:bg-emerald-500 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-200 disabled:text-zinc-400"
           :disabled="loading || normalizedLocalQuantity >= maxQuantity"
           aria-label="Увеличить количество"
           @click="changeQuantity(normalizedLocalQuantity + 1)"
         >
-          <UIcon
-            name="i-lucide-plus"
+          <UIcon name="i-lucide-plus"
             class="size-4"
           />
         </button>
       </div>
 
       <UTooltip text="Удалить из корзины">
-        <UButton
-          color="error"
+        <UButton color="error"
           variant="soft"
           icon="i-lucide-trash-2"
           size="md"

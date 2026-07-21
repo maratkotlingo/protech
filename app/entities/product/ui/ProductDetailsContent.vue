@@ -1,20 +1,17 @@
 <template>
   <section class="space-y-3">
-    <ProductSectionHeading
-      eyebrow="Описание"
+    <ProductSectionHeading eyebrow="Описание"
       title="Описание товара"
     />
 
     <div class="rounded-2xl bg-[#f9fafb] p-4 shadow-sm shadow-zinc-950/5 sm:p-5">
-      <p
-        class="whitespace-pre-line text-base leading-7 text-zinc-600"
+      <p class="whitespace-pre-line text-base leading-7 text-zinc-600"
         :class="!expanded && isLongDescription ? 'line-clamp-5' : ''"
       >
         {{ product.description }}
       </p>
 
-      <UButton
-        v-if="isLongDescription"
+      <UButton v-if="isLongDescription"
         color="neutral"
         variant="ghost"
         size="sm"

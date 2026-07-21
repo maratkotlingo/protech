@@ -1,6 +1,5 @@
 <template>
-  <article
-    class="group cursor-pointer rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/10 sm:p-4"
+  <article class="group cursor-pointer rounded-2xl bg-white/90 p-3 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg hover:shadow-zinc-950/10 sm:p-4"
     @click="openDetails">
     <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:justify-between">
       <div class="min-w-0">
@@ -9,8 +8,7 @@
           <OrderStatusPill v-if="order.payment" type="payment" :value="order.payment.paymentStatus" />
         </div>
 
-        <h2
-          class="mt-2 text-lg font-semibold tracking-normal text-zinc-950 transition group-hover:text-emerald-700 sm:text-xl">
+        <h2 class="mt-2 text-lg font-semibold tracking-normal text-zinc-950 transition group-hover:text-emerald-700 sm:text-xl">
           Заказ №{{ order.id }}
         </h2>
 

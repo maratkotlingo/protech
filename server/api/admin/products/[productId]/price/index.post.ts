@@ -19,21 +19,24 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const [priceRecord, updatedProduct] = await prisma.$transaction([
-    prisma.productPrice.create({
+  const { priceRecord, updatedProduct } = await prisma.$transaction(async (tx) => {
+    const priceRecord = await tx.productPrice.create({
       data: {
         productId,
         value: body.value
       }
-    }),
-    prisma.product.update({
+    });
+
+    const updatedProduct = await tx.product.update({
       where: { id: productId },
       data: {
         oldPrice: product.currentPrice,
         currentPrice: new Prisma.Decimal(body.value)
       }
-    })
-  ]);
+    });
+
+    return { priceRecord, updatedProduct };
+  });
 
   await recordAdminAudit({
     adminId: userId,

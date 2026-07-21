@@ -7,8 +7,7 @@
           Изменения цены по истории карточки товара
         </p>
       </div>
-      <UBadge
-        :color="trendMeta.color"
+      <UBadge :color="trendMeta.color"
         variant="soft"
         class="rounded-full px-3 py-1.5"
       >
@@ -32,8 +31,7 @@
         </div>
         <div class="rounded-2xl bg-[#f9fafb] p-4">
           <p class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">За период</p>
-          <p
-            class="mt-2 text-xl font-semibold sm:text-2xl"
+          <p class="mt-2 text-xl font-semibold sm:text-2xl"
             :class="trendMeta.textClass"
           >
             {{ signedCurrency(changeAmount) }}
@@ -42,31 +40,26 @@
         </div>
       </div>
 
-      <div
-        v-if="entries.length > 1"
+      <div v-if="entries.length > 1"
         class="flex overflow-hidden rounded-2xl bg-[#f9fafb] p-2 sm:p-4 lg:min-h-80"
       >
-        <svg
-          viewBox="0 0 760 320"
+        <svg viewBox="0 0 760 320"
           class="h-auto w-full lg:h-full lg:min-h-80"
           role="img"
           aria-label="График изменения цены"
         >
           <defs>
-            <linearGradient
-              id="price-area-gradient"
+            <linearGradient id="price-area-gradient"
               x1="0"
               x2="0"
               y1="0"
               y2="1"
             >
-              <stop
-                offset="0%"
+              <stop offset="0%"
                 :stop-color.attr="trendMeta.stroke"
                 stop-opacity="0.22"
               />
-              <stop
-                offset="100%"
+              <stop offset="100%"
                 :stop-color.attr="trendMeta.stroke"
                 stop-opacity="0"
               />
@@ -74,8 +67,7 @@
           </defs>
 
           <g>
-            <line
-              v-for="line in gridLines"
+            <line v-for="line in gridLines"
               :key="line.key"
               x1="72"
               x2="724"
@@ -84,8 +76,7 @@
               stroke="#e4e4e7"
               stroke-dasharray="4 8"
             />
-            <text
-              v-for="line in gridLines"
+            <text v-for="line in gridLines"
               :key="`${line.key}-label`"
               x="18"
               :y.attr="svgNumber(line.y + 5)"
@@ -96,12 +87,10 @@
             </text>
           </g>
 
-          <path
-            :d.attr="areaPath"
+          <path :d.attr="areaPath"
             fill="url(#price-area-gradient)"
           />
-          <polyline
-            :points.attr="linePoints"
+          <polyline :points.attr="linePoints"
             fill="none"
             :stroke.attr="trendMeta.stroke"
             stroke-linecap="round"
@@ -109,20 +98,17 @@
             stroke-width="5"
           />
 
-          <g
-            v-for="point in plottedPoints"
+          <g v-for="point in plottedPoints"
             :key="point.key"
           >
-            <circle
-              :cx.attr="svgNumber(point.x)"
+            <circle :cx.attr="svgNumber(point.x)"
               :cy.attr="svgNumber(point.y)"
               r="6"
               fill="white"
               :stroke.attr="trendMeta.stroke"
               stroke-width="4"
             />
-            <text
-              v-if="point.showValue"
+            <text v-if="point.showValue"
               :x.attr="svgNumber(point.x)"
               :y.attr="svgNumber(point.y - 14)"
               text-anchor="middle"
@@ -135,8 +121,7 @@
           </g>
 
           <g>
-            <text
-              v-for="label in xAxisLabels"
+            <text v-for="label in xAxisLabels"
               :key="label.key"
               :x.attr="svgNumber(label.x)"
               y="300"
@@ -150,8 +135,7 @@
         </svg>
       </div>
 
-      <div
-        v-else
+      <div v-else
         class="grid min-h-40 place-items-center rounded-2xl bg-[#f9fafb] px-6 text-center text-sm text-zinc-500 lg:min-h-80"
       >
         Пока есть только текущая цена. График появится после следующего изменения.

@@ -3,8 +3,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-start gap-3">
         <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-amber-50 text-amber-700">
-          <UIcon
-            name="i-lucide-images"
+          <UIcon name="i-lucide-images"
             class="size-5"
           />
         </span>
@@ -18,15 +17,13 @@
         </div>
       </div>
       <div class="flex flex-wrap gap-2">
-        <input
-          ref="galleryImageInput"
+        <input ref="galleryImageInput"
           class="hidden"
           type="file"
           accept="image/png,image/jpeg,image/webp,image/gif"
           @change="emit('uploadGalleryImage', $event)"
         >
-        <UButton
-          color="neutral"
+        <UButton color="neutral"
           variant="outline"
           type="button"
           size="lg"
@@ -38,8 +35,7 @@
           <Upload class="size-4" />
           В галерею
         </UButton>
-        <UButton
-          color="primary"
+        <UButton color="primary"
           variant="soft"
           type="button"
           size="lg"
@@ -59,26 +55,22 @@
         </p>
 
         <div class="overflow-hidden rounded-2xl bg-[#f3f4f6] shadow-inner shadow-zinc-950/5">
-          <img
-            v-if="mainImage"
+          <img v-if="mainImage"
             :src="mainImage"
             alt=""
             class="aspect-square w-full object-cover"
           >
-          <div
-            v-else
+          <div v-else
             class="grid aspect-square place-items-center text-zinc-400"
           >
             <ImageIcon class="size-10" />
           </div>
         </div>
 
-        <UFormField
-          label="URL изображения"
+        <UFormField label="URL изображения"
           :error="fieldErrors.mainImage"
         >
-          <UInput
-            :model-value="mainImage"
+          <UInput :model-value="mainImage"
             class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
             size="xl"
             variant="none"
@@ -88,15 +80,13 @@
           />
         </UFormField>
 
-        <input
-          ref="mainImageInput"
+        <input ref="mainImageInput"
           class="hidden"
           type="file"
           accept="image/png,image/jpeg,image/webp,image/gif"
           @change="emit('uploadMainImage', $event)"
         >
-        <UButton
-          color="neutral"
+        <UButton color="neutral"
           variant="outline"
           type="button"
           size="lg"
@@ -115,39 +105,33 @@
           Галерея
         </p>
 
-        <UAlert
-          v-if="fieldErrors.productImages"
+        <UAlert v-if="fieldErrors.productImages"
           color="error"
           variant="soft"
           :description="fieldErrors.productImages"
           class="rounded-2xl"
         />
 
-        <div
-          v-if="productImages.length"
+        <div v-if="productImages.length"
           class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
-          <div
-            v-for="(image, index) in productImages"
+          <div v-for="(image, index) in productImages"
             :key="index"
             class="rounded-2xl bg-white p-3 shadow-sm shadow-zinc-950/5"
           >
             <div class="relative overflow-hidden rounded-2xl bg-[#f3f4f6]">
-              <img
-                v-if="image.url"
+              <img v-if="image.url"
                 :src="image.url"
                 alt=""
                 class="aspect-[4/3] w-full object-cover"
               >
-              <div
-                v-else
+              <div v-else
                 class="grid aspect-[4/3] place-items-center text-zinc-400"
               >
                 <ImageIcon class="size-8" />
               </div>
               <UTooltip text="Удалить изображение">
-                <UButton
-                  color="error"
+                <UButton color="error"
                   variant="soft"
                   type="button"
                   size="md"
@@ -161,8 +145,7 @@
               </UTooltip>
             </div>
             <div class="mt-3">
-              <UInput
-                :model-value="image.url"
+              <UInput :model-value="image.url"
                 class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
                 size="xl"
                 variant="none"
@@ -174,8 +157,7 @@
           </div>
         </div>
 
-        <div
-          v-else
+        <div v-else
           class="grid min-h-28 place-items-center rounded-2xl bg-white px-4 text-center text-sm leading-6 text-zinc-500"
         >
           Добавьте URL или загрузите изображение в галерею.

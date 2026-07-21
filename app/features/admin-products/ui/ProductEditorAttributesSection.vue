@@ -3,8 +3,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-start gap-3">
         <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-sky-50 text-sky-700">
-          <UIcon
-            name="i-lucide-list-checks"
+          <UIcon name="i-lucide-list-checks"
             class="size-5"
           />
         </span>
@@ -17,8 +16,7 @@
           </p>
         </div>
       </div>
-      <UButton
-        color="primary"
+      <UButton color="primary"
         variant="soft"
         type="button"
         size="lg"
@@ -30,8 +28,7 @@
       </UButton>
     </div>
 
-    <UAlert
-      v-if="error"
+    <UAlert v-if="error"
       color="error"
       variant="soft"
       :description="error"
@@ -39,8 +36,7 @@
     />
 
     <div class="space-y-4">
-      <div
-        v-for="(attribute, index) in attributes"
+      <div v-for="(attribute, index) in attributes"
         :key="index"
         class="rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5"
       >
@@ -49,8 +45,7 @@
             Характеристика {{ index + 1 }}
           </p>
           <UTooltip text="Удалить характеристику">
-            <UButton
-              color="error"
+            <UButton color="error"
               variant="ghost"
               type="button"
               size="md"
@@ -65,8 +60,7 @@
         </div>
         <div class="grid gap-3 lg:grid-cols-2">
           <UFormField label="Характеристика">
-            <USelect
-              :model-value="attribute.attributeId"
+            <USelect :model-value="attribute.attributeId"
               class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
               size="xl"
               color="neutral"
@@ -79,8 +73,7 @@
             />
           </UFormField>
           <UFormField label="Значение">
-            <UInput
-              :model-value="attribute.value"
+            <UInput :model-value="attribute.value"
               class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
               size="xl"
               variant="none"
@@ -92,8 +85,7 @@
         </div>
       </div>
 
-      <div
-        v-if="!attributes.length"
+      <div v-if="!attributes.length"
         class="grid min-h-24 place-items-center rounded-2xl bg-[#f9fafb] px-4 text-center text-sm leading-6 text-zinc-500"
       >
         Добавьте характеристику или создайте новую через селектор.

@@ -7,7 +7,7 @@
       </UButton>
 
       <div v-if="pending" class="grid items-start gap-5 xl:grid-cols-[minmax(0,620px)_minmax(0,1fr)_340px] xl:gap-6">
-        <USkeleton class="aspect-[3/4] rounded-2xl" />
+        <USkeleton class="aspect-3/4 rounded-2xl" />
         <USkeleton class="h-80 rounded-2xl" />
         <USkeleton class="h-72 rounded-2xl" />
       </div>

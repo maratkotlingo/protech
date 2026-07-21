@@ -10,8 +10,7 @@
     </div>
 
     <div class="grid items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-      <aside
-        class="rounded-[2rem] bg-[#f9fafb] p-6 shadow-sm shadow-zinc-950/5 lg:sticky lg:top-8 lg:h-[360px] lg:self-start">
+      <aside class="rounded-4xl bg-[#f9fafb] p-6 shadow-sm shadow-zinc-950/5 lg:sticky lg:top-8 lg:h-90 lg:self-start">
         <div class="flex items-end justify-between gap-4">
           <div>
             <p class="text-sm font-medium text-zinc-400">Средняя оценка</p>
@@ -104,7 +103,7 @@
 
         <div v-auto-animate class="grid gap-4">
           <article v-for="review in visibleReviews" :key="review.id"
-            class="rounded-[2rem] bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10 sm:p-6   ">
+            class="rounded-4xl bg-[#f9fafb] p-5 shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:shadow-zinc-950/10 sm:p-6   ">
             <div class="flex flex-wrap items-start justify-between gap-4">
               <div class="flex items-center gap-3">
                 <img v-if="review.user?.image" :src="review.user.image" :alt="review.user.name ?? 'Покупатель'"
@@ -154,8 +153,7 @@
                 :aria-label="`Открыть фото отзыва ${photoIndex + 1}`" @click="openReviewPhoto(review, photoIndex)">
                 <img :src="photo.url" :alt="`Фото отзыва ${review.id}`"
                   class="size-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
-                <span
-                  class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
+                <span class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
                   <UIcon name="i-lucide-expand" class="size-5 drop-shadow" />
                 </span>
               </button>
@@ -173,7 +171,7 @@
           </article>
 
           <div v-if="!filteredReviews.length"
-            class="grid min-h-44 place-items-center rounded-[2rem] bg-[#f9fafb] px-6 text-center text-zinc-500 shadow-sm shadow-zinc-950/5   ">
+            class="grid min-h-44 place-items-center rounded-4xl bg-[#f9fafb] px-6 text-center text-zinc-500 shadow-sm shadow-zinc-950/5   ">
             Отзывов с такой оценкой пока нет.
           </div>
 
@@ -192,8 +190,7 @@
         <div v-if="activeReviewPhoto" class="relative overflow-hidden rounded-2xl bg-[#f9fafb]">
           <img :src="activeReviewPhoto.url" :alt="activeReviewPhotoAlt"
             class="mx-auto block max-h-[82dvh] max-w-full object-contain">
-          <div
-            class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
+          <div class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
             {{ activeReviewPhotoIndex + 1 }} / {{ activeReviewPhotos.length }}
           </div>
           <div v-if="activeReviewPhotos.length > 1"

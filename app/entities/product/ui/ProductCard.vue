@@ -1,6 +1,5 @@
 <template>
-  <ProductCatalogCard
-    :product="product"
+  <ProductCatalogCard :product="product"
     :favorite="favorite"
     :in-cart="inCart"
     :cart-quantity="cartQuantity"

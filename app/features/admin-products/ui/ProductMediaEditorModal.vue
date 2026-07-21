@@ -1,13 +1,11 @@
 <template>
-  <UModal
-    v-model:open="open"
+  <UModal v-model:open="open"
     :ui="mediaModalUi"
   >
     <template #header>
       <div class="flex min-w-0 items-start gap-4">
         <div class="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-500 text-white shadow-lg shadow-amber-950/15">
-          <UIcon
-            name="i-lucide-images"
+          <UIcon name="i-lucide-images"
             class="size-6"
           />
         </div>
@@ -26,8 +24,7 @@
     </template>
 
     <template #body>
-      <div
-        v-if="loading"
+      <div v-if="loading"
         class="grid min-h-96 place-items-center bg-[#f9fafb]"
       >
         <div class="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-zinc-500 shadow-sm shadow-zinc-950/5">
@@ -36,8 +33,7 @@
         </div>
       </div>
 
-      <form
-        v-else
+      <form v-else
         id="product-media-editor-form"
         class="grid gap-5 bg-[#f9fafb] p-4 sm:p-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
         @submit.prevent="save"
@@ -46,8 +42,7 @@
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="flex items-start gap-3">
               <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-amber-50 text-amber-700">
-                <UIcon
-                  name="i-lucide-image"
+                <UIcon name="i-lucide-image"
                   class="size-5"
                 />
               </span>
@@ -60,15 +55,13 @@
                 </p>
               </div>
             </div>
-            <input
-              ref="mainImageInput"
+            <input ref="mainImageInput"
               class="hidden"
               type="file"
               accept="image/png,image/jpeg,image/webp,image/gif"
               @change="uploadMainImage"
             >
-            <UButton
-              color="neutral"
+            <UButton color="neutral"
               variant="outline"
               type="button"
               size="lg"
@@ -83,26 +76,22 @@
           </div>
 
           <div class="overflow-hidden rounded-2xl bg-[#f3f4f6] shadow-inner shadow-zinc-950/5">
-            <img
-              v-if="mainImage"
+            <img v-if="mainImage"
               :src="mainImage"
               alt=""
               class="aspect-[3/4] w-full object-cover"
             >
-            <div
-              v-else
+            <div v-else
               class="grid aspect-[3/4] place-items-center text-zinc-400"
             >
               <ImageIcon class="size-12" />
             </div>
           </div>
 
-          <UFormField
-            label="URL главного фото"
+          <UFormField label="URL главного фото"
             :error="fieldErrors.mainImage"
           >
-            <UInput
-              v-model="mainImage"
+            <UInput v-model="mainImage"
               class="w-full rounded-2xl bg-[#f9fafb] shadow-inner shadow-zinc-950/5"
               size="lg"
               variant="none"
@@ -117,8 +106,7 @@
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="flex items-start gap-3">
               <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-violet-50 text-violet-700">
-                <UIcon
-                  name="i-lucide-gallery-horizontal"
+                <UIcon name="i-lucide-gallery-horizontal"
                   class="size-5"
                 />
               </span>
@@ -132,15 +120,13 @@
               </div>
             </div>
             <div class="flex flex-wrap gap-2">
-              <input
-                ref="galleryImageInput"
+              <input ref="galleryImageInput"
                 class="hidden"
                 type="file"
                 accept="image/png,image/jpeg,image/webp,image/gif"
                 @change="uploadGalleryImage"
               >
-              <UButton
-                color="neutral"
+              <UButton color="neutral"
                 variant="outline"
                 type="button"
                 size="lg"
@@ -152,8 +138,7 @@
                 <Upload class="size-4" />
                 Загрузить
               </UButton>
-              <UButton
-                color="primary"
+              <UButton color="primary"
                 variant="soft"
                 type="button"
                 size="lg"
@@ -166,32 +151,27 @@
             </div>
           </div>
 
-          <UAlert
-            v-if="fieldErrors.productImages"
+          <UAlert v-if="fieldErrors.productImages"
             color="error"
             variant="soft"
             :description="fieldErrors.productImages"
             class="rounded-2xl"
           />
 
-          <div
-            v-if="productImages.length"
+          <div v-if="productImages.length"
             class="grid gap-3 sm:grid-cols-2"
           >
-            <div
-              v-for="(image, index) in productImages"
+            <div v-for="(image, index) in productImages"
               :key="index"
               class="space-y-3 rounded-2xl bg-[#f9fafb] p-3 shadow-inner shadow-zinc-950/5"
             >
               <div class="overflow-hidden rounded-2xl bg-white shadow-sm shadow-zinc-950/5">
-                <img
-                  v-if="image.url"
+                <img v-if="image.url"
                   :src="image.url"
                   alt=""
                   class="aspect-[3/4] w-full object-cover"
                 >
-                <div
-                  v-else
+                <div v-else
                   class="grid aspect-[3/4] place-items-center text-zinc-400"
                 >
                   <ImageIcon class="size-8" />
@@ -199,8 +179,7 @@
               </div>
 
               <div class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-                <UInput
-                  v-model="image.url"
+                <UInput v-model="image.url"
                   class="w-full rounded-2xl bg-white shadow-sm shadow-zinc-950/5"
                   size="lg"
                   variant="none"
@@ -208,8 +187,7 @@
                   :ui="mediaInputUi"
                   @update:model-value="fieldErrors.productImages = undefined"
                 />
-                <UButton
-                  color="error"
+                <UButton color="error"
                   variant="ghost"
                   type="button"
                   size="lg"
@@ -223,8 +201,7 @@
             </div>
           </div>
 
-          <div
-            v-else
+          <div v-else
             class="grid min-h-48 place-items-center rounded-2xl bg-[#f9fafb] px-4 text-center text-sm leading-6 text-zinc-500"
           >
             Добавьте URL или загрузите изображение в галерею.
@@ -235,8 +212,7 @@
 
     <template #footer>
       <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <UButton
-          color="neutral"
+        <UButton color="neutral"
           variant="ghost"
           size="lg"
           class="min-h-12 justify-center rounded-full px-6"
@@ -244,8 +220,7 @@
         >
           Отмена
         </UButton>
-        <UButton
-          color="primary"
+        <UButton color="primary"
           size="lg"
           type="submit"
           form="product-media-editor-form"

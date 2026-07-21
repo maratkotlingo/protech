@@ -32,8 +32,7 @@
       :description="getErrorMessage(error)" class="rounded-2xl" />
 
     <section class="admin-list-card">
-      <div
-        class="flex flex-col gap-3 border-b border-zinc-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex flex-col gap-3 border-b border-zinc-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="admin-section-heading">
             Лента заказов
@@ -91,8 +90,7 @@
           <section class="border-y border-zinc-200 bg-white px-4 py-4 sm:px-5">
             <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
               <label class="block min-w-0">
-                <span
-                  class="mb-2 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                <span class="mb-2 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
                   <UIcon name="i-lucide-package-check" class="size-4" />
                   Статус заказа
                 </span>
@@ -104,8 +102,7 @@
               </label>
 
               <label class="block min-w-0">
-                <span
-                  class="mb-2 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                <span class="mb-2 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
                   <UIcon name="i-lucide-credit-card" class="size-4" />
                   Статус оплаты
                 </span>
@@ -166,8 +163,7 @@
                 </div>
               </div>
 
-              <div
-                class="mt-3 flex items-center justify-between gap-4 rounded-2xl bg-emerald-50 px-4 py-3 ring-1 ring-emerald-100">
+              <div class="mt-3 flex items-center justify-between gap-4 rounded-2xl bg-emerald-50 px-4 py-3 ring-1 ring-emerald-100">
                 <span class="text-sm font-semibold text-emerald-700">Сумма заказа</span>
                 <span class="whitespace-nowrap text-xl font-bold text-emerald-800">
                   {{ formatCurrency(order.payment?.amount) }}
@@ -185,7 +181,7 @@
                     <p class="text-xs font-semibold uppercase tracking-wide text-zinc-400">
                       Получатель
                     </p>
-                    <p class="mt-1 break-words text-base font-bold text-zinc-950">
+                    <p class="mt-1 wrap-break-word text-base font-bold text-zinc-950">
                       {{ order.recipientName || order.user?.name || order.user?.email || "Гость" }}
                     </p>
                     <p class="mt-1 break-all text-sm font-semibold text-zinc-700">
@@ -197,8 +193,7 @@
 
               <section class="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
                 <div class="flex items-start gap-3">
-                  <div
-                    class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                  <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
                     <UIcon name="i-lucide-map-pin" class="size-5" />
                   </div>
                   <div class="min-w-0 flex-1">
@@ -207,7 +202,7 @@
                     </p>
 
                     <template v-if="order.delivery">
-                      <p class="mt-1 break-words text-sm font-semibold leading-6 text-zinc-950">
+                      <p class="mt-1 wrap-break-word text-sm font-semibold leading-6 text-zinc-950">
                         {{ order.delivery.address }}
                       </p>
                       <p v-if="deliveryDetails(order)" class="mt-1 text-xs leading-5 text-zinc-500">

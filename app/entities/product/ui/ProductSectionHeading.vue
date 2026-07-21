@@ -6,8 +6,7 @@
     <h2 class="mt-1 text-2xl font-semibold tracking-normal text-zinc-950">
       {{ title }}
     </h2>
-    <p
-      v-if="description"
+    <p v-if="description"
       class="mt-1 text-sm leading-6 text-zinc-500"
     >
       {{ description }}

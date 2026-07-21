@@ -99,7 +99,7 @@
         </div>
         <label v-if="reviews.length"
           class="inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600">
-          <input v-model="allReviewsOnPageSelected" class="size-4 rounded border-zinc-200 accent-[var(--admin-accent)]"
+          <input v-model="allReviewsOnPageSelected" class="size-4 rounded border-zinc-200 accent-(--admin-accent)"
             type="checkbox">
           Выбрать страницу
         </label>
@@ -110,10 +110,9 @@
           class="rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)] sm:p-5">
           <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
             <div class="flex min-w-0 gap-3">
-              <label
-                class="mt-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full bg-[#f9fafb] shadow-sm shadow-zinc-950/5">
+              <label class="mt-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full bg-[#f9fafb] shadow-sm shadow-zinc-950/5">
                 <input :checked="selectedReviewIds.includes(review.id)"
-                  class="size-4 rounded border-zinc-200 accent-[var(--admin-accent)]" type="checkbox"
+                  class="size-4 rounded border-zinc-200 accent-(--admin-accent)" type="checkbox"
                   :aria-label="`Выбрать отзыв ${review.id}`" @change="toggleReviewSelection(review.id, $event)">
               </label>
               <img :src="review.product.mainImage" alt="" class="size-16 shrink-0 rounded-2xl object-cover">
@@ -191,8 +190,7 @@
               :aria-label="`Открыть фото отзыва ${photoIndex + 1}`" @click="openReviewPhoto(review, photoIndex)">
               <img :src="photo.url" alt="" class="size-full object-cover transition duration-300 group-hover:scale-105"
                 loading="lazy">
-              <span
-                class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
+              <span class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
                 <UIcon name="i-lucide-expand" class="size-5 drop-shadow" />
               </span>
             </button>
@@ -292,8 +290,7 @@
         <div v-if="activeReviewPhoto" class="relative overflow-hidden rounded-2xl bg-[#f9fafb]">
           <img :src="activeReviewPhoto.url" :alt="activeReviewPhotoAlt"
             class="mx-auto block max-h-[82dvh] max-w-full object-contain">
-          <div
-            class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
+          <div class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-zinc-600 shadow-lg shadow-zinc-950/10 backdrop-blur-xl">
             {{ activeReviewPhotoIndex + 1 }} / {{ activeReviewPhotos.length }}
           </div>
           <div v-if="activeReviewPhotos.length > 1"

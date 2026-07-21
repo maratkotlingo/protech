@@ -65,30 +65,42 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const updateProduct = prisma.product.update({
-      where: { id: productId },
-      data,
-      include: {
-        category: true,
-        productImages: true,
-        productAttributes: {
-          include: { attribute: true }
-        },
-        productStocks: true
-      }
-    });
-
     const product = priceChanged
-      ? (await prisma.$transaction([
-        updateProduct,
-        prisma.productPrice.create({
+      ? await prisma.$transaction(async (tx) => {
+        const updatedProduct = await tx.product.update({
+          where: { id: productId },
+          data,
+          include: {
+            category: true,
+            productImages: true,
+            productAttributes: {
+              include: { attribute: true }
+            },
+            productStocks: true
+          }
+        });
+
+        await tx.productPrice.create({
           data: {
             productId,
             value: body.currentPrice!
           }
-        })
-      ]))[0]
-      : await updateProduct;
+        });
+
+        return updatedProduct;
+      })
+      : await prisma.product.update({
+        where: { id: productId },
+        data,
+        include: {
+          category: true,
+          productImages: true,
+          productAttributes: {
+            include: { attribute: true }
+          },
+          productStocks: true
+        }
+      });
 
     await recordAdminAudit({
       adminId: userId,

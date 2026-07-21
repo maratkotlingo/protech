@@ -1,8 +1,7 @@
 <template>
   <div class="grid min-h-96 place-items-center rounded-4xl bg-white/90 px-6 text-center shadow-sm shadow-zinc-950/5  ">
     <div class="max-w-sm">
-      <div
-        class="mx-auto grid size-16 place-items-center rounded-[1.5rem] bg-[#f3f4f6] text-zinc-500 shadow-inner shadow-zinc-950/5  ">
+      <div class="mx-auto grid size-16 place-items-center rounded-[1.5rem] bg-[#f3f4f6] text-zinc-500 shadow-inner shadow-zinc-950/5  ">
         <UIcon :name="icon" class="size-8" />
       </div>
       <h2 class="mt-5 text-2xl font-semibold tracking-normal text-zinc-950 ">

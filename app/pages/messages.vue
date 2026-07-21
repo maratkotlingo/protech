@@ -1,12 +1,10 @@
 <template>
   <div class="mx-auto w-full max-w-330 px-4 py-4 sm:px-6 lg:px-8 lg:py-5">
-    <section
-      class="flex h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+    <section class="flex h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
       <header class="shrink-0 border-b border-zinc-100 px-3 py-3 sm:px-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2.5">
-            <span
-              class="grid size-10 place-items-center rounded-xl bg-zinc-950 text-white shadow-md shadow-zinc-950/15">
+            <span class="grid size-10 place-items-center rounded-xl bg-zinc-950 text-white shadow-md shadow-zinc-950/15">
               <UIcon name="i-lucide-message-circle" class="size-5" />
             </span>
             <div>
@@ -33,7 +31,7 @@
 
         <OrderEmptyState v-else-if="!messages.length" icon="i-lucide-message-circle" title="Сообщений пока нет"
           description="Напишите нам по заказу, оплате, доставке или товару."
-          class="mx-auto max-w-xl !min-h-72 bg-white" />
+          class="mx-auto max-w-xl min-h-72 bg-white" />
 
         <div v-else v-auto-animate class="space-y-3">
           <article v-for="message in messages" :key="message.id" class="flex"
@@ -59,12 +57,10 @@
         <div ref="messagesEnd" class="h-px scroll-mb-28" aria-hidden="true" />
       </div>
 
-      <form
-        class="shrink-0 rounded-b-2xl border-t border-zinc-100 bg-white/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-18px_44px_rgba(15,23,42,0.08)] backdrop-blur sm:p-3 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
+      <form class="shrink-0 rounded-b-2xl border-t border-zinc-100 bg-white/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-18px_44px_rgba(15,23,42,0.08)] backdrop-blur sm:p-3 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
         @submit.prevent="sendMessage">
         <UFormField :error="messageError">
-          <div
-            class="flex items-end gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45">
+          <div class="flex items-end gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45">
             <textarea ref="messageInput" v-model="draftMessage"
               class="h-12 min-h-12 max-h-36 flex-1 resize-none overflow-y-hidden rounded-xl bg-transparent px-3 py-3 text-sm leading-5 text-zinc-950 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-60"
               :disabled="submitting" placeholder="Сообщение" rows="1" @input="resizeMessageInput"

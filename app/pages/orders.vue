@@ -3,8 +3,7 @@
     <section class="rounded-2xl bg-white/90 p-4 shadow-[0_16px_50px_rgba(15,23,42,0.06)] sm:p-5">
       <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div class="max-w-3xl">
-          <p
-            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+          <p class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
             <UIcon name="i-lucide-package-check" class="size-4" />
             История
           </p>
