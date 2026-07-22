@@ -24,7 +24,8 @@
         </div>
       </header>
 
-      <div ref="messagesViewport" class="min-h-0 flex-1 overflow-y-auto bg-[#f8faf9] px-3 py-4 sm:px-4">
+      <div ref="messagesViewport" class="min-h-0 flex-1 overflow-y-auto bg-[#f8faf9] px-3 py-4 sm:px-4"
+        role="log" aria-live="polite" aria-relevant="additions text">
         <div v-if="loading" class="space-y-3">
           <USkeleton v-for="item in 5" :key="item" class="h-14 rounded-lg" />
         </div>
@@ -63,7 +64,7 @@
           <div class="flex items-end gap-2 rounded-2xl bg-[#f3f4f6] p-1.5 shadow-inner shadow-zinc-950/5 ring-1 ring-transparent transition focus-within:ring-emerald-500/45">
             <textarea ref="messageInput" v-model="draftMessage"
               class="h-12 min-h-12 max-h-36 flex-1 resize-none overflow-y-hidden rounded-xl bg-transparent px-3 py-3 text-sm leading-5 text-zinc-950 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-60"
-              :disabled="submitting" placeholder="Сообщение" rows="1" @input="resizeMessageInput"
+              :disabled="submitting" placeholder="Сообщение" rows="1" aria-label="Сообщение поддержке" @input="resizeMessageInput"
               @keydown.enter.exact.prevent="sendMessage" />
             <button type="submit"
               class="mb-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-950/15 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"

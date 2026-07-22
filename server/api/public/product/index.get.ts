@@ -139,7 +139,11 @@ export default defineEventHandler(async (event) => {
         pages: Math.ceil(total / limit)
       }
     };
-  } catch {
+  } catch (error) {
+    if (error && typeof error === "object" && "statusCode" in error) {
+      throw error;
+    }
+
     throw createError({
       statusCode: 500,
       message: "Ошибка сервера при получении товаров"

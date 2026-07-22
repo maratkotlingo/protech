@@ -45,6 +45,7 @@
             <div v-auto-animate class="flex flex-wrap gap-2">
               <button v-for="filter in ratingFilters" :key="filter.key" type="button"
                 class="min-h-11 rounded-full px-4 py-2 text-sm font-medium transition duration-300 hover:scale-[1.03]"
+                :aria-pressed="ratingFilter === filter.value"
                 :class="ratingFilter === filter.value ? 'bg-zinc-950 text-white shadow-lg shadow-zinc-950/20' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:text-zinc-950'"
                 @click="selectRatingFilter(filter.value)">
                 {{ filter.label }}
@@ -63,9 +64,11 @@
             <form class="space-y-5" @submit.prevent="submitReview">
               <div>
                 <p class="mb-2 text-sm font-semibold text-zinc-950">Оценка</p>
-                <div class="flex gap-1">
+                <div class="flex gap-1" role="radiogroup" aria-label="Оценка товара">
                   <button v-for="rating in 5" :key="rating" type="button"
                     class="grid size-11 place-items-center rounded-full text-amber-400 transition duration-300 hover:scale-110 hover:bg-amber-50 "
+                    role="radio"
+                    :aria-checked="form.rating === rating"
                     :aria-label="`Поставить ${rating}`" @click="form.rating = rating">
                     <UIcon name="i-lucide-star" class="size-8"
                       :class="rating <= form.rating ? 'fill-amber-400' : 'text-zinc-300 '" />
@@ -154,7 +157,7 @@
                 <img :src="photo.url" :alt="`Фото отзыва ${review.id}`"
                   class="size-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
                 <span class="pointer-events-none absolute inset-0 grid place-items-center bg-zinc-950/0 text-white opacity-0 transition duration-300 group-hover:bg-zinc-950/20 group-hover:opacity-100">
-                  <UIcon name="i-lucide-expand" class="size-5 drop-shadow" />
+                  <UIcon name="i-lucide-expand" class="size-5 drop-shadow" aria-hidden="true" />
                 </span>
               </button>
             </div>

@@ -2,6 +2,8 @@
   <aside class="lg:sticky lg:top-24 lg:self-start">
     <div class="rounded-2xl bg-white p-4 shadow-[0_16px_50px_rgba(15,23,42,0.09)] ring-1 ring-zinc-100 sm:p-5">
       <div class="inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-medium"
+        aria-live="polite"
+        role="status"
         :class="stockStatus.shellClass"
       >
         <span class="relative flex size-2">
@@ -91,6 +93,7 @@
         class="mt-5 min-h-12 rounded-full shadow-lg shadow-emerald-700/15 transition duration-300 hover:scale-[1.01]"
         :disabled="stockQuantity <= 0"
         :loading="cartSyncing"
+        :aria-label="stockQuantity <= 0 ? `${product.name} нет в наличии` : `Добавить ${product.name} в корзину`"
         @click="$emit('addToCart')"
       >
         {{ stockQuantity <= 0 ? "Нет в наличии" : "Добавить в корзину" }}
@@ -104,6 +107,7 @@
         class="mt-2 min-h-12 rounded-full bg-[#f3f4f6] text-zinc-800 transition duration-300 hover:scale-[1.01] hover:bg-zinc-100"
         :class="isFavorite ? 'text-red-500' : ''"
         :loading="favoriteSyncing"
+        :aria-label="isFavorite ? `Убрать ${product.name} из избранного` : `Добавить ${product.name} в избранное`"
         @click="$emit('toggleFavorite')"
       >
         {{ isFavorite ? "Убрать из избранного" : "Добавить в избранное" }}

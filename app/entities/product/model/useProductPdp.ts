@@ -41,12 +41,38 @@ export function useProductPdp() {
     { watch: [productId] }
   );
 
+  const pageDescription = computed(() =>
+    truncateSeoText(product.value?.description, "Карточка товара ProTech")
+  );
+  const productImageUrls = computed(() => {
+    const seen = new Set<string>();
+
+    return [
+      product.value?.mainImage,
+      ...(product.value?.productImages.map((image) => image.url) ?? [])
+    ].filter((url): url is string => {
+      if (!url || seen.has(url)) {
+        return false;
+      }
+
+      seen.add(url);
+      return true;
+    });
+  });
+
   useSeoMeta({
     title: () => product.value?.name ?? "Товар",
-    description: () => product.value?.description?.slice(0, 160) ?? "Карточка товара ProTech",
-    ogTitle: () => product.value?.name ?? "Товар ProTech",
-    ogDescription: () => product.value?.description?.slice(0, 160) ?? "Карточка товара ProTech",
-    ogImage: () => product.value?.mainImage
+    description: () => pageDescription.value,
+    ogTitle: () => product.value?.name ?? "Товар ПроТех76",
+    ogDescription: () => pageDescription.value,
+    ogImage: () => productImageUrls.value[0] ?? "/logo.png",
+    ogImageAlt: () => product.value?.name ?? "Товар ПроТех76",
+    twitterCard: "summary_large_image"
+  });
+  useHead({
+    meta: [
+      { property: "og:type", content: "product" }
+    ]
   });
 
   const stockQuantity = computed(() => product.value?.productStocks[0]?.quantity ?? 0);
@@ -71,6 +97,81 @@ export function useProductPdp() {
     return reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
   });
   const averageRatingLabel = computed(() => averageRating.value ? averageRating.value.toFixed(1) : "—");
+  const productSchemaNodes = computed(() => {
+    const currentProduct = product.value;
+
+    if (!currentProduct) {
+      return [];
+    }
+
+    const reviews = currentProduct.reviews.slice(0, 20);
+
+    return [
+      defineBreadcrumb({
+        itemListElement: [
+          { name: "Каталог", item: "/" },
+          { name: currentProduct.category.name, item: "/" },
+          { name: currentProduct.name }
+        ]
+      }),
+      defineProduct({
+        name: currentProduct.name,
+        description: pageDescription.value,
+        image: productImageUrls.value.length ? productImageUrls.value : ["/logo.png"],
+        sku: currentProduct.article || String(currentProduct.id),
+        brand: {
+          name: brandName.value
+        },
+        category: currentProduct.category.name,
+        offers: defineOffer({
+          price: toNumber(currentProduct.currentPrice),
+          priceCurrency: "RUB",
+          availability: stockQuantity.value > 0
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+          itemCondition: "https://schema.org/NewCondition",
+          url: `/product/${currentProduct.id}`
+        }),
+        ...(averageRating.value
+          ? {
+            aggregateRating: defineAggregateRating({
+              ratingValue: Number(averageRating.value.toFixed(1)),
+              reviewCount: currentProduct.reviews.length,
+              bestRating: 5,
+              worstRating: 1
+            })
+          }
+          : {}),
+        ...(reviews.length
+          ? {
+            review: reviews.map((review) =>
+              defineReview({
+                author: {
+                  name: review.user.name || "Покупатель"
+                },
+                datePublished: review.createdAt,
+                reviewBody: [review.advantages, review.disadvantages, review.comment].filter(Boolean).join("\n"),
+                reviewRating: {
+                  ratingValue: review.rating,
+                  bestRating: 5,
+                  worstRating: 1
+                }
+              })
+            )
+          }
+          : {})
+      })
+    ];
+  });
+  useSchemaOrg(() => productSchemaNodes.value);
+
+  if (import.meta.server) {
+    defineOgImage("NuxtSeoSatori", {
+      title: () => product.value?.name ?? "Товар ПроТех76",
+      description: () => pageDescription.value
+    });
+  }
+
   const cartButtonIcon = computed(() => isInCart.value ? "i-lucide-trash-2" : "i-lucide-shopping-bag");
   const cartButtonLabel = computed(() => {
     if (isInCart.value) {
@@ -178,6 +279,16 @@ export function useProductPdp() {
 
   function normalizeQuantityValue(value: number | string) {
     return Math.min(Math.max(Number(value) || 1, 1), maxQuantity.value);
+  }
+
+  function truncateSeoText(value: string | null | undefined, fallback: string) {
+    const normalized = value?.replace(/\s+/g, " ").trim();
+
+    if (!normalized) {
+      return fallback;
+    }
+
+    return normalized.length > 160 ? `${normalized.slice(0, 157)}...` : normalized;
   }
 
   function normalizeQuantity() {

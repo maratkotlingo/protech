@@ -22,10 +22,11 @@
           </span>
         </NuxtLink>
 
-        <nav
+        <nav aria-label="Основная навигация"
           class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full bg-[#f3f4f6] p-1 xl:flex ">
           <NuxtLink v-for="item in navItems" :key="item.to" :to="item.to"
             class="relative inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-medium transition duration-300 hover:scale-[1.02]"
+            :aria-current="isNavActive(item) ? 'page' : undefined"
             :class="isNavActive(item) ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5' : 'text-zinc-500 hover:text-zinc-950  '">
             <UIcon :name="item.icon" class="size-4" />
             {{ item.label }}
@@ -82,7 +83,13 @@
         <button class="absolute inset-0 bg-zinc-950/45 backdrop-blur-sm" aria-label="Закрыть меню"
           @click="closeMobileMenu" />
 
-        <aside
+        <aside ref="mobilePanel"
+          aria-labelledby="mobile-menu-title"
+          aria-modal="true"
+          role="dialog"
+          tabindex="-1"
+          @keydown.esc.prevent="closeMobileMenu"
+          @keydown.tab="trapMobileFocus"
           class="absolute inset-y-3 right-3 flex w-[min(390px,calc(100vw-1.5rem))] flex-col rounded-4xl bg-white p-4 shadow-2xl shadow-zinc-950/25 ">
           <div class="flex items-center justify-between gap-4">
             <NuxtLink to="/" class="flex items-center gap-3 rounded-3xl" aria-label="На главную ПроТех76"
@@ -92,7 +99,7 @@
                 <img src="/logo.png" alt="Логотип ПроТех76" class="size-full object-contain">
               </span>
               <span>
-                <span class="block font-semibold text-zinc-950">ПроТех76</span>
+                <span id="mobile-menu-title" class="block font-semibold text-zinc-950">ПроТех76</span>
                 <span class="block text-xs text-zinc-500">Магазин запчастей и навесного оборудования</span>
               </span>
             </NuxtLink>
@@ -104,6 +111,7 @@
           <div v-auto-animate class="mt-6 grid gap-2">
             <NuxtLink v-for="item in navItems" :key="item.to" :to="item.to"
               class="flex items-center justify-between gap-3 rounded-[1.35rem] bg-[#f9fafb] px-4 py-3 text-sm font-medium text-zinc-700 transition duration-300 hover:scale-[1.01] hover:bg-zinc-100   "
+              :aria-current="isNavActive(item) ? 'page' : undefined"
               :class="isNavActive(item) ? 'text-emerald-700' : ''" @click="closeMobileMenu">
               <span class="flex items-center gap-3">
                 <span
@@ -164,6 +172,8 @@ const cart = useCartStore();
 const favorites = useFavoritesStore();
 const messageNotifications = useMessageNotificationsStore();
 const mobileOpen = ref(false);
+const mobilePanel = ref<HTMLElement | null>(null);
+let lastFocusedElement: HTMLElement | null = null;
 const navItems = computed<NavItem[]>(() => [
   {
     icon: "i-lucide-layout-grid",
@@ -217,6 +227,17 @@ watch(
 watch(mobileOpen, (open) => {
   if (import.meta.client) {
     document.documentElement.style.overflow = open ? "hidden" : "";
+
+    if (open) {
+      lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      nextTick(() => {
+        const focusable = getMobileFocusableElements();
+        (focusable[0] ?? mobilePanel.value)?.focus();
+      });
+      return;
+    }
+
+    lastFocusedElement?.focus();
   }
 });
 
@@ -264,5 +285,46 @@ function openMobileMenu() {
 
 function closeMobileMenu() {
   mobileOpen.value = false;
+}
+
+function getMobileFocusableElements() {
+  if (!mobilePanel.value || !import.meta.client) {
+    return [];
+  }
+
+  return Array.from(
+    mobilePanel.value.querySelectorAll<HTMLElement>(
+      "a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex='-1'])"
+    )
+  ).filter((element) =>
+    !element.hasAttribute("disabled") &&
+    element.tabIndex !== -1 &&
+    window.getComputedStyle(element).visibility !== "hidden"
+  );
+}
+
+function trapMobileFocus(event: KeyboardEvent) {
+  if (!mobileOpen.value || !event.key || event.key !== "Tab") {
+    return;
+  }
+
+  const focusable = getMobileFocusableElements();
+
+  if (!focusable.length) {
+    event.preventDefault();
+    mobilePanel.value?.focus();
+    return;
+  }
+
+  const first = focusable[0]!;
+  const last = focusable[focusable.length - 1]!;
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
 }
 </script>

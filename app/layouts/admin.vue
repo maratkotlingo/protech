@@ -48,7 +48,9 @@
       <div v-if="mobileMenuOpen" class="fixed inset-0 z-40 lg:hidden">
         <button class="absolute inset-0 bg-zinc-950/40 backdrop-blur-sm" aria-label="Закрыть навигацию"
           @click="mobileMenuOpen = false" />
-        <div class="relative h-full w-full max-w-76">
+        <div ref="mobileAdminPanel" aria-label="Административная навигация" aria-modal="true" role="dialog"
+          tabindex="-1" class="relative h-full w-full max-w-76" @keydown.esc.prevent="mobileMenuOpen = false"
+          @keydown.tab="trapMobileAdminFocus">
           <AdminSidebar fluid :show-collapse="false" @navigate="mobileMenuOpen = false" />
         </div>
       </div>
@@ -73,8 +75,67 @@ import type { AdminUser } from "~~/app/shared/types/admin";
 
 const ui = useAdminUiStore();
 const mobileMenuOpen = ref(false);
+const mobileAdminPanel = ref<HTMLElement | null>(null);
+let lastAdminFocusedElement: HTMLElement | null = null;
 
 const { data, pending, error, refresh } = await useAsyncData("admin-me", () =>
   adminFetch<{ user: AdminUser }>("/api/admin/me")
 );
+
+watch(mobileMenuOpen, async (open) => {
+  if (!import.meta.client) {
+    return;
+  }
+
+  if (open) {
+    lastAdminFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    await nextTick();
+    const focusable = getMobileAdminFocusableElements();
+    (focusable[0] ?? mobileAdminPanel.value)?.focus();
+    return;
+  }
+
+  lastAdminFocusedElement?.focus();
+});
+
+function getMobileAdminFocusableElements() {
+  if (!mobileAdminPanel.value || !import.meta.client) {
+    return [];
+  }
+
+  return Array.from(
+    mobileAdminPanel.value.querySelectorAll<HTMLElement>(
+      "a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex='-1'])"
+    )
+  ).filter((element) =>
+    !element.hasAttribute("disabled") &&
+    element.tabIndex !== -1 &&
+    window.getComputedStyle(element).visibility !== "hidden"
+  );
+}
+
+function trapMobileAdminFocus(event: KeyboardEvent) {
+  if (event.key !== "Tab") {
+    return;
+  }
+
+  const focusable = getMobileAdminFocusableElements();
+
+  if (!focusable.length) {
+    event.preventDefault();
+    mobileAdminPanel.value?.focus();
+    return;
+  }
+
+  const first = focusable[0]!;
+  const last = focusable[focusable.length - 1]!;
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
 </script>

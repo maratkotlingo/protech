@@ -41,14 +41,22 @@
 </template>
 
 <script setup lang="ts">
-import { getErrorMessage } from "~~/app/shared/lib/shopFormatters";
+import { isOutOfStock } from "~~/app/shared/lib/catalogProductHelpers";
+import { getErrorMessage, toNumber } from "~~/app/shared/lib/shopFormatters";
 import { useProductCatalog } from "~~/app/shared/lib/useProductCatalog";
 
+const pageTitle = "Товары для экскаваторов Rippa";
+const pageDescription = "Каталог товаров ПроТех76: запчасти, комплектующие и навесное оборудование для мини-экскаваторов Rippa с фильтрами по цене, наличию и характеристикам.";
+
 useSeoMeta({
-  title: "Каталог товаров",
-  description: "Каталог товаров ПроТех76 с живыми фильтрами по категориям, цене и характеристикам из базы данных.",
-  ogTitle: "Каталог товаров ПроТех76",
-  ogDescription: "Выбирайте товары ПроТех76 с живыми фильтрами по категориям, цене и характеристикам."
+  title: pageTitle,
+  description: pageDescription,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogImage: "/logo.png",
+  ogImageAlt: "Каталог товаров ПроТех76",
+  ogType: "website",
+  twitterCard: "summary_large_image"
 });
 
 const {
@@ -86,4 +94,52 @@ const {
   toggleFavorite,
   ui
 } = await useProductCatalog();
+
+useSchemaOrg(computed(() => [
+  defineItemList({
+    name: pageTitle,
+    description: pageDescription,
+    itemListElement: products.value.slice(0, 24).map((product, index) =>
+      defineListItem({
+        position: index + 1,
+        item: defineProduct({
+          name: product.name,
+          image: product.mainImage || "/logo.png",
+          url: `/product/${product.id}`,
+          category: product.category?.name,
+          offers: defineOffer({
+            price: toNumber(product.currentPrice),
+            priceCurrency: "RUB",
+            availability: isOutOfStock(product)
+              ? "https://schema.org/OutOfStock"
+              : "https://schema.org/InStock",
+            itemCondition: "https://schema.org/NewCondition"
+          }),
+          ...(product.averageRating
+            ? {
+              aggregateRating: defineAggregateRating({
+                ratingValue: product.averageRating,
+                reviewCount: product.reviewsCount ?? 0,
+                bestRating: 5,
+                worstRating: 1
+              })
+            }
+            : {})
+        })
+      })
+    )
+  }),
+  defineBreadcrumb({
+    itemListElement: [
+      { name: "Каталог", item: "/" }
+    ]
+  })
+]));
+
+if (import.meta.server) {
+  defineOgImage("NuxtSeoSatori", {
+    title: pageTitle,
+    description: pageDescription
+  });
+}
 </script>

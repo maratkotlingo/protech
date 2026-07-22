@@ -68,7 +68,7 @@
             type="text"
             inputmode="numeric"
             pattern="[0-9]*"
-            aria-label="Количество"
+            :aria-label="`Количество товара ${item.product.name}`"
             @blur="commitQuantity"
             @keydown.enter.prevent="commitQuantity"
           >

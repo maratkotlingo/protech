@@ -3,10 +3,12 @@ import vue from "@vitejs/plugin-vue";
 import type { InputPluginOption } from "rollup";
 import process from "process";
 
-const publicAppUrl = process.env.NUXT_PUBLIC_APP_URL;
-const siteUrl = publicAppUrl && !/localhost|127\.0\.0\.1/.test(publicAppUrl)
-  ? publicAppUrl
+const configuredSiteUrl = process.env.NUXT_SITE_URL ?? process.env.NUXT_PUBLIC_SITE_URL ?? process.env.NUXT_PUBLIC_APP_URL;
+const siteUrl = configuredSiteUrl && !/localhost|127\.0\.0\.1/.test(configuredSiteUrl)
+  ? configuredSiteUrl.replace(/\/$/, "")
   : undefined;
+const siteName = "ПроТех76";
+const siteDescription = "Интернет-магазин запчастей, навесного оборудования и комплектующих для мини-экскаваторов Rippa.";
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -19,6 +21,21 @@ export default defineNuxtConfig({
     "vue-sonner/nuxt",
     "@nuxtjs/seo"
   ],
+  app: {
+    head: {
+      htmlAttrs: {
+        lang: "ru"
+      },
+      link: [
+        { rel: "icon", href: "/favicon.ico", sizes: "any" },
+        { rel: "apple-touch-icon", href: "/logo.png" }
+      ],
+      meta: [
+        { name: "theme-color", content: "#166534" },
+        { name: "format-detection", content: "telephone=no" }
+      ]
+    }
+  },
   css: ["./app/assets/css/main.css"],
   components: [
     { path: "~/shared/ui", pathPrefix: false },
@@ -60,12 +77,165 @@ export default defineNuxtConfig({
   },
   site: {
     ...(siteUrl ? { url: siteUrl } : {}),
-    name: "ПроТех76",
-    description: "Интернет-магазин техники, аксессуаров и комплектующих ProTech",
-    defaultLocale: "ru"
+    name: siteName,
+    description: siteDescription,
+    defaultLocale: "ru-RU",
+    trailingSlash: false
+  },
+  seo: {
+    canonicalLowercase: true,
+    canonicalQueryWhitelist: [],
+    redirectToCanonicalSiteUrl: Boolean(siteUrl),
+    meta: {
+      ogImage: "/logo.png",
+      ogImageAlt: "Логотип ПроТех76",
+      ogLocale: "ru_RU",
+      twitterCard: "summary_large_image"
+    }
+  },
+  robots: {
+    credits: false,
+    disallow: [
+      "/admin",
+      "/admin/**",
+      "/auth",
+      "/cart",
+      "/checkout",
+      "/favorites",
+      "/messages",
+      "/orders",
+      "/orders/**"
+    ],
+    disallowNonIndexableRoutes: false,
+    sitemap: ["/sitemap.xml"]
+  },
+  sitemap: {
+    credits: false,
+    discoverImages: true,
+    sources: ["/__sitemap__/products.json"],
+    urls: [
+      {
+        loc: "/",
+        changefreq: "daily",
+        priority: 1
+      }
+    ],
+    exclude: [
+      "/admin",
+      "/admin/**",
+      "/auth",
+      "/cart",
+      "/checkout",
+      "/favorites",
+      "/messages",
+      "/orders",
+      "/orders/**"
+    ],
+    defaults: {
+      changefreq: "weekly",
+      priority: 0.7
+    }
+  },
+  ogImage: {
+    defaults: {
+      width: 1200,
+      height: 630,
+      extension: "png",
+      alt: "ПроТех76 - запчасти и навесное оборудование для мини-экскаваторов Rippa"
+    },
+    security: {
+      secret: process.env.NUXT_OG_IMAGE_SECRET,
+      strict: process.env.NODE_ENV === "production"
+    }
   },
   schemaOrg: {
-    defaults: false
+    defaults: true,
+    identity: {
+      type: "LocalBusiness",
+      name: siteName,
+      description: siteDescription,
+      logo: "/logo.png",
+      telephone: "+79201309744",
+      address: {
+        streetAddress: "пр.-т Октября, д. 78д",
+        addressLocality: "Ярославль",
+        addressCountry: "RU"
+      }
+    }
+  },
+  routeRules: {
+    "/": {
+      swr: 300,
+      robots: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large"
+      },
+    },
+    "/product/**": {
+      swr: 600,
+      robots: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large"
+      },
+    },
+    "/auth": {
+      ssr: false,
+      robots: false
+    },
+    "/cart": {
+      ssr: false,
+      robots: false
+    },
+    "/checkout": {
+      ssr: false,
+      robots: false
+    },
+    "/favorites": {
+      ssr: false,
+      robots: false
+    },
+    "/messages": {
+      ssr: false,
+      robots: false
+    },
+    "/orders": {
+      ssr: false,
+      robots: false
+    },
+    "/orders/**": {
+      ssr: false,
+      robots: false
+    },
+    "/admin": {
+      ssr: false,
+      robots: false
+    },
+    "/admin/**": {
+      ssr: false,
+      robots: false
+    },
+    "/_nuxt/**": {
+      headers: {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
+    },
+    "/uploads/**": {
+      headers: {
+        "cache-control": "public, max-age=604800, stale-while-revalidate=86400"
+      }
+    },
+    "/favicon.ico": {
+      headers: {
+        "cache-control": "public, max-age=86400"
+      }
+    },
+    "/logo.png": {
+      headers: {
+        "cache-control": "public, max-age=86400"
+      }
+    }
   },
   nitro: {
     compressPublicAssets: true,

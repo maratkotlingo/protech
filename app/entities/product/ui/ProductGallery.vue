@@ -1,5 +1,7 @@
 <template>
   <div class="-mx-4 grid gap-0 sm:mx-0 sm:gap-4 xl:gap-3"
+    role="region"
+    :aria-label="`Фотографии товара ${alt}`"
     :class="imageItems.length > 1 ? 'xl:grid-cols-[76px_minmax(0,1fr)]' : ''"
   >
     <div v-if="imageItems.length > 1"
@@ -12,6 +14,8 @@
         :class="index === selectedIndex ? 'scale-[1.03] bg-emerald-50 ring-2 ring-emerald-200' : 'ring-2 ring-transparent'"
         type="button"
         :aria-label="`Открыть фото ${index + 1}`"
+        :aria-current="index === selectedIndex ? 'true' : undefined"
+        :aria-pressed="index === selectedIndex"
         @click="selectImage(index)"
       >
         <img :src="image.url"
@@ -24,6 +28,7 @@
 
     <div class="group relative order-1 overflow-hidden bg-white xl:order-2 xl:rounded-2xl xl:bg-[#f9fafb] xl:p-1.5 xl:shadow-[0_16px_50px_rgba(15,23,42,0.07)]">
       <div ref="mobileGallery"
+        aria-label="Галерея товара, горизонтальная прокрутка"
         class="mobile-gallery-scrollbar flex aspect-3/4 max-h-[calc(100svh-7rem)] w-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth bg-white sm:hidden"
         @scroll.passive="syncMobileSelection"
       >
@@ -40,6 +45,7 @@
       </div>
 
       <div v-if="imageItems.length > 1"
+        aria-hidden="true"
         class="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center gap-1.5 sm:hidden"
       >
         <span v-for="(image, index) in imageItems"
@@ -50,6 +56,7 @@
       </div>
 
       <div ref="tabletGallery"
+        aria-label="Галерея товара, горизонтальная прокрутка"
         class="tablet-gallery-scrollbar hidden h-[min(58vw,560px)] min-h-105 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-smooth sm:flex xl:hidden"
         @scroll.passive="syncTabletSelection"
       >

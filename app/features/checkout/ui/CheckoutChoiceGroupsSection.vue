@@ -8,13 +8,15 @@
               class="size-4.5"
             />
           </span>
-          <h2 class="text-base font-semibold tracking-normal text-zinc-950">Получение</h2>
+          <h2 id="checkout-obtaining-heading" class="text-base font-semibold tracking-normal text-zinc-950">Получение</h2>
         </div>
 
-        <div class="mt-3 grid gap-2">
+        <div class="mt-3 grid gap-2" role="radiogroup" aria-labelledby="checkout-obtaining-heading">
           <button v-for="option in obtainingOptions"
             :key="option.value"
             type="button"
+            role="radio"
+            :aria-checked="obtainingMethod === option.value"
             :class="choiceButtonClass(obtainingMethod === option.value)"
             @click="emit('selectObtaining', option.value)"
           >
@@ -42,14 +44,17 @@
               class="size-4.5"
             />
           </span>
-          <h2 class="text-base font-semibold tracking-normal text-zinc-950">Оплата</h2>
+          <h2 id="checkout-payment-heading" class="text-base font-semibold tracking-normal text-zinc-950">Оплата</h2>
         </div>
 
-        <div class="mt-3 grid gap-2">
+        <div class="mt-3 grid gap-2" role="radiogroup" aria-labelledby="checkout-payment-heading">
           <button v-for="option in paymentOptions"
             :key="option.value"
             type="button"
             :disabled="option.disabled"
+            role="radio"
+            :aria-checked="paymentMethod === option.value"
+            :aria-disabled="option.disabled || undefined"
             :class="choiceButtonClass(paymentMethod === option.value, option.disabled)"
             @click="emit('selectPayment', option.value)"
           >

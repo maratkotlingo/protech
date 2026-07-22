@@ -1,6 +1,11 @@
 import type { Prisma } from "@prisma/client";
 import { createError } from "h3";
 
+const MAX_SEARCH_LENGTH = 120;
+const MAX_ATTRIBUTES_QUERY_LENGTH = 5000;
+const MAX_ATTRIBUTE_FILTERS = 50;
+const MAX_ATTRIBUTE_VALUE_LENGTH = 255;
+
 export type PublicProductQueryValue = string | string[] | undefined;
 
 export interface PublicProductFilterQuery {
@@ -28,10 +33,24 @@ function parseAttributes(attributes?: PublicProductQueryValue): AttributeFilter[
 
   if (!rawAttributes) return [];
 
+  if (rawAttributes.length > MAX_ATTRIBUTES_QUERY_LENGTH) {
+    throw createError({
+      statusCode: 400,
+      message: "Слишком длинный фильтр attributes"
+    });
+  }
+
   try {
     const parsed = JSON.parse(rawAttributes);
 
     if (!Array.isArray(parsed)) return [];
+
+    if (parsed.length > MAX_ATTRIBUTE_FILTERS) {
+      throw createError({
+        statusCode: 400,
+        message: "Слишком много фильтров attributes"
+      });
+    }
 
     return parsed
       .map((item) => ({
@@ -41,9 +60,14 @@ function parseAttributes(attributes?: PublicProductQueryValue): AttributeFilter[
       .filter((item) =>
         Number.isInteger(item.attributeId) &&
         item.attributeId > 0 &&
-        item.value.length > 0
+        item.value.length > 0 &&
+        item.value.length <= MAX_ATTRIBUTE_VALUE_LENGTH
       );
-  } catch {
+  } catch (error) {
+    if (error && typeof error === "object" && "statusCode" in error) {
+      throw error;
+    }
+
     throw createError({
       statusCode: 400,
       message: "Некорректный формат attributes"
@@ -74,6 +98,13 @@ export function buildPublicProductWhere(
   const inStockOnly = ["1", "true"].includes(getPublicProductQueryValue(query.inStockOnly) ?? "");
   const attributes = parseAttributes(query.attributes);
   const groupedAttributes = new Map<number, Set<string>>();
+
+  if (search && search.length > MAX_SEARCH_LENGTH) {
+    throw createError({
+      statusCode: 400,
+      message: "Слишком длинная поисковая строка"
+    });
+  }
 
   for (const attribute of attributes) {
     if (!groupedAttributes.has(attribute.attributeId)) {

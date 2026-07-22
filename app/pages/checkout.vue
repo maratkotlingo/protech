@@ -22,7 +22,7 @@
 
     <div v-else
       class="mx-auto grid w-full max-w-370 gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,0.82fr)_minmax(460px,1.18fr)] lg:px-8 lg:py-8 xl:gap-6">
-      <main v-auto-animate class="space-y-4 lg:pb-8">
+      <div v-auto-animate class="space-y-4 lg:pb-8">
         <CheckoutOverviewCard />
 
         <CheckoutContactSection :customer-phone-error="fieldErrors.customerPhone" :phone="draft.customerPhone"
@@ -39,7 +39,7 @@
           @select-payment="setPaymentMethod" />
         <CheckoutDeliveryDetailsSection :draft="draft" :field-errors="fieldErrors" :is-delivery="isDelivery"
           @update-field="updateCheckoutField" />
-      </main>
+      </div>
 
       <aside class="space-y-4 lg:sticky lg:top-28 lg:self-start">
         <CheckoutDeliveryMap :city="draft.city" :house="draft.house" :obtaining-method="draft.obtainingMethod"

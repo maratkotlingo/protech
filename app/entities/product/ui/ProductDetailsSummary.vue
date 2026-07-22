@@ -40,6 +40,7 @@
         <dd>
           <NuxtLink :to="product.ozonLink"
             target="_blank"
+            rel="noopener noreferrer sponsored nofollow"
             class="inline-flex items-center gap-1.5 font-medium text-emerald-700 transition hover:text-emerald-800"
           >
             Открыть товар

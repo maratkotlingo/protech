@@ -70,7 +70,6 @@
 </template>
 
 <script setup lang="ts">
-const currentYear = new Date().getFullYear();
 const footerGroups = [
   {
     title: "Покупателю",

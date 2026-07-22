@@ -1,5 +1,7 @@
 import { createError, getRouterParam, type H3Event } from "h3";
 
+const DEFAULT_MAX_PAGE = 1000;
+
 function toPositiveInteger(value: unknown) {
   if (value === undefined || value === null || value === "") {
     return null;
@@ -26,8 +28,8 @@ export function getPositiveIntRouterParam(
   return parsed;
 }
 
-export function getPageQueryParam(value: unknown) {
-  return toPositiveInteger(value) ?? 1;
+export function getPageQueryParam(value: unknown, max = DEFAULT_MAX_PAGE) {
+  return Math.min(toPositiveInteger(value) ?? 1, max);
 }
 
 export function getOptionalPositiveIntQueryParam(value: unknown) {

@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <nav :class="[
+    <nav aria-label="Навигация администратора" :class="[
       'admin-muted-scroll flex-1 overflow-y-auto',
       collapsed ? 'px-2 py-3' : 'px-3 pb-4'
     ]">
@@ -65,7 +65,7 @@
               'admin-sidebar-link group',
               isActive(item.to) ? 'is-active' : '',
               collapsed ? 'justify-center px-2' : ''
-            ]" @click="$emit('navigate')">
+            ]" :aria-current="isActive(item.to) ? 'page' : undefined" @click="$emit('navigate')">
               <span :class="[
                 'grid size-9 shrink-0 place-items-center rounded-xl transition',
                 isActive(item.to)

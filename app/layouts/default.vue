@@ -1,8 +1,13 @@
 <template>
   <div class="shop-shell min-h-screen bg-(--shop-surface-muted) text-(--shop-text)">
+    <a href="#main-content"
+      class="sr-only fixed left-4 top-4 z-[100] rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white shadow-xl focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-emerald-300">
+      К основному содержимому
+    </a>
+
     <PublicHeader />
 
-    <main class="min-h-[calc(100dvh-9rem)]">
+    <main id="main-content" class="min-h-[calc(100dvh-9rem)]" tabindex="-1">
       <slot />
     </main>
 

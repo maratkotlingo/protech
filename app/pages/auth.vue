@@ -23,13 +23,17 @@
 
     <UCard class="rounded-4xl bg-white ring-0 shadow-2xl shadow-zinc-950/10  " :ui="{ body: 'p-6 sm:p-8' }">
       <div class="mb-7">
-        <div class="grid grid-cols-2 rounded-full bg-[#f9fafb] p-1 ">
+        <div class="grid grid-cols-2 rounded-full bg-[#f9fafb] p-1 " role="tablist" aria-label="Режим авторизации">
           <button type="button" class="rounded-full px-4 py-2 text-sm font-medium transition"
+            role="tab"
+            :aria-selected="mode === 'login'"
             :class="mode === 'login' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5' : 'text-zinc-500 '"
             @click="mode = 'login'">
             Вход
           </button>
           <button type="button" class="rounded-full px-4 py-2 text-sm font-medium transition"
+            role="tab"
+            :aria-selected="mode === 'register'"
             :class="mode === 'register' ? 'bg-white text-zinc-950 shadow-sm shadow-zinc-950/5' : 'text-zinc-500 '"
             @click="mode = 'register'">
             Регистрация

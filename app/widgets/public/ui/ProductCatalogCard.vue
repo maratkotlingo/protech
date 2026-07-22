@@ -1,10 +1,10 @@
 <template>
-  <article
+  <article role="listitem"
     class="group overflow-hidden bg-white shadow-sm shadow-zinc-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10"
     :class="compact ? 'rounded-2xl p-2' : 'rounded-2xl p-2 sm:rounded-3xl sm:p-3'">
     <div class="relative overflow-hidden bg-zinc-100"
       :class="compact ? 'rounded-xl' : 'rounded-xl sm:rounded-[1.45rem]'">
-      <NuxtLink :to="`/product/${product.id}`">
+      <NuxtLink :to="`/product/${product.id}`" :aria-label="`Открыть товар ${product.name}`">
         <img :src="product.mainImage || '/favicon.ico'" :alt="product.name"
           class="w-full object-cover transition duration-500 group-hover:scale-105"
           :class="isOutOfStock(product) ? 'opacity-60 grayscale' : ''"
@@ -23,7 +23,8 @@
           :class="[
             compact ? 'right-2 top-2' : 'right-2 top-2 sm:right-4 sm:top-4',
             favorite ? 'text-red-500' : ''
-          ]" :loading="loadingFavorite" :aria-label="favorite ? 'Убрать из избранного' : 'Добавить в избранное'"
+          ]" :loading="loadingFavorite"
+          :aria-label="favorite ? `Убрать ${product.name} из избранного` : `Добавить ${product.name} в избранное`"
           @click="onToggleFavorite" />
       </UTooltip>
 
@@ -33,7 +34,9 @@
         :class="[
           compact ? 'inset-x-2 bottom-2' : 'inset-x-2 bottom-2 sm:inset-x-4 sm:bottom-4',
           cartButtonClass
-        ]" :disabled="!inCart && isOutOfStock(product)" :loading="loadingCart" @click="onToggleCart">
+        ]" :disabled="!inCart && isOutOfStock(product)" :loading="loadingCart"
+        :aria-label="cartAriaLabel"
+        @click="onToggleCart">
         {{ cartButtonLabel }}
       </UButton>
     </div>
@@ -132,6 +135,17 @@ const cartButtonClass = computed(() => {
   }
 
   return "";
+});
+const cartAriaLabel = computed(() => {
+  if (props.inCart) {
+    return `Удалить ${props.product.name} из корзины`;
+  }
+
+  if (isOutOfStock(props.product)) {
+    return `${props.product.name} нет в наличии`;
+  }
+
+  return `Добавить ${props.product.name} в корзину`;
 });
 
 function onToggleCart() {

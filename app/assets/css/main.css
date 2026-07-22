@@ -76,6 +76,15 @@ body {
   background: color-mix(in srgb, var(--shop-accent) 24%, transparent);
 }
 
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--shop-ring) 86%, white);
+  outline-offset: 3px;
+}
+
+.admin-shell :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline-color: color-mix(in srgb, var(--admin-ring) 86%, white);
+}
+
 .prose-shop {
   color: var(--shop-text-muted);
 }
