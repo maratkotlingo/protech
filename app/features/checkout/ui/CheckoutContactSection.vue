@@ -110,7 +110,7 @@ const emit = defineEmits<{
   updateRecipientPhone: [value: string];
 }>();
 
-const inputUi = { base: "h-10 rounded-[1.1rem] bg-transparent text-sm" };
+const inputUi = { base: "h-11 rounded-[1.1rem] bg-transparent text-sm" };
 
 function updateRecipientToggle(event: Event) {
   emit("updateRecipientIsAnotherPerson", (event.target as HTMLInputElement | null)?.checked ?? false);

@@ -57,8 +57,8 @@
       </p>
 
       <div v-auto-animate class="flex flex-wrap gap-2">
-        <UButton v-if="hasAnyAnalyticsFilter" color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw"
-          class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
+        <UButton v-if="hasAnyAnalyticsFilter" color="neutral" variant="ghost" size="lg" icon="i-lucide-rotate-ccw"
+          class="h-11 rounded-full bg-white px-4 text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           @click="filters.resetAnalyticsFilters()">
           Сбросить
         </UButton>

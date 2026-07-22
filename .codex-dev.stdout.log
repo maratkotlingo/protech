@@ -12,12 +12,51 @@
 
 [36mi[39m Nuxt Icon server bundle mode is set to [36mlocal[39m
 [90m[[90mnuxt:icon[90m][39m [32m√[39m Nuxt Icon discovered local-installed 2 collections: carbon, lucide
-[32m√[39m Vite client built in 42ms
-[32m√[39m Vite server built in 15ms
-[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 3531ms
-[36mi[39m Vite server warmed up in 1ms
-[36mi[39m Vite client warmed up in 3ms
-[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 2894ms
-[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 2642ms
-[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 2472ms
-[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 2512ms
+[32m√[39m Vite client built in 66ms
+[32m√[39m Vite server built in 29ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 3643ms
+[36mi[39m Vite server warmed up in 0ms
+[36mi[39m Vite client warmed up in 4ms
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/layouts/default.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mpage reload [39m[2mlayouts/default.vue[22m
+[36mi[39m [32mhmr update [39m[2m/widgets/public/ui/PublicHeader.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mpage reload [39m[2mwidgets/public/ui/PublicHeader.vue[22m
+[36mi[39m [32mhmr update [39m[2m/widgets/public/ui/ProductCatalogGrid.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m
+[36mi[39m [32mhmr update [39m[2m/widgets/public/ui/ProductCatalogCard.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m[2m (x2)[22m
+[36mi[39m [32mhmr update [39m[2m/widgets/public/ui/ProductCatalogFiltersDrawer.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m
+[36mi[39m [32mhmr update [39m[2m/features/cart/ui/CartLineItem.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m
+[36mi[39m [32mhmr update [39m[2m/features/checkout/ui/CheckoutContactSection.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/features/checkout/ui/CheckoutDeliveryDetailsSection.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m
+[32m√[39m Vite server hmr 32 files in 3.5ms
+[32m√[39m Vite server hmr 5 files in 0.59ms
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mplugins.server.mjs[39m in 674.52ms
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mplugins.client.mjs[39m in 676.9ms
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mtypes/plugins.d.ts[39m in 680.4ms
+[32m√[39m Vite server hmr 5 files in 0.315ms
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mplugins.server.mjs[39m in 550.42ms
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mplugins.client.mjs[39m in 552.37ms
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mtypes/plugins.d.ts[39m in 555.06ms
+[36mi[39m [32mhmr update [39m[2m/features/cart/ui/CartLineItem.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m
+[32m√[39m Vite server hmr 11 files in 0.658ms
+[36mi[39m [32mhmr update [39m[2m/widgets/public/ui/PublicHeader.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mpage reload [39m[2mwidgets/public/ui/PublicHeader.vue[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m
+[36mi[39m [32mhmr update [39m[2m/widgets/public/ui/ProductCatalogFiltersDrawer.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/widgets/public/ui/ProductCatalogCard.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m
+[32m√[39m Vite server hmr 25 files in 0.559ms
+[36mi[39m [32mhmr update [39m[2m/widgets/public/ui/ProductCatalogCard.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mhmr update [39m[2m/assets/css/main.css, /@id/virtual:nuxt:C%3A%2FUsers%2FMarat%2Fprotech%2F.nuxt%2Froutes.mjs[22m
+[32m√[39m Vite server hmr 12 files in 0.939ms
+[36mi[39m [32mhmr update [39m[2m/widgets/public/ui/PublicHeader.vue, /assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mpage reload [39m[2mwidgets/public/ui/PublicHeader.vue[22m
+[32m√[39m Vite server hmr 18 files in 1.156ms

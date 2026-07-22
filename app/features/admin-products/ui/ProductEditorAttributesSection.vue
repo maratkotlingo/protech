@@ -50,7 +50,7 @@
               type="button"
               size="md"
               square
-              class="rounded-full bg-white shadow-sm shadow-zinc-950/5"
+              class="admin-touch-icon rounded-full bg-white shadow-sm shadow-zinc-950/5"
               aria-label="Удалить характеристику"
               @click="emit('remove', index)"
             >

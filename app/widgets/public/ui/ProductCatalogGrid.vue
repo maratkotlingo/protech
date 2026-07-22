@@ -1,10 +1,10 @@
 <template>
-  <div v-if="pending && !products.length" class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+  <div v-if="pending && !products.length" class="mt-6 grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
     <USkeleton v-for="item in 8" :key="item" class="h-90 rounded-2xl sm:h-140" />
   </div>
 
   <div v-else-if="products.length" v-auto-animate
-    class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+    class="mt-6 grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
     <ProductCatalogCard v-for="product in products" :key="product.id" :product="product"
       :favorite="favoriteProductIds.includes(product.id)" :in-cart="Boolean(cartItemByProductId(product.id))"
       :cart-quantity="cartItemByProductId(product.id)?.quantity ?? 0"

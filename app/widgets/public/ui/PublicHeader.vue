@@ -64,7 +64,7 @@
           </div>
 
           <UButton color="neutral" variant="soft" icon="i-lucide-menu" square
-            class="relative rounded-full bg-[#f3f4f6] transition duration-300 hover:scale-105 xl:hidden "
+            class="relative !h-11 !w-11 rounded-full bg-[#f3f4f6] transition duration-300 hover:scale-105 xl:hidden "
             aria-label="Открыть меню" @click="openMobileMenu">
             <span v-if="messageNotifications.unreadCount"
               class="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-emerald-600 px-1 text-[11px] font-semibold text-white shadow-lg shadow-emerald-950/20">
@@ -97,7 +97,7 @@
               </span>
             </NuxtLink>
 
-            <UButton color="neutral" variant="soft" icon="i-lucide-x" square class="rounded-full bg-[#f3f4f6] "
+            <UButton color="neutral" variant="soft" icon="i-lucide-x" square class="!h-11 !w-11 shrink-0 rounded-full bg-[#f3f4f6] "
               aria-label="Закрыть меню" @click="closeMobileMenu" />
           </div>
 
@@ -127,7 +127,7 @@
               <p class="mt-2 truncate font-semibold text-zinc-950 ">
                 {{ auth.user.name || auth.user.email }}
               </p>
-              <UButton color="neutral" variant="soft" icon="i-lucide-log-out" block class="mt-4 rounded-full"
+              <UButton color="neutral" variant="soft" icon="i-lucide-log-out" block class="mt-4 min-h-11 rounded-full"
                 :loading="auth.pending" @click="logout">
                 Выйти
               </UButton>

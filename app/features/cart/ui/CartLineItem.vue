@@ -49,10 +49,10 @@
       </div>
     </div>
 
-    <div class="col-span-2 grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3 md:col-span-1 md:col-start-3 md:row-start-1 md:grid md:grid-cols-1 md:items-stretch">
-      <div class="flex min-h-12 items-center justify-between gap-2 rounded-2xl bg-white p-1.5 shadow-sm shadow-zinc-950/5 sm:w-56 md:w-full">
+    <div class="col-span-2 grid gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3 md:col-span-1 md:col-start-3 md:row-start-1 md:grid md:grid-cols-1 md:items-stretch">
+      <div class="flex min-h-14 items-center justify-between gap-2 rounded-2xl bg-white p-1.5 shadow-sm shadow-zinc-950/5 sm:w-56 md:w-full">
         <button type="button"
-          class="grid size-10 place-items-center rounded-xl bg-[#f3f4f6] text-zinc-700 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:text-emerald-700 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-100 disabled:text-zinc-300"
+          class="grid size-11 shrink-0 place-items-center rounded-xl bg-[#f3f4f6] text-zinc-700 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:text-emerald-700 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-100 disabled:text-zinc-300"
           :disabled="loading || normalizedLocalQuantity <= 1"
           aria-label="Уменьшить количество"
           @click="changeQuantity(normalizedLocalQuantity - 1)"
@@ -76,7 +76,7 @@
         </div>
 
         <button type="button"
-          class="grid size-10 place-items-center rounded-xl bg-emerald-600 text-white shadow-sm shadow-emerald-950/15 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:bg-emerald-500 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-200 disabled:text-zinc-400"
+          class="grid size-11 shrink-0 place-items-center rounded-xl bg-emerald-700 text-white shadow-sm shadow-emerald-950/15 transition duration-200 hover:-translate-y-0.5 hover:scale-105 hover:bg-emerald-800 active:scale-95 disabled:pointer-events-none disabled:translate-y-0 disabled:scale-100 disabled:bg-zinc-200 disabled:text-zinc-400"
           :disabled="loading || normalizedLocalQuantity >= maxQuantity"
           aria-label="Увеличить количество"
           @click="changeQuantity(normalizedLocalQuantity + 1)"

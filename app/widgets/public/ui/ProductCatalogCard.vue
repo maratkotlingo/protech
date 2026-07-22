@@ -19,7 +19,7 @@
 
       <UTooltip :text="favorite ? 'Убрать из избранного' : 'В избранное'">
         <UButton color="neutral" variant="soft" icon="i-lucide-heart" :size="compact ? 'md' : 'md'" square
-          class="absolute rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105"
+          class="absolute !h-11 !w-11 rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 sm:!h-10 sm:!w-10"
           :class="[
             compact ? 'right-2 top-2' : 'right-2 top-2 sm:right-4 sm:top-4',
             favorite ? 'text-red-500' : ''
@@ -29,7 +29,7 @@
 
       <UButton :color="inCart ? 'error' : isOutOfStock(product) ? 'neutral' : 'primary'"
         :variant="inCart ? 'soft' : 'solid'" :icon="cartButtonIcon" :size="compact ? 'md' : 'md'"
-        class="absolute justify-center rounded-full opacity-100 shadow-lg shadow-zinc-950/15 transition duration-300 sm:translate-y-3 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 sm:group-focus-within:translate-y-0 sm:group-focus-within:opacity-100"
+        class="absolute min-h-12 justify-center rounded-full opacity-100 shadow-lg shadow-zinc-950/15 transition duration-300 sm:translate-y-3 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 sm:group-focus-within:translate-y-0 sm:group-focus-within:opacity-100"
         :class="[
           compact ? 'inset-x-2 bottom-2' : 'inset-x-2 bottom-2 sm:inset-x-4 sm:bottom-4',
           cartButtonClass
@@ -128,7 +128,7 @@ const cartButtonClass = computed(() => {
   }
 
   if (isOutOfStock(props.product)) {
-    return "bg-white/90 text-zinc-500";
+    return "!bg-zinc-950/90 !text-white disabled:!opacity-100 aria-disabled:!opacity-100";
   }
 
   return "";

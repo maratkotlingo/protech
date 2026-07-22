@@ -80,7 +80,7 @@
       variant="soft"
       icon="i-lucide-list-checks"
       size="md"
-      class="mt-5 rounded-full bg-white px-4 text-zinc-800 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-[1.02] hover:bg-zinc-100"
+      class="mt-5 min-h-11 rounded-full bg-white px-4 text-zinc-800 shadow-sm shadow-zinc-950/5 transition duration-300 hover:scale-[1.02] hover:bg-zinc-100"
       @click="$emit('openDetails')"
     >
       Характеристики и описание

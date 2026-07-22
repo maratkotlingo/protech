@@ -5,13 +5,13 @@
     </p>
 
     <div class="flex items-center gap-2">
-      <UButton color="neutral" variant="ghost" icon="i-lucide-arrow-left"
-        class="rounded-full bg-white text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
+      <UButton color="neutral" variant="ghost" icon="i-lucide-arrow-left" size="lg"
+        class="h-11 rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
         :disabled="pagination.page <= 1 || loading" @click="$emit('update:page', pagination.page - 1)">
         Назад
       </UButton>
-      <UButton color="neutral" variant="ghost" trailing-icon="i-lucide-arrow-right"
-        class="rounded-full bg-white text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
+      <UButton color="neutral" variant="ghost" trailing-icon="i-lucide-arrow-right" size="lg"
+        class="h-11 rounded-full bg-white px-4 text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
         :disabled="pagination.page >= pagination.pages || loading || pagination.pages === 0"
         @click="$emit('update:page', pagination.page + 1)">
         Вперёд

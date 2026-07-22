@@ -32,7 +32,7 @@
               <LockKeyhole class="size-5 text-(--admin-text-muted)" />
             </template>
             <template #trailing>
-              <UButton color="neutral" variant="ghost" size="sm" square type="button"
+              <UButton color="neutral" variant="ghost" size="lg" square type="button" class="admin-touch-icon"
                 :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'" @click="togglePasswordVisibility">
                 <EyeOff v-if="showPassword" class="size-5" />
                 <Eye v-else class="size-5" />
@@ -41,17 +41,18 @@
           </UInput>
         </UFormField>
 
-        <USwitch v-model="form.rememberMe" label="Запомнить меня" />
+        <USwitch v-model="form.rememberMe" label="Запомнить меня" size="xl"
+          :ui="{ root: 'items-center', container: 'h-11', base: 'h-11 w-[4.5rem]', thumb: 'size-8 data-[state=checked]:translate-x-7 data-[state=checked]:rtl:-translate-x-7' }" />
 
         <UButton color="primary" size="xl" block type="submit" :loading="loading"
-          class="rounded-md shadow-lg shadow-emerald-800/15">
+          class="min-h-12 rounded-md shadow-lg shadow-emerald-800/15">
           <LogIn class="size-5" />
           Войти
         </UButton>
       </form>
 
       <div class="mt-7 flex justify-center">
-        <UButton color="neutral" variant="ghost" icon="i-lucide-store" to="/" class="rounded-md">
+        <UButton color="neutral" variant="ghost" icon="i-lucide-store" size="lg" to="/" class="h-11 rounded-md px-4">
           Вернуться в магазин
         </UButton>
       </div>

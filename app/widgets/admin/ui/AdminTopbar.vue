@@ -4,7 +4,7 @@
       <div class="admin-topbar-panel flex min-h-16 items-center justify-between gap-3">
         <div class="flex min-w-0 items-center gap-3">
           <UButton color="neutral" variant="ghost" icon="i-lucide-menu" square
-            class="rounded-full bg-[#f9fafb] text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 lg:hidden"
+            class="admin-touch-icon rounded-full bg-[#f9fafb] text-zinc-600 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 lg:hidden"
             aria-label="Открыть навигацию" @click="$emit('open-menu')" />
 
           <div class="hidden size-11 shrink-0 place-items-center rounded-2xl bg-emerald-100 text-emerald-700 sm:grid">
@@ -37,7 +37,7 @@
             Магазин
           </UButton>
 
-          <div class="flex h-12 items-center gap-2 rounded-full bg-[#f9fafb] py-1 pl-1 pr-3 shadow-sm shadow-zinc-950/5">
+          <div class="flex size-12 items-center justify-center rounded-full bg-[#f9fafb] p-1 shadow-sm shadow-zinc-950/5 md:h-12 md:w-auto md:justify-start md:gap-2 md:py-1 md:pl-1 md:pr-3">
             <img v-if="user?.image" :src="user.image" :alt="user.name ?? user.email"
               class="size-10 rounded-full object-cover">
             <div v-else
@@ -56,7 +56,7 @@
 
           <UTooltip text="Выйти">
             <UButton color="neutral" variant="ghost" icon="i-lucide-log-out" square
-              class="rounded-full bg-[#f9fafb] text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-red-50 hover:text-red-600"
+              class="admin-touch-icon rounded-full bg-[#f9fafb] text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-red-50 hover:text-red-600"
               :loading="loggingOut" aria-label="Выйти" @click="logout" />
           </UTooltip>
         </div>

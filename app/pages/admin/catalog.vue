@@ -26,7 +26,8 @@
                 Основная группировка товаров.
               </p>
             </div>
-            <UButton color="primary" icon="i-lucide-plus" class="rounded-full shadow-lg shadow-emerald-950/10"
+            <UButton color="primary" icon="i-lucide-plus" size="lg"
+              class="h-11 rounded-full px-4 shadow-lg shadow-emerald-950/10"
               @click="openCategoryForm()">
               Добавить
             </UButton>
@@ -47,13 +48,13 @@
             <div class="flex gap-3">
               <UTooltip text="Редактировать">
                 <UButton color="neutral" variant="ghost" square
-                  class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
+                  class="admin-touch-icon rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
                   aria-label="Редактировать категорию" @click="openCategoryForm(category)">
                   <Pencil class="size-4" />
                 </UButton>
               </UTooltip>
               <UTooltip text="Удалить">
-                <UButton color="error" variant="ghost" square class="rounded-full" aria-label="Удалить категорию"
+                <UButton color="error" variant="ghost" square class="admin-touch-icon rounded-full" aria-label="Удалить категорию"
                   :loading="deletingCategoryId === category.id" @click="deleteCategory(category)">
                   <Trash2 class="size-4" />
                 </UButton>
@@ -67,7 +68,7 @@
             <FolderTree class="size-6" />
           </template>
           <template #actions>
-            <UButton color="primary" @click="openCategoryForm()">
+            <UButton color="primary" size="lg" class="h-11 rounded-full px-4" @click="openCategoryForm()">
               Добавить категорию
             </UButton>
           </template>
@@ -85,7 +86,8 @@
                 Параметры, которые привязываются к товарам.
               </p>
             </div>
-            <UButton color="primary" icon="i-lucide-plus" class="rounded-full shadow-lg shadow-emerald-950/10"
+            <UButton color="primary" icon="i-lucide-plus" size="lg"
+              class="h-11 rounded-full px-4 shadow-lg shadow-emerald-950/10"
               @click="openAttributeForm()">
               Добавить
             </UButton>
@@ -109,13 +111,13 @@
             <div class="flex gap-3">
               <UTooltip text="Редактировать">
                 <UButton color="neutral" variant="ghost" square
-                  class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
+                  class="admin-touch-icon rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
                   aria-label="Редактировать характеристику" @click="openAttributeForm(attribute)">
                   <Pencil class="size-4" />
                 </UButton>
               </UTooltip>
               <UTooltip text="Удалить">
-                <UButton color="error" variant="ghost" square class="rounded-full" aria-label="Удалить характеристику"
+                <UButton color="error" variant="ghost" square class="admin-touch-icon rounded-full" aria-label="Удалить характеристику"
                   :loading="deletingAttributeId === attribute.id" @click="deleteAttribute(attribute)">
                   <Trash2 class="size-4" />
                 </UButton>
@@ -129,7 +131,7 @@
             <ListChecks class="size-6" />
           </template>
           <template #actions>
-            <UButton color="primary" @click="openAttributeForm()">
+            <UButton color="primary" size="lg" class="h-11 rounded-full px-4" @click="openAttributeForm()">
               Добавить характеристику
             </UButton>
           </template>
@@ -146,10 +148,10 @@
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton color="neutral" variant="ghost" class="rounded-full" @click="closeCategoryForm">
+          <UButton color="neutral" variant="ghost" size="lg" class="h-11 rounded-full px-4" @click="closeCategoryForm">
             Отмена
           </UButton>
-          <UButton color="primary" class="rounded-full" :loading="savingCategory" @click="saveCategory">
+          <UButton color="primary" size="lg" class="h-11 rounded-full px-4" :loading="savingCategory" @click="saveCategory">
             Сохранить
           </UButton>
         </div>
@@ -172,10 +174,10 @@
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton color="neutral" variant="ghost" class="rounded-full" @click="closeAttributeForm">
+          <UButton color="neutral" variant="ghost" size="lg" class="h-11 rounded-full px-4" @click="closeAttributeForm">
             Отмена
           </UButton>
-          <UButton color="primary" class="rounded-full" :loading="savingAttribute" @click="saveAttribute">
+          <UButton color="primary" size="lg" class="h-11 rounded-full px-4" :loading="savingAttribute" @click="saveAttribute">
             Сохранить
           </UButton>
         </div>

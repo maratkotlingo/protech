@@ -83,9 +83,9 @@
             </div>
 
             <UTooltip text="Убрать из прихода">
-              <UButton size="xl" color="error" variant="ghost" class="rounded-2xl bg-[#f9fafb]" type="button" square
+              <UButton size="xl" color="error" variant="ghost" class="admin-touch-icon rounded-2xl bg-[#f9fafb]" type="button" square
                 aria-label="Убрать товар из прихода" @click="removeArrivalItem(item.id)">
-                <Trash2 class="size-8" />
+                <Trash2 class="size-5" />
               </UButton>
             </UTooltip>
           </div>

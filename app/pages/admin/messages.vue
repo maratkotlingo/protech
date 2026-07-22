@@ -101,7 +101,8 @@
                 </div>
               </div>
 
-              <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" class="rounded-full bg-white"
+              <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" size="lg"
+                class="h-11 rounded-full bg-white px-4"
                 :loading="threadPending" @click="loadThread(selectedUser.id)">
                 Обновить
               </UButton>
@@ -151,7 +152,7 @@
                   :disabled="submitting" placeholder="Сообщение" rows="1" @input="resizeMessageInput"
                   @keydown.enter.exact.prevent="sendMessage" />
                 <button type="submit"
-                  class="mb-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-950/15 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+                  class="grid size-11 shrink-0 place-items-center rounded-full bg-(--admin-accent) text-white shadow-md shadow-emerald-950/15 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
                   :disabled="!draftMessage.trim() || submitting" aria-label="Отправить сообщение">
                   <UIcon :name="submitting ? 'i-lucide-loader-circle' : 'i-lucide-send'" class="size-4"
                     :class="submitting ? 'animate-spin' : ''" />

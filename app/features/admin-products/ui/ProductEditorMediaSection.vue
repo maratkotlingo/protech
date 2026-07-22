@@ -136,7 +136,7 @@
                   type="button"
                   size="md"
                   square
-                  class="absolute right-2 top-2 rounded-full bg-white/95 shadow-lg shadow-zinc-950/10 backdrop-blur"
+                  class="admin-touch-icon absolute right-2 top-2 rounded-full bg-white/95 shadow-lg shadow-zinc-950/10 backdrop-blur"
                   aria-label="Удалить изображение"
                   @click="emit('removeGalleryImage', index)"
                 >

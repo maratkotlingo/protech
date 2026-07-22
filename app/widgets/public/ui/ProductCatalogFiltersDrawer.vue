@@ -10,7 +10,7 @@
         </div>
 
         <UButton color="neutral" variant="ghost" icon="i-lucide-x" size="lg" square
-          class="rounded-full bg-zinc-100 hover:bg-zinc-200  " aria-label="Закрыть фильтры" @click="closeDrawer" />
+          class="!h-11 !w-11 rounded-full bg-zinc-100 hover:bg-zinc-200  " aria-label="Закрыть фильтры" @click="closeDrawer" />
       </div>
     </template>
 
@@ -90,7 +90,7 @@
             </div>
 
             <UButton v-if="attribute.values.length > PRODUCT_CATALOG_VISIBLE_FILTER_OPTIONS" color="neutral"
-              variant="ghost" size="sm" class="mt-3 rounded-full px-3 text-zinc-500"
+              variant="ghost" size="sm" class="mt-3 min-h-11 rounded-full px-3 text-zinc-500"
               :icon="isAttributeExpanded(attribute.id) ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
               @click="toggleAttributeExpanded(attribute.id)">
               {{ isAttributeExpanded(attribute.id) ? "Свернуть" : `Показать все (${attribute.values.length})` }}
@@ -107,10 +107,10 @@
     <template #footer>
       <div class="flex items-center gap-3">
         <UButton color="neutral" variant="link" size="lg"
-          class="shrink-0 rounded-full px-0 text-zinc-500 whitespace-nowrap" @click="$emit('clear')">
+          class="min-h-11 shrink-0 rounded-full px-2 text-zinc-500 whitespace-nowrap" @click="$emit('clear')">
           Очистить
         </UButton>
-        <UButton color="neutral" variant="solid" size="lg" icon="i-lucide-check" block class="rounded-full"
+        <UButton color="neutral" variant="solid" size="lg" icon="i-lucide-check" block class="min-h-12 rounded-full"
           @click="closeDrawer">
           Применить
         </UButton>

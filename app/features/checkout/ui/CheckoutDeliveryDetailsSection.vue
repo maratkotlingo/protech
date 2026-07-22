@@ -164,6 +164,6 @@ const emit = defineEmits<{
   updateField: [field: CheckoutDraftField, value: string];
 }>();
 
-const inputUi = { base: "h-10 rounded-[1.1rem] bg-transparent text-sm" };
-const textareaUi = { base: "rounded-[1.1rem] bg-transparent text-sm" };
+const inputUi = { base: "h-11 rounded-[1.1rem] bg-transparent text-sm" };
+const textareaUi = { base: "min-h-16 rounded-[1.1rem] bg-transparent text-sm" };
 </script>

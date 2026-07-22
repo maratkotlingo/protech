@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-(--shop-surface-muted) text-(--shop-text)">
+  <div class="shop-shell min-h-screen bg-(--shop-surface-muted) text-(--shop-text)">
     <PublicHeader />
 
     <main class="min-h-[calc(100dvh-9rem)]">

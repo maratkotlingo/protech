@@ -37,8 +37,8 @@
       </p>
 
       <div v-auto-animate class="flex flex-wrap gap-2">
-        <UButton v-if="filters.reviews.pendingOnly" color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw"
-          class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
+        <UButton v-if="filters.reviews.pendingOnly" color="neutral" variant="ghost" size="lg" icon="i-lucide-rotate-ccw"
+          class="h-11 rounded-full bg-white px-4 text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           @click="setReviewsPendingOnly(false)">
           Сбросить
         </UButton>
@@ -60,22 +60,22 @@
           </p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <UButton color="primary" variant="soft" class="rounded-full" :loading="bulkLoading === 'markAnswered'"
+          <UButton color="primary" variant="soft" size="lg" class="h-11 rounded-full px-4" :loading="bulkLoading === 'markAnswered'"
             @click="bulkMarkAnswered(true)">
             <CheckCircle2 class="size-4" />
             Отвечено
           </UButton>
-          <UButton color="neutral" variant="soft" class="rounded-full" :loading="bulkLoading === 'markUnanswered'"
+          <UButton color="neutral" variant="soft" size="lg" class="h-11 rounded-full px-4" :loading="bulkLoading === 'markUnanswered'"
             @click="bulkMarkAnswered(false)">
             <CircleOff class="size-4" />
             Без ответа
           </UButton>
-          <UButton color="neutral" variant="ghost"
-            class="rounded-full bg-white shadow-sm shadow-zinc-950/5 hover:bg-zinc-100" @click="exportSelectedReviews">
+          <UButton color="neutral" variant="ghost" size="lg"
+            class="h-11 rounded-full bg-white px-4 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100" @click="exportSelectedReviews">
             <Download class="size-4" />
             Экспорт
           </UButton>
-          <UButton color="error" variant="soft" class="rounded-full" :loading="bulkLoading === 'delete'"
+          <UButton color="error" variant="soft" size="lg" class="h-11 rounded-full px-4" :loading="bulkLoading === 'delete'"
             @click="confirmBulkDelete">
             <Trash2 class="size-4" />
             Удалить
@@ -98,8 +98,8 @@
           </p>
         </div>
         <label v-if="reviews.length"
-          class="inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600">
-          <input v-model="allReviewsOnPageSelected" class="size-4 rounded border-zinc-200 accent-(--admin-accent)"
+          class="admin-check-target inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600">
+          <input v-model="allReviewsOnPageSelected" class="admin-check-input rounded border-zinc-200 accent-(--admin-accent)"
             type="checkbox">
           Выбрать страницу
         </label>
@@ -110,9 +110,9 @@
           class="rounded-[1.5rem] bg-white p-4 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)] sm:p-5">
           <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
             <div class="flex min-w-0 gap-3">
-              <label class="mt-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full bg-[#f9fafb] shadow-sm shadow-zinc-950/5">
+              <label class="admin-check-target mt-1 grid shrink-0 cursor-pointer place-items-center rounded-full bg-[#f9fafb] shadow-sm shadow-zinc-950/5">
                 <input :checked="selectedReviewIds.includes(review.id)"
-                  class="size-4 rounded border-zinc-200 accent-(--admin-accent)" type="checkbox"
+                  class="admin-check-input rounded border-zinc-200 accent-(--admin-accent)" type="checkbox"
                   :aria-label="`Выбрать отзыв ${review.id}`" @change="toggleReviewSelection(review.id, $event)">
               </label>
               <img :src="review.product.mainImage" alt="" class="size-16 shrink-0 rounded-2xl object-cover">
@@ -142,13 +142,13 @@
             <div class="flex shrink-0 gap-1">
               <UTooltip text="Редактировать">
                 <UButton color="neutral" variant="ghost" square
-                  class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
+                  class="admin-touch-icon rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
                   aria-label="Редактировать отзыв" @click="openEditReview(review)">
                   <Pencil class="size-4" />
                 </UButton>
               </UTooltip>
               <UTooltip text="Удалить">
-                <UButton color="error" variant="ghost" square class="rounded-full" aria-label="Удалить отзыв"
+                <UButton color="error" variant="ghost" square class="admin-touch-icon rounded-full" aria-label="Удалить отзыв"
                   :loading="deletingReviewId === review.id" @click="deleteReview(review)">
                   <Trash2 class="size-4" />
                 </UButton>
@@ -156,7 +156,40 @@
             </div>
           </div>
 
-          <div class="mt-4 grid gap-3 lg:grid-cols-3">
+          <details class="mt-4 rounded-2xl bg-[#f9fafb] p-4 sm:hidden">
+            <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-1 text-sm font-semibold text-zinc-950">
+              Детали отзыва
+              <UIcon name="i-lucide-chevron-down" class="size-5 text-(--admin-text-muted)" />
+            </summary>
+            <div class="mt-3 space-y-3">
+              <div>
+                <p class="text-xs font-semibold uppercase text-zinc-400">
+                  Достоинства
+                </p>
+                <p class="mt-2 text-sm leading-6 text-zinc-950">
+                  {{ review.advantages || "Не указаны" }}
+                </p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold uppercase text-zinc-400">
+                  Недостатки
+                </p>
+                <p class="mt-2 text-sm leading-6 text-zinc-950">
+                  {{ review.disadvantages || "Не указаны" }}
+                </p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold uppercase text-zinc-400">
+                  Комментарий
+                </p>
+                <p class="mt-2 text-sm leading-6 text-zinc-950">
+                  {{ review.comment || "Без комментария" }}
+                </p>
+              </div>
+            </div>
+          </details>
+
+          <div class="mt-4 hidden gap-3 sm:grid lg:grid-cols-3">
             <div class="rounded-2xl bg-[#f9fafb] p-4">
               <p class="text-xs font-semibold uppercase text-zinc-400">
                 Достоинства
@@ -255,7 +288,7 @@
               <p class="admin-section-heading">
                 Фотографии
               </p>
-              <UButton color="primary" variant="soft" type="button" class="rounded-full" @click="addReviewPhoto">
+              <UButton color="primary" variant="soft" size="lg" type="button" class="h-11 rounded-full px-4" @click="addReviewPhoto">
                 <Plus class="size-4" />
                 URL
               </UButton>
@@ -265,7 +298,7 @@
             </p>
             <div v-for="(photo, index) in reviewForm.reviewPhotos" :key="index" class="grid grid-cols-[1fr_auto] gap-2">
               <UInput v-model="photo.url" class="w-full" size="lg" placeholder="URL изображения" />
-              <UButton color="error" variant="ghost" square type="button" class="rounded-full" aria-label="Удалить фото"
+              <UButton color="error" variant="ghost" square type="button" class="admin-touch-icon rounded-full" aria-label="Удалить фото"
                 @click="removeReviewPhoto(index)">
                 <Trash2 class="size-4" />
               </UButton>
@@ -275,10 +308,10 @@
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton color="neutral" variant="ghost" class="rounded-full" @click="closeReviewModal">
+          <UButton color="neutral" variant="ghost" size="lg" class="h-11 rounded-full px-4" @click="closeReviewModal">
             Отмена
           </UButton>
-          <UButton color="primary" class="rounded-full" :loading="savingReview" @click="saveReview">
+          <UButton color="primary" size="lg" class="h-11 rounded-full px-4" :loading="savingReview" @click="saveReview">
             Сохранить
           </UButton>
         </div>
@@ -296,10 +329,10 @@
           <div v-if="activeReviewPhotos.length > 1"
             class="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4">
             <UButton color="neutral" variant="soft" icon="i-lucide-chevron-left" size="xl" square
-              class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
+              class="admin-touch-icon rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
               aria-label="Предыдущее фото" @click="previousReviewPhoto" />
             <UButton color="neutral" variant="soft" icon="i-lucide-chevron-right" size="xl" square
-              class="rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
+              class="admin-touch-icon rounded-full bg-white/90 shadow-xl shadow-black/20 backdrop-blur-xl transition hover:scale-105"
               aria-label="Следующее фото" @click="nextReviewPhoto" />
           </div>
         </div>

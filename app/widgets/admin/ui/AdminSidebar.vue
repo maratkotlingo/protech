@@ -30,7 +30,7 @@
 
       <UTooltip v-if="!collapsed && showCollapse" text="Свернуть меню">
         <UButton color="neutral" variant="ghost" icon="i-lucide-panel-left-close" square
-          class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
+          class="admin-touch-icon rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
           aria-label="Свернуть навигацию" @click="ui.toggleSidebar()" />
       </UTooltip>
     </div>
@@ -102,13 +102,13 @@
       <div v-if="collapsed" class="flex flex-col items-center gap-2">
         <UTooltip text="В магазин">
           <UButton color="neutral" variant="ghost" icon="i-lucide-store" to="/" square
-            class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-emerald-700"
+            class="admin-touch-icon rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-emerald-700"
             aria-label="В магазин" @click="$emit('navigate')" />
         </UTooltip>
 
         <UTooltip text="Развернуть меню">
           <UButton color="neutral" variant="ghost" icon="i-lucide-panel-left-open" square
-            class="rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
+            class="admin-touch-icon rounded-full bg-[#f9fafb] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
             aria-label="Развернуть навигацию" @click="ui.toggleSidebar()" />
         </UTooltip>
       </div>

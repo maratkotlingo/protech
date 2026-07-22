@@ -4,7 +4,7 @@
       <ProductSectionHeading eyebrow="Отзывы" title="Опыт покупателей" :description="reviewSummaryText" />
 
       <UButton color="primary" variant="soft" icon="i-lucide-message-square-plus" size="lg"
-        class="rounded-full transition duration-300 hover:scale-[1.02]" @click="toggleReviewForm">
+        class="min-h-11 rounded-full transition duration-300 hover:scale-[1.02]" @click="toggleReviewForm">
         Оставить отзыв
       </UButton>
     </div>
@@ -44,7 +44,7 @@
           <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div v-auto-animate class="flex flex-wrap gap-2">
               <button v-for="filter in ratingFilters" :key="filter.key" type="button"
-                class="rounded-full px-4 py-2 text-sm font-medium transition duration-300 hover:scale-[1.03]"
+                class="min-h-11 rounded-full px-4 py-2 text-sm font-medium transition duration-300 hover:scale-[1.03]"
                 :class="ratingFilter === filter.value ? 'bg-zinc-950 text-white shadow-lg shadow-zinc-950/20' : 'bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:text-zinc-950'"
                 @click="selectRatingFilter(filter.value)">
                 {{ filter.label }}
@@ -65,7 +65,7 @@
                 <p class="mb-2 text-sm font-semibold text-zinc-950">Оценка</p>
                 <div class="flex gap-1">
                   <button v-for="rating in 5" :key="rating" type="button"
-                    class="rounded-full p-1 text-amber-400 transition duration-300 hover:scale-110 hover:bg-amber-50 "
+                    class="grid size-11 place-items-center rounded-full text-amber-400 transition duration-300 hover:scale-110 hover:bg-amber-50 "
                     :aria-label="`Поставить ${rating}`" @click="form.rating = rating">
                     <UIcon name="i-lucide-star" class="size-8"
                       :class="rating <= form.rating ? 'fill-amber-400' : 'text-zinc-300 '" />
@@ -93,7 +93,7 @@
 
               <div class="flex justify-end">
                 <UButton color="primary" icon="i-lucide-send"
-                  class="rounded-full transition duration-300 hover:scale-[1.02]" type="submit" :loading="submitting">
+                  class="min-h-11 rounded-full transition duration-300 hover:scale-[1.02]" type="submit" :loading="submitting">
                   Отправить
                 </UButton>
               </div>
@@ -177,7 +177,7 @@
 
           <div v-else-if="hasMoreReviews" class="flex justify-center pt-2">
             <UButton color="neutral" variant="soft" icon="i-lucide-plus" size="lg"
-              class="rounded-full bg-[#f9fafb] transition duration-300 hover:scale-[1.02] " @click="loadMoreReviews">
+              class="min-h-11 rounded-full bg-[#f9fafb] transition duration-300 hover:scale-[1.02] " @click="loadMoreReviews">
               Показать еще {{ remainingReviewsCount }}
             </UButton>
           </div>
@@ -264,7 +264,7 @@ const reviewPhotoModalUi = {
   body: "overflow-hidden p-3 sm:p-4"
 };
 const reviewTextareaUi = { base: "rounded-3xl bg-transparent" };
-const reviewSummaryText = computed(() => props.reviews.length ? `${props.reviews.length} отзывов о товаре` : "Пока отзывов нет");
+const reviewSummaryText = computed(() => props.reviews.length ? `${props.reviews.length} ${reviewNoun(props.reviews.length)} о товаре` : "Пока отзывов нет");
 const averageRating = computed(() => {
   if (!props.reviews.length) {
     return 0;
@@ -318,6 +318,21 @@ const activeReviewPhotoAlt = computed(() => activeReviewPhoto.value ? `Фото 
 watch(() => props.reviews.length, () => {
   visibleCount.value = 3;
 });
+
+function reviewNoun(count: number) {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+
+  if (mod10 === 1 && mod100 !== 11) {
+    return "отзыв";
+  }
+
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+    return "отзыва";
+  }
+
+  return "отзывов";
+}
 
 function newestFirst(first: ReviewItem, second: ReviewItem) {
   return new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime();

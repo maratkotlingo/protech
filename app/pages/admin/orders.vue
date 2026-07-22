@@ -17,8 +17,8 @@
       </p>
 
       <div v-auto-animate class="flex flex-wrap gap-2">
-        <UButton v-if="hasAnyOrderFilter" color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw"
-          class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
+        <UButton v-if="hasAnyOrderFilter" color="neutral" variant="ghost" size="lg" icon="i-lucide-rotate-ccw"
+          class="h-11 rounded-full bg-white px-4 text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           @click="setOrderStatusFilter('all')">
           Сбросить
         </UButton>
@@ -116,13 +116,84 @@
 
               <UButton v-if="order.user" color="neutral" variant="solid" icon="i-lucide-messages-square"
                 :to="{ path: '/admin/messages', query: { userId: order.user.id } }"
-                class="min-h-12 justify-center rounded-2xl bg-zinc-800 px-5 text-white ring-1 ring-white/10 hover:bg-zinc-700">
+                class="min-h-12 justify-center rounded-2xl bg-[#27272a] px-5 text-white ring-1 ring-white/10 hover:bg-[#3f3f46]">
                 Чат
               </UButton>
             </div>
           </section>
 
-          <div class="grid xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.75fr)]">
+          <details class="border-b border-zinc-200 bg-[#f9fafb] px-4 py-3 lg:hidden">
+            <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-zinc-950">
+              Состав и клиент
+              <UIcon name="i-lucide-chevron-down" class="size-5 text-(--admin-text-muted)" />
+            </summary>
+
+            <div class="mt-4 space-y-4">
+              <section class="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                <div class="flex items-center justify-between gap-3">
+                  <p class="text-sm font-semibold text-zinc-950">
+                    Товары
+                  </p>
+                  <p class="text-sm font-medium text-(--admin-text-muted)">
+                    {{ order.orderItems.length }} позиций
+                  </p>
+                </div>
+
+                <div class="mt-3 divide-y divide-zinc-100">
+                  <div v-for="item in order.orderItems.slice(0, 3)" :key="item.product.id"
+                    class="flex items-center gap-3 py-3">
+                    <img :src="item.product.mainImage" :alt="item.product.name"
+                      class="size-12 shrink-0 rounded-xl bg-zinc-100 object-cover ring-1 ring-zinc-200">
+                    <div class="min-w-0 flex-1">
+                      <p class="line-clamp-2 text-sm font-semibold leading-5 text-zinc-950">
+                        {{ item.product.name }}
+                      </p>
+                      <p class="mt-1 text-xs font-medium text-(--admin-text-muted)">
+                        {{ item.quantity }} шт. · {{ formatCurrency(item.price) }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <p v-if="order.orderItems.length > 3" class="mt-2 text-xs font-medium text-(--admin-text-muted)">
+                  Еще позиций: {{ order.orderItems.length - 3 }}
+                </p>
+              </section>
+
+              <section class="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                <p class="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                  Получатель
+                </p>
+                <p class="mt-2 wrap-break-word text-base font-bold text-zinc-950">
+                  {{ order.recipientName || order.user?.name || order.user?.email || "Гость" }}
+                </p>
+                <p class="mt-1 break-all text-sm font-semibold text-zinc-700">
+                  {{ order.recipientPhone || order.customerPhone || "Телефон не указан" }}
+                </p>
+              </section>
+
+              <section class="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                <p class="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                  {{ order.delivery ? "Адрес доставки" : "Самовывоз" }}
+                </p>
+                <template v-if="order.delivery">
+                  <p class="mt-2 wrap-break-word text-sm font-semibold leading-6 text-zinc-950">
+                    {{ order.delivery.address }}
+                  </p>
+                  <p v-if="deliveryDetails(order)" class="mt-1 text-xs leading-5 text-(--admin-text-muted)">
+                    {{ deliveryDetails(order) }}
+                  </p>
+                </template>
+                <template v-else>
+                  <p class="mt-2 text-sm font-semibold leading-6 text-zinc-950">
+                    Ярославль, пр.-т Октября, д. 78д
+                  </p>
+                </template>
+              </section>
+            </div>
+          </details>
+
+          <div class="hidden lg:grid xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.75fr)]">
             <section class="border-b border-zinc-200 p-4 sm:p-5 xl:border-b-0 xl:border-r">
               <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <div>
@@ -252,7 +323,7 @@
             </aside>
           </div>
 
-          <form class="border-t border-zinc-200 bg-white px-4 py-4 sm:px-5" @submit.prevent="sendOrderMessage(order)">
+          <form class="hidden border-t border-zinc-200 bg-white px-4 py-4 sm:px-5 lg:block" @submit.prevent="sendOrderMessage(order)">
             <template v-if="order.user">
               <div class="grid gap-3 lg:grid-cols-[minmax(220px,0.45fr)_minmax(0,1fr)_auto] lg:items-center">
                 <div>

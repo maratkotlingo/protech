@@ -47,8 +47,8 @@
       </p>
 
       <div v-auto-animate class="flex flex-wrap gap-2">
-        <UButton v-if="hasAnyProductsFilter" color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw"
-          class="rounded-full bg-white text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
+        <UButton v-if="hasAnyProductsFilter" color="neutral" variant="ghost" size="lg" icon="i-lucide-rotate-ccw"
+          class="h-11 rounded-full bg-white px-4 text-zinc-500 shadow-sm shadow-zinc-950/5 hover:bg-zinc-100"
           @click="resetProductsFilters">
           Сбросить
         </UButton>
@@ -79,9 +79,9 @@
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <label v-if="products.length"
-            class="inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600">
+            class="admin-check-target inline-flex items-center gap-2 rounded-full bg-[#f9fafb] px-3 py-2 text-sm font-medium text-zinc-600">
             <input v-model="allProductsOnPageSelected"
-              class="size-4 rounded border-(--admin-border) accent-(--admin-accent)" type="checkbox"
+              class="admin-check-input rounded border-(--admin-border) accent-(--admin-accent)" type="checkbox"
               aria-label="Выбрать все товары на странице">
             Выбрать страницу
           </label>
@@ -102,42 +102,42 @@
           </p>
         </div>
         <div class="flex flex-wrap items-end gap-2">
-          <UButton color="primary" variant="soft" :loading="bulkLoading === 'activate'" @click="bulkSetActive(true)">
+          <UButton color="primary" variant="soft" size="lg" class="h-11 px-4" :loading="bulkLoading === 'activate'" @click="bulkSetActive(true)">
             <CheckCircle2 class="size-4" />
             Включить
           </UButton>
-          <UButton color="neutral" variant="soft" :loading="bulkLoading === 'deactivate'" @click="bulkSetActive(false)">
+          <UButton color="neutral" variant="soft" size="lg" class="h-11 px-4" :loading="bulkLoading === 'deactivate'" @click="bulkSetActive(false)">
             <CircleOff class="size-4" />
             Выключить
           </UButton>
-          <UButton color="error" variant="soft" :loading="bulkLoading === 'delete'" @click="confirmBulkDelete">
+          <UButton color="error" variant="soft" size="lg" class="h-11 px-4" :loading="bulkLoading === 'delete'" @click="confirmBulkDelete">
             <Trash2 class="size-4" />
             Удалить
           </UButton>
         </div>
       </div>
 
-      <div v-if="products.length" class="grid gap-2 p-3 grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div v-if="products.length" class="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         <article v-for="product in products" :key="product.id"
-          class="admin-product-card group overflow-hidden rounded-[1.5rem] bg-white p-1 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)]">
-          <div class="relative overflow-hidden rounded-xl bg-zinc-100 sm:rounded-xl">
+          class="admin-product-card group grid grid-cols-[7.5rem_minmax(0,1fr)] gap-3 overflow-hidden rounded-[1.5rem] bg-white p-2 shadow-[0_18px_50px_rgba(24,24,27,0.08)] ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(24,24,27,0.12)] sm:block sm:p-1">
+          <div class="relative h-full min-h-44 overflow-hidden rounded-xl bg-zinc-100 sm:h-auto sm:min-h-0 sm:rounded-xl">
             <img :src="product.mainImage || '/favicon.ico'" :alt="product.name"
-              class="w-full object-cover transition duration-500 group-hover:scale-105"
+              class="h-full w-full object-cover transition duration-500 group-hover:scale-105 sm:h-auto"
               :class="stockQuantity(product) <= 0 ? 'opacity-60 grayscale' : ''" style="aspect-ratio: 3 / 4;"
               loading="lazy">
-            <label class="absolute right-2 top-2 grid size-10 cursor-pointer place-items-center rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 sm:right-4 sm:top-4">
+            <label class="admin-check-target absolute right-2 top-2 grid cursor-pointer place-items-center rounded-full bg-white/90 shadow-sm shadow-zinc-950/10 backdrop-blur transition hover:scale-105 sm:right-4 sm:top-4">
               <input :checked="selectedProductIds.includes(product.id)"
-                class="size-4 rounded border-(--admin-border) accent-(--admin-accent)" type="checkbox"
+                class="admin-check-input rounded border-(--admin-border) accent-(--admin-accent)" type="checkbox"
                 :aria-label="`Выбрать товар ${product.name}`" @change="toggleProductSelection(product.id, $event)">
             </label>
           </div>
 
-          <div class="px-2 pb-3 pt-4">
+          <div class="px-1 py-1 sm:px-2 sm:pb-3 sm:pt-4">
             <div class="flex items-center justify-between gap-3">
               <AdminStatusBadge type="boolean" :value="product.isActive" />
             </div>
 
-            <p class="mt-2 line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-zinc-950 sm:min-h-12 sm:text-base sm:leading-6">
+            <p class="mt-2 line-clamp-3 min-h-0 text-sm font-semibold leading-5 text-zinc-950 sm:line-clamp-2 sm:min-h-12 sm:text-base sm:leading-6">
               {{ product.name }}
             </p>
 
@@ -156,13 +156,13 @@
 
             <div class="mt-4 grid grid-cols-3 gap-2">
               <UButton color="neutral" variant="ghost" icon="i-lucide-pencil"
-                class="min-w-0 justify-center rounded-full bg-zinc-50 px-2 text-xs shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 sm:text-sm"
+                class="admin-touch-icon min-w-0 justify-center rounded-full bg-zinc-50 px-2 text-xs shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 sm:text-sm"
                 aria-label="Редактировать товар" @click="openEdit(product.id)" />
               <UButton color="neutral" variant="ghost" icon="i-lucide-image"
-                class="min-w-0 justify-center rounded-full bg-zinc-50 px-2 text-xs shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 sm:text-sm"
+                class="admin-touch-icon min-w-0 justify-center rounded-full bg-zinc-50 px-2 text-xs shadow-sm shadow-zinc-950/5 hover:bg-zinc-100 sm:text-sm"
                 aria-label="Редактировать изображения товара" @click="openMediaEditor(product.id)" />
               <UButton color="error" variant="soft" icon="i-lucide-trash-2"
-                class="min-w-0 justify-center rounded-full px-2 text-xs sm:text-sm" aria-label="Удалить товар"
+                class="admin-touch-icon min-w-0 justify-center rounded-full px-2 text-xs sm:text-sm" aria-label="Удалить товар"
                 :loading="deletingId === product.id" @click="deleteProduct(product)" />
             </div>
           </div>
@@ -175,7 +175,7 @@
           <PackageSearch class="size-6" />
         </template>
         <template #actions>
-          <UButton color="primary" @click="openCreate">
+          <UButton color="primary" size="lg" class="h-11 rounded-full px-4" @click="openCreate">
             Добавить товар
           </UButton>
         </template>
@@ -196,7 +196,7 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircle2, CircleOff, PackageSearch, Trash2 } from "@lucide/vue";
+import { CheckCircle2, CircleOff, PackageSearch, Search, Trash2 } from "@lucide/vue";
 import { watchDebounced } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import {
