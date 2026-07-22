@@ -18,10 +18,13 @@
         :aria-pressed="index === selectedIndex"
         @click="selectImage(index)"
       >
-        <img :src="image.url"
+        <img :src="productImageUrl(image.url, 'thumbnail')"
           :alt="alt"
           class="aspect-3/4 w-16 rounded-lg bg-white object-contain sm:w-16.5"
           loading="lazy"
+          :srcset="productImageSrcset(image.url, 'thumbnail')"
+          :crossorigin="productImageCrossorigin(image.url)"
+          decoding="async"
         >
       </button>
     </div>
@@ -36,10 +39,14 @@
           :key="`mobile-${image.url}`"
           class="h-full w-full shrink-0 snap-center snap-always"
         >
-          <img :src="image.url"
+          <img :src="productImageUrl(image.url, 'detail')"
             :alt="alt"
             class="size-full object-contain"
             :loading="index === 0 ? 'eager' : 'lazy'"
+            :fetchpriority="index === 0 ? 'high' : 'auto'"
+            :srcset="productImageSrcset(image.url, 'detail')"
+            :crossorigin="productImageCrossorigin(image.url)"
+            decoding="async"
           >
         </div>
       </div>
@@ -65,10 +72,14 @@
           class="h-full shrink-0 snap-start snap-always overflow-hidden rounded-2xl bg-white ring-1 ring-zinc-200/70"
           :class="imageItems.length > 1 ? 'basis-[calc((100%-0.75rem)/2)]' : 'basis-full'"
         >
-          <img :src="image.url"
+          <img :src="productImageUrl(image.url, 'detail')"
             :alt="alt"
             class="size-full object-contain"
             :loading="index < 2 ? 'eager' : 'lazy'"
+            :fetchpriority="index === 0 ? 'high' : 'auto'"
+            :srcset="productImageSrcset(image.url, 'detail')"
+            :crossorigin="productImageCrossorigin(image.url)"
+            decoding="async"
           >
         </div>
       </div>
@@ -83,9 +94,13 @@
           leave-to-class="opacity-0 scale-[0.985]"
         >
           <img :key="activeImage.url"
-            :src="activeImage.url"
+            :src="productImageUrl(activeImage.url, 'detail')"
             :alt="alt"
             class="aspect-3/4 w-full bg-zinc-100 object-contain"
+            fetchpriority="high"
+            :srcset="productImageSrcset(activeImage.url, 'detail')"
+            :crossorigin="productImageCrossorigin(activeImage.url)"
+            decoding="async"
           >
         </Transition>
 
@@ -143,9 +158,12 @@
     >
       <template #body>
         <div class="relative overflow-hidden rounded-2xl bg-[#f9fafb]">
-          <img :src="activeImage.url"
+          <img :src="productImageUrl(activeImage.url, 'detail')"
             :alt="alt"
             class="mx-auto block aspect-3/4 max-h-[82dvh] max-w-full object-contain"
+            :srcset="productImageSrcset(activeImage.url, 'detail')"
+            :crossorigin="productImageCrossorigin(activeImage.url)"
+            decoding="async"
           >
           <div v-if="imageItems.length > 1"
             class="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4"
@@ -176,6 +194,12 @@
 </template>
 
 <script setup lang="ts">
+import {
+  productImageCrossorigin,
+  productImageSrcset,
+  productImageUrl
+} from "~~/app/shared/lib/productImages";
+
 const props = defineProps<{
   alt: string;
   images: Array<{ id?: number; url: string }>;

@@ -4,15 +4,18 @@
     <USkeleton v-for="item in 8" :key="item" class="h-90 rounded-2xl sm:h-140" />
   </section>
 
-  <section v-else-if="products.length" v-auto-animate aria-labelledby="catalog-results-heading" aria-live="polite"
-    :aria-busy="pending" role="list"
-    class="mt-6 grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+  <section v-else-if="products.length" aria-labelledby="catalog-results-heading" aria-live="polite"
+    :aria-busy="pending" class="mt-6">
     <h2 id="catalog-results-heading" class="sr-only">Товары каталога</h2>
-    <ProductCatalogCard v-for="product in products" :key="product.id" :product="product"
-      :favorite="favoriteProductIds.includes(product.id)" :in-cart="Boolean(cartItemByProductId(product.id))"
-      :cart-quantity="cartItemByProductId(product.id)?.quantity ?? 0"
-      :loading-favorite="syncingFavoriteProductId === product.id" :loading-cart="syncingCartProductId === product.id"
-      @toggle-cart="$emit('toggleCart', $event)" @toggle-favorite="$emit('toggleFavorite', $event)" />
+    <div v-auto-animate role="list"
+      class="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+      <ProductCatalogCard v-for="(product, index) in products" :key="product.id" :product="product"
+        :favorite="favoriteProductIds.includes(product.id)" :in-cart="Boolean(cartItemByProductId(product.id))"
+        :cart-quantity="cartItemByProductId(product.id)?.quantity ?? 0"
+        :priority="index < 4"
+        :loading-favorite="syncingFavoriteProductId === product.id" :loading-cart="syncingCartProductId === product.id"
+        @toggle-cart="$emit('toggleCart', $event)" @toggle-favorite="$emit('toggleFavorite', $event)" />
+    </div>
   </section>
 
   <section v-else role="status" aria-live="polite"

@@ -10,6 +10,22 @@ const siteUrl = configuredSiteUrl && !/localhost|127\.0\.0\.1/.test(configuredSi
 const siteName = "ПроТех76";
 const siteDescription = "Интернет-магазин запчастей, навесного оборудования и комплектующих для мини-экскаваторов Rippa.";
 
+const securityHeaders = {
+  "content-security-policy": [
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'self'",
+    "form-action 'self'",
+    "upgrade-insecure-requests"
+  ].join("; "),
+  "cross-origin-opener-policy": "same-origin",
+  "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=()",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "strict-transport-security": "max-age=31536000; includeSubDomains",
+  "x-content-type-options": "nosniff",
+  "x-frame-options": "SAMEORIGIN"
+};
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   modules: [
@@ -53,7 +69,7 @@ export default defineNuxtConfig({
     dirs: ["app/shared/lib"]
   },
   devtools: {
-    enabled: true
+    enabled: process.env.NODE_ENV !== "production"
   },
   colorMode: {
     preference: "light",
@@ -164,6 +180,9 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
+    "/**": {
+      headers: securityHeaders
+    },
     "/": {
       swr: 300,
       robots: {

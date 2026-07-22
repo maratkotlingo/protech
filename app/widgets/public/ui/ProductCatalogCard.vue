@@ -5,10 +5,12 @@
     <div class="relative overflow-hidden bg-zinc-100"
       :class="compact ? 'rounded-xl' : 'rounded-xl sm:rounded-[1.45rem]'">
       <NuxtLink :to="`/product/${product.id}`" :aria-label="`Открыть товар ${product.name}`">
-        <img :src="product.mainImage || '/favicon.ico'" :alt="product.name"
+        <img :src="imageUrl" :alt="product.name"
           class="w-full object-cover transition duration-500 group-hover:scale-105"
           :class="isOutOfStock(product) ? 'opacity-60 grayscale' : ''"
-          :style="{ aspectRatio: compact ? '1 / 1' : '3 / 4' }" loading="lazy">
+          :style="{ aspectRatio: compact ? '1 / 1' : '3 / 4' }" :loading="imageLoading"
+          :fetchpriority="imageFetchPriority" :srcset="imageSrcset" :sizes="imageSizes"
+          :crossorigin="imageCrossorigin" decoding="async">
       </NuxtLink>
 
       <div class="absolute flex flex-wrap gap-2" :class="compact ? 'left-2 top-2' : 'left-2 top-2 sm:left-4 sm:top-4'">
@@ -85,6 +87,11 @@ import {
   isOutOfStock,
   productBrand
 } from "~~/app/shared/lib/catalogProductHelpers";
+import {
+  productImageCrossorigin,
+  productImageSrcset,
+  productImageUrl
+} from "~~/app/shared/lib/productImages";
 import { formatCurrency } from "~~/app/shared/lib/shopFormatters";
 import type { ProductCardItem } from "~~/app/shared/types/shop";
 
@@ -95,6 +102,7 @@ const props = defineProps<{
   loadingCart?: boolean;
   loadingFavorite?: boolean;
   compact?: boolean;
+  priority?: boolean;
   product: ProductCardItem;
 }>();
 
@@ -103,6 +111,20 @@ const emit = defineEmits<{
   toggleFavorite: [product: ProductCardItem];
 }>();
 
+const imageUrl = computed(() =>
+  productImageUrl(props.product.mainImage || "/favicon.ico", props.compact ? "thumbnail" : "card")
+);
+const imageSrcset = computed(() =>
+  productImageSrcset(props.product.mainImage || "/favicon.ico", props.compact ? "thumbnail" : "card")
+);
+const imageCrossorigin = computed(() => productImageCrossorigin(props.product.mainImage || ""));
+const imageLoading = computed(() => props.priority ? "eager" : "lazy");
+const imageFetchPriority = computed(() => props.priority ? "high" : "auto");
+const imageSizes = computed(() =>
+  props.compact
+    ? "(min-width: 640px) 160px, 50vw"
+    : "(min-width: 1280px) 360px, (min-width: 1024px) 33vw, (min-width: 360px) 50vw, 100vw"
+);
 const cartButtonIcon = computed(() => {
   if (props.inCart) {
     return "i-lucide-trash-2";

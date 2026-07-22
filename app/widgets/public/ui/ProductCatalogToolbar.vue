@@ -10,13 +10,13 @@
 
       <USelectMenu v-model="categoryId" :items="categoryItems" value-key="id" label-key="name" :search-input="false"
         color="neutral" variant="none" size="lg" icon="i-lucide-layout-grid"
-        aria-label="Категория товара"
+        :aria-label="categoryAriaLabel"
         class="min-w-0 rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 " :ui="selectUi" />
 
       <div class="grid grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-stretch lg:justify-end">
         <USelectMenu v-model="sort" :items="sortOptions" value-key="value" label-key="label" :search-input="false"
           color="neutral" variant="none" size="lg" icon="i-lucide-arrow-up-down"
-          aria-label="Сортировка товаров"
+          :aria-label="sortAriaLabel"
           class="col-span-2 w-full rounded-full bg-white px-1 shadow-sm shadow-zinc-950/5 lg:w-48 lg:shrink-0 "
           :ui="sortUi" />
 
@@ -57,7 +57,7 @@ import type {
   ProductCatalogSortOption
 } from "~~/app/shared/lib/catalogProductHelpers";
 
-defineProps<{
+const props = defineProps<{
   activeFilterCount: number;
   categoryItems: ProductCatalogCategoryItem[];
   sortOptions: ProductCatalogSortOption[];
@@ -72,6 +72,15 @@ const categoryId = defineModel<number | null>("categoryId", { required: true });
 const sort = defineModel<ProductCatalogSort>("sort", { required: true });
 const discountOnly = defineModel<boolean>("discountOnly", { required: true });
 const inStockOnly = defineModel<boolean>("inStockOnly", { required: true });
+
+const selectedCategoryLabel = computed(() =>
+  props.categoryItems.find((item) => item.id === categoryId.value)?.name ?? ""
+);
+const selectedSortLabel = computed(() =>
+  props.sortOptions.find((item) => item.value === sort.value)?.label ?? ""
+);
+const categoryAriaLabel = computed(() => `${selectedCategoryLabel.value}, категория товара`);
+const sortAriaLabel = computed(() => `${selectedSortLabel.value}, сортировка товаров`);
 
 const selectUi = {
   base: "h-12 rounded-full bg-transparent",
